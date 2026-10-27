@@ -1,0 +1,26 @@
+Vazir (original family), release v30.1.0
+Author: Saber Rastikerdar and the Vazir Project Authors (see AUTHORS.txt).
+License: SIL Open Font License 1.1 (unmodified original in OFL.txt).
+
+Official repository at this release:
+https://github.com/rastikerdar/vazir-font/tree/v30.1.0
+The old repository URL now redirects to rastikerdar/vazirmatn; this pinned
+release predates the family rename and contains the actual Vazir family.
+
+Pinned commit: 68833b2c255d96d38b517acdf327b6367e9e8d67
+Download base:
+https://raw.githubusercontent.com/rastikerdar/vazir-font/68833b2c255d96d38b517acdf327b6367e9e8d67/
+
+Unmodified upstream paths:
+dist/Vazir-Thin.woff2
+dist/Vazir-Light.woff2
+dist/Vazir-Regular.woff2
+dist/Vazir-Medium.woff2
+dist/Vazir-Bold.woff2
+dist/Vazir-Black.woff2
+OFL.txt
+AUTHORS.txt
+
+The accompanying font-face.css is a local integration file. It loads only
+these relative WOFF2 files, has no CDN dependency, and does not rename,
+subset or otherwise modify the font binaries.

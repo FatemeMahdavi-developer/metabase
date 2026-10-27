@@ -1,0 +1,40 @@
+<?php
+
+return [
+    'required' => 'وارد کردن :attribute الزامی است.',
+    'present' => ':attribute باید ارسال شود.',
+    'string' => ':attribute باید متن باشد.',
+    'array' => ':attribute باید فهرست معتبر باشد.',
+    'integer' => ':attribute باید عدد صحیح باشد.',
+    'numeric' => ':attribute باید عدد باشد.',
+    'boolean' => ':attribute باید بله یا خیر باشد.',
+    'email' => ':attribute باید آدرس ایمیل معتبر باشد.',
+    'date_format' => 'قالب :attribute باید :format باشد.',
+    'regex' => 'قالب :attribute معتبر نیست.',
+    'in' => 'مقدار انتخاب‌شده برای :attribute معتبر نیست.',
+    'distinct' => ':attribute تکراری است.',
+    'max' => [
+        'numeric' => ':attribute نمی‌تواند بیشتر از :max باشد.',
+        'string' => ':attribute نمی‌تواند بیشتر از :max نویسه باشد.',
+        'array' => ':attribute نمی‌تواند بیشتر از :max مورد داشته باشد.',
+    ],
+    'min' => [
+        'numeric' => ':attribute نمی‌تواند کمتر از :min باشد.',
+        'string' => ':attribute باید حداقل :min نویسه باشد.',
+        'array' => ':attribute باید حداقل :min مورد داشته باشد.',
+    ],
+    'attributes' => [
+        'name' => 'نام', 'description' => 'توضیح', 'email' => 'ایمیل', 'value' => 'مقدار',
+        'driver' => 'نوع دیتابیس', 'configuration' => 'تنظیم اتصال', 'configuration.path' => 'مسیر فایل SQLite',
+        'configuration.host' => 'میزبان', 'configuration.port' => 'پورت', 'configuration.database' => 'نام دیتابیس',
+        'configuration.username' => 'نام کاربری دیتابیس', 'configuration.password' => 'رمز دیتابیس',
+        'connection_id' => 'اتصال دیتابیس', 'source' => 'جدول', 'mode' => 'حالت گزارش', 'limit' => 'حداکثر ردیف',
+        'metrics' => 'محاسبه‌ها', 'dimensions' => 'گروه‌بندی‌ها', 'filters' => 'فیلترها', 'sort' => 'مرتب‌سازی',
+        'joins' => 'اتصال جدول‌ها', 'columns' => 'ستون‌ها', 'sql' => 'پرس‌وجوی SQL', 'parameters' => 'پارامترها',
+        'display' => 'نوع نمایش', 'query_definition' => 'تعریف گزارش', 'visualization_settings' => 'تنظیم نمایش',
+        'tabs' => 'تب‌ها', 'widgets' => 'کارت‌ها', 'version' => 'نسخه', 'settings' => 'تنظیمات',
+        'metrics.*.key' => 'شناسهٔ ستون نتیجه', 'metrics.*.function' => 'نوع محاسبه',
+        'tabs.*.name' => 'نام تب', 'filters.*.label' => 'عنوان فیلتر', 'widgets.*.settings.decimals' => 'تعداد اعشار',
+        'visualization_settings.decimals' => 'تعداد اعشار', 'settings.refresh_interval' => 'فاصلهٔ تازه‌سازی',
+    ],
+];

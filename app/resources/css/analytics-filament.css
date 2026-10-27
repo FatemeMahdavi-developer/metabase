@@ -1,0 +1,142 @@
+/* Analytics is content inside a Filament page. Navigation and page spacing are
+   provided by the panel; advanced notebook controls reuse its component markup. */
+body .fi-page #analytics-studio {
+    min-height: 0;
+    background: transparent;
+}
+body .fi-page #analytics-studio .mb-shell {
+    display: block;
+    min-height: 0;
+    background: transparent;
+}
+body .fi-page #analytics-studio .mb-main { background: transparent; }
+body .fi-page #analytics-studio .mb-workbench-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+/* Native modal overlays use z-40; fullscreen content must stay beneath them. */
+body .fi-page #analytics-studio .mb-fullscreen { z-index: 35; }
+body .fi-page #analytics-studio .mb-toolbar {
+    padding: 18px 24px;
+    border: 1px solid var(--mb-border);
+    border-radius: 12px;
+    gap: 16px;
+    margin-bottom: 20px;
+    background: var(--mb-surface);
+}
+body .fi-page #analytics-studio .mb-toolbar h1 { font-size: 18px; }
+body .fi-page #analytics-studio .mb-toolbar:has(h1:empty) { display: none; }
+body .fi-page #analytics-studio .mb-content { padding: 0; }
+body .fi-page #analytics-studio :is(.mb-list, .mb-db-page, .mb-question-result, .mb-preview, .mb-notebook) { border-radius: 12px; }
+body .fi-page #analytics-studio :is(.mb-canvas, .mb-notebook-v2) { padding-inline: 0; }
+body .fi-page #analytics-studio .mb-editbar { padding: 12px 20px; border-radius: 12px; margin-bottom: 16px; }
+body .fi-page #analytics-studio :is(.mb-filterbar, .mb-tabs) { padding-inline: 20px; }
+
+/* Retain the exact native Filament modal overlay, focus trap and transitions. */
+body #analytics-studio .fi-modal-window.mb-dialog {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: min(48rem, calc(100vw - 32px));
+    max-height: calc(100dvh - 64px);
+    padding: 0;
+    margin: auto;
+    overflow: hidden;
+    border: 0;
+    border-radius: 12px;
+    background: var(--mb-surface);
+    color: var(--mb-text);
+}
+body #analytics-studio .fi-modal-window.mb-dialog.wide { max-width: min(72rem, calc(100vw - 32px)); }
+body #analytics-studio .fi-modal-slide-over-window.mb-dialog.side {
+    margin: 0;
+    margin-inline-start: auto;
+    width: min(36rem, 100vw);
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+}
+body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-header {
+    padding: 24px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--mb-border);
+    background: var(--mb-surface);
+}
+body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-heading {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--mb-text);
+}
+body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-content { min-height: 0; padding: 0; overflow: auto; }
+body #analytics-studio .fi-modal-window.mb-dialog .analytics-workbench-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: none;
+}
+body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-body { padding: 24px; overflow: visible; }
+body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-footer {
+    padding: 20px 24px;
+    background: var(--mb-surface);
+    border-top: 1px solid var(--mb-border);
+    flex-shrink: 0;
+}
+body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-footer[hidden] { display: none; }
+body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-footer {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+}
+body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-error { margin-inline: 24px; }
+
+body #analytics-studio .mb-btn.fi-btn {
+    border-radius: var(--soar-btn-radius, 8px);
+    min-height: 36px;
+    padding: 8px 14px;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+}
+body #analytics-studio .mb-btn.fi-btn .fi-btn-label { display: inline-flex; align-items: center; gap: 7px; }
+body #analytics-studio .mb-btn.fi-btn.small { min-height: 30px; padding: 4px 10px; font-size: 12px; }
+body #analytics-studio .mb-btn.fi-btn:disabled { cursor: default; }
+body #analytics-studio .mb-form-field > .fi-fo-field-wrp-label { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+body #analytics-studio .mb-form-field > .fi-input-wrp {
+    display: flex;
+    width: 100%;
+    border-radius: var(--soar-input-radius, 8px);
+    background: var(--mb-input-bg);
+}
+body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > .mb-input {
+    border: 0;
+    border-radius: inherit;
+    box-shadow: none;
+    background-color: transparent;
+    min-height: 36px;
+    height: auto;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 24px;
+    color: var(--mb-text);
+}
+body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > textarea.mb-input { min-height: 92px; }
+body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > .mb-input:focus { box-shadow: none; outline: none; }
+body #analytics-studio .mb-form-field > .fi-input-wrp:focus-within { outline: 2px solid var(--mb-focus); outline-offset: 1px; }
+body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > select.mb-input { padding-inline-end: 34px; }
+
+@media (max-width: 640px) {
+    body .fi-page #analytics-studio .mb-toolbar { padding: 16px; align-items: flex-start; flex-direction: column; }
+    body .fi-page #analytics-studio .mb-actions { width: 100%; }
+    body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-body { padding: 20px 16px; }
+    body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-header { padding: 20px 16px; }
+    body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-footer { padding: 16px; }
+}

@@ -1,0 +1,191 @@
+.mb-dialog[data-click-behavior-dialog].side {
+    width: min(460px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+}
+
+.mb-click-settings-summary {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line, #e3e8ee);
+}
+
+.mb-click-settings-summary > strong,
+.mb-click-behavior h3 {
+    color: var(--text, #4c5773);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.mb-click-settings-summary .mb-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.mb-click-options {
+    display: grid;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.mb-click-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text, #4c5773);
+    background: transparent;
+    text-align: start;
+    font: inherit;
+    cursor: pointer;
+    transition: background 120ms, border-color 120ms;
+}
+
+.mb-click-option:hover {
+    background: #f5f9fd;
+    border-color: #d9e8f6;
+}
+
+.mb-click-option.active {
+    color: var(--blue, #509ee3);
+    background: #edf5fd;
+    border-color: #b9d9f5;
+}
+
+.mb-click-option > span {
+    flex: 1;
+    min-width: 0;
+}
+
+.mb-click-option strong,
+.mb-click-option small {
+    display: block;
+}
+
+.mb-click-option strong {
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.mb-click-option small {
+    margin-top: 3px;
+    color: var(--muted, #8895aa);
+    font-size: 11px;
+    line-height: 1.8;
+    font-weight: 400;
+}
+
+.mb-click-option > .mb-icon {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 19px;
+}
+
+.mb-click-option > .mb-icon:last-child {
+    width: 16px;
+    height: 16px;
+    flex-basis: 16px;
+}
+
+.mb-click-details {
+    padding-top: 18px;
+    border-top: 1px solid var(--line, #e3e8ee);
+}
+
+.mb-click-selected {
+    display: flex;
+    align-items: stretch;
+    margin: 20px 0;
+    border: 1px solid #b9d9f5;
+    border-radius: 7px;
+    color: var(--blue, #509ee3);
+    background: #edf5fd;
+}
+
+.mb-click-selected .mb-click-selected-label {
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    border: 0;
+    background: transparent;
+    text-align: start;
+    justify-content: flex-start;
+    color: inherit;
+}
+
+.mb-click-selected > .mb-icon-btn {
+    align-self: stretch;
+    width: 42px;
+    border-inline-start: 1px solid #b9d9f5;
+    border-radius: 0;
+    color: inherit;
+}
+
+.mb-click-details:empty {
+    display: none;
+}
+
+.mb-click-mappings h3,
+.mb-click-template-values h3 {
+    margin: 8px 0 18px;
+}
+
+.mb-click-mapping .mb-form-field {
+    margin-bottom: 18px;
+}
+
+.mb-click-mapping select {
+    width: 100%;
+}
+
+.mb-click-template-values {
+    padding-top: 4px;
+}
+
+.mb-click-template-values .mb-btn {
+    margin-inline-end: 5px;
+    margin-bottom: 8px;
+    max-width: 100%;
+    white-space: normal;
+    text-align: start;
+}
+
+.mb-click-template-values .mb-help {
+    margin-top: 10px;
+    line-height: 1.9;
+}
+
+.mb-click-option:focus-visible,
+.mb-click-behavior .mb-btn:focus-visible,
+.mb-click-behavior .mb-input:focus-visible {
+    outline: 3px solid #c5e0f7;
+    outline-offset: 2px;
+}
+
+.mb-query-date-parts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 10px 0;
+    gap: 8px 14px;
+}
+
+.mb-query-date-parts .mb-inline-check {
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .mb-dialog[data-click-behavior-dialog].side {
+        width: calc(100vw - 16px);
+        max-width: calc(100vw - 16px);
+    }
+
+    .mb-click-option {
+        padding: 11px 9px;
+        gap: 9px;
+    }
+}

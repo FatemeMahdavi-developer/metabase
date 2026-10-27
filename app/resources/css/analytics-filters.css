@@ -1,0 +1,46 @@
+.mb-filter-pending .mb-filter-trigger { border-color:#d9b05a; background:#fffaf0; }
+.mb-filter-value-picker { min-width:280px; }
+.mb-filter-selected-values { display:flex; flex-wrap:wrap; gap:6px; max-height:100px; overflow:auto; margin-bottom:12px; }
+.mb-filter-selected-values:empty { display:none; }
+.mb-filter-selected-values .mb-chip { display:inline-flex; align-items:center; gap:5px; margin:0; padding:5px 8px; color:var(--blue); background:#edf5fc; border:1px solid #d7e8f6; border-radius:5px; font-size:12px; }
+.mb-filter-selected-values .mb-icon-btn { padding:0; min-width:20px; min-height:20px; color:var(--blue); }
+.mb-filter-selected-values .mb-icon { width:13px; height:13px; }
+.mb-filter-value-picker .mb-search { margin-bottom:10px; }
+.mb-filter-selection-tools { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:32px; color:var(--muted); font-size:11px; }
+.mb-filter-selection-tools .mb-btn { padding:5px 8px; color:var(--blue); background:transparent; border-color:transparent; }
+.mb-filter-value-picker .mb-filter-value-list { margin-top:8px; min-height:70px; max-height:320px; overflow:auto; border-block:1px solid var(--line); overscroll-behavior:contain; }
+.mb-filter-value-picker .mb-value-option { gap:10px; padding:10px 8px; min-height:40px; border-bottom:0; border-radius:4px; }
+.mb-filter-value-picker .mb-value-option:hover,.mb-filter-value-picker .mb-value-option:focus-within { background:#f0f6fc; color:var(--blue); }
+.mb-filter-value-picker .mb-value-option:has(:checked) { background:#edf5fc; }
+.mb-filter-value-picker input[type=checkbox],.mb-filter-value-picker input[type=radio] { accent-color:var(--blue); cursor:pointer; width:16px; height:16px; }
+.mb-filter-value-picker .mb-value-option input:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+.mb-filter-value-picker .mb-empty { min-height:80px; padding:22px 12px; font-size:12px; }
+.mb-filter-value-picker .mb-loading { display:flex; align-items:center; justify-content:center; gap:10px; min-height:90px; padding:15px; color:var(--muted); }
+.mb-filter-value-picker .mb-loading::before { content:""; width:17px; height:17px; border:2px solid #dbe7f3; border-top-color:var(--blue); border-radius:50%; animation:mb-filter-spin 800ms linear infinite; }
+.mb-filter-value-picker .mb-error { margin:10px 0; line-height:1.8; padding:12px; }
+.mb-filter-values-more { display:flex; justify-content:center; padding-top:9px; }
+.mb-filter-values-more:empty,.mb-filter-custom-value:empty { display:none; }
+.mb-filter-values-more .mb-btn { border-color:transparent; color:var(--blue); background:transparent; }
+.mb-filter-custom-value { padding-top:9px; }
+.mb-filter-custom-value .mb-btn { width:100%; justify-content:flex-start; color:var(--blue); border:1px dashed #abcce9; background:#f7fbff; white-space:normal; overflow-wrap:anywhere; }
+.mb-filter-date-tabs { display:flex; gap:8px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+.mb-filter-date-tabs .mb-btn { padding:10px 12px; margin-bottom:-1px; border:0; border-radius:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); }
+.mb-filter-date-tabs .mb-btn.selected { border-bottom-color:var(--blue); color:var(--blue); background:transparent; font-weight:bold; }
+.mb-dialog:has(.mb-filter-date-tabs) .mb-date-presets { gap:7px; margin-bottom:20px; }
+.mb-dialog:has(.mb-filter-date-tabs) .mb-date-presets button { text-align:center; padding:9px 5px; font-size:12px; background:#fafcfe; }
+.mb-dialog:has(.mb-filter-date-tabs) .mb-inline-check { margin-block:12px; }
+.mb-dialog:has(.mb-filter-date-tabs) .mb-note { margin-top:15px; font-size:12px; line-height:1.9; }
+.mb-date-exclude-values { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 12px; max-height:300px; overflow:auto; padding:8px 2px; }
+.mb-date-exclude-values .mb-inline-check { margin:0!important; padding:7px 5px; border-radius:4px; }
+.mb-date-exclude-values .mb-inline-check:hover,.mb-date-exclude-values .mb-inline-check:has(:checked) { background:#edf5fc; color:var(--blue); }
+.mb-date-exclude-values input { accent-color:var(--blue); width:15px; height:15px; }
+.mb-dialog:has(.mb-filter-options) .mb-dashboard-default { padding:14px 12px 2px; margin:14px 0; border:1px solid #e2e8f0; border-radius:6px; background:#fafbfd; }
+.mb-dialog:has(.mb-filter-options) .mb-form-field { margin-bottom:16px; }
+.mb-dialog:has(.mb-filter-options) .mb-inline-check { margin-block:12px; line-height:1.8; }
+.mb-dialog:has(.mb-filter-options) label[hidden] { display:none; }
+.mb-dialog:has(.mb-filter-options) .mb-input:disabled { background:#f0f2f5; color:#9ca8b5; cursor:default; }
+.mb-dialog:has(.mb-filter-options) [data-filter-dependency-note] { line-height:1.9; font-size:12px; }
+.mb-filter-date-tabs .mb-btn:focus-visible,.mb-filter-value-picker .mb-btn:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+@keyframes mb-filter-spin { to { transform:rotate(360deg); } }
+@media(max-width:760px) { .mb-filter-value-picker { min-width:0; width:100%; } .mb-filter-selected-values { max-height:80px; } .mb-filter-value-picker .mb-filter-value-list { max-height:280px; } .mb-filter-selection-tools { flex-wrap:wrap; gap:6px; } .mb-dialog:has(.mb-filter-date-tabs) .mb-date-presets { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(prefers-reduced-motion:reduce) { .mb-filter-value-picker .mb-loading::before { animation:none; } }
