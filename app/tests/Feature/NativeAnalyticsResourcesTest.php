@@ -179,22 +179,24 @@ class NativeAnalyticsResourcesTest extends TestCase
         $second->update(['sort_order' => 0]);
         $foreign = AnalyticsDashboard::create(['owner_id' => User::factory()->create()->id, 'name' => 'Private submenu', 'settings' => []]);
 
-        $home = Dashboard::getNavigationItems()[0];
-        $this->assertSame('/admin', parse_url($home->getUrl(), PHP_URL_PATH));
+        $children = Dashboard::getNavigationItems();
         $this->assertSame([], AnalyticsDashboardResource::getNavigationItems()[0]->getChildItems());
-        $children = $home->getChildItems();
+        foreach ($children as $item) {
+            $this->assertSame(Dashboard::getNavigationLabel(), $item->getGroup());
+            $this->assertSame([], $item->getChildItems());
+        }
         $this->assertSame(['Second submenu', 'First submenu'], array_map(fn ($item) => $item->getLabel(), $children));
         $this->assertSame(AnalyticsDashboardView::getUrl(['record' => $second->id]), $children[0]->getUrl());
         $this->get($children[0]->getUrl())->assertOk();
 
         DB::table('analytics_dashboard_members')->insert(['dashboard_id' => $foreign->id, 'user_id' => $this->owner->id, 'role' => 'viewer']);
-        $children = Dashboard::getNavigationItems()[0]->getChildItems();
+        $children = Dashboard::getNavigationItems();
         $this->assertContains('Private submenu', array_map(fn ($item) => $item->getLabel(), $children));
 
         Livewire::test(ListAnalyticsDashboards::class)
             ->call('updateTableColumnState', 'is_active', (string) $first->id, false)
             ->assertRedirect(AnalyticsDashboardResource::getUrl());
-        $children = Dashboard::getNavigationItems()[0]->getChildItems();
+        $children = Dashboard::getNavigationItems();
         $this->assertNotContains('First submenu', array_map(fn ($item) => $item->getLabel(), $children));
     }
 
@@ -446,4 +448,73 @@ class NativeAnalyticsResourcesTest extends TestCase
         }
         $this->assertDatabaseMissing('analytics_reports', ['name' => 'Forbidden copy']);
     }
+
+    private function assertSharedPanelFields(\Filament\Forms\Form $form, array $names, string $html): void
+    {
+        $fields = $form->getFlatFields(withHidden: true);
+        foreach ($names as $name) {
+            $field = $fields[$name];
+            $attributes = $field->getExtraFieldWrapperAttributes();
+            $this->assertStringContainsString('soar-floating-field', $attributes['class'], $name);
+            $this->assertInstanceOf(\Illuminate\Support\HtmlString::class, $attributes['x-data']);
+            $this->assertStringContainsString($field->getStatePath(), $attributes['x-data']->toHtml());
+            $this->assertSame("{ 'soar-floating-has-value': hasValue }", $attributes['x-bind:class']->toHtml());
+            if ($field instanceof \Filament\Forms\Components\Select) {
+                $this->assertStringContainsString('soar-floating-select', $attributes['class']);
+            }
+        }
+
+        $document = new \DOMDocument;
+        $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+        $wrappers = (new \DOMXPath($document))->query('//*[@data-field-wrapper and contains(@class, "soar-floating-field")]');
+        $this->assertGreaterThanOrEqual(count($names), $wrappers->length);
+        foreach ($wrappers as $wrapper) {
+            $this->assertStringStartsWith('soarFloatingField(', $wrapper->getAttribute('x-data'));
+            $this->assertSame("{ 'soar-floating-has-value': hasValue }", $wrapper->getAttribute('x-bind:class'));
+        }
+    }
+
+    public function test_connection_create_and_edit_share_panel_fields_including_the_nested_section(): void
+    {
+        $names = ['name', 'driver', 'configuration.host', 'configuration.port', 'configuration.database', 'configuration.username', 'configuration.password', 'configuration.sslmode'];
+        $create = Livewire::test(ListAnalyticsConnections::class)->mountAction('create');
+        $form = $create->instance()->getMountedActionForm();
+        $this->assertSharedPanelFields($form, $names, $create->html());
+        $fields = $form->getFlatFields(withHidden: true);
+        $this->assertSame('ltr', $fields['configuration.host']->getExtraInputAttributes()['dir']);
+        $this->assertTrue($fields['name']->isRequired());
+        $this->assertArrayNotHasKey('x-data', $fields['configuration.ssl']->getExtraFieldWrapperAttributes());
+        $this->assertArrayNotHasKey('x-data', $fields['test_first']->getExtraFieldWrapperAttributes());
+
+        $edit = Livewire::test(ListAnalyticsConnections::class)->mountTableAction('edit', $this->connection());
+        $this->assertSharedPanelFields($edit->instance()->getMountedTableActionForm(), $names, $edit->html());
+    }
+
+    public function test_dashboard_report_copy_and_folder_forms_reuse_the_same_native_field_styling(): void
+    {
+        $names = ['name', 'description', 'folder_id'];
+        $dashboard = Livewire::test(ListAnalyticsDashboards::class)->mountAction('create');
+        $this->assertSharedPanelFields($dashboard->instance()->getMountedActionForm(), $names, $dashboard->html());
+
+        foreach ([ListAnalyticsDashboards::class, ListAnalyticsReports::class] as $page) {
+            $folder = Livewire::test($page)->mountAction('createFolder');
+            $this->assertSharedPanelFields($folder->instance()->getMountedActionForm(), ['name'], $folder->html());
+        }
+
+        $connection = $this->connection();
+        $report = AnalyticsReport::create([
+            'owner_id' => $this->owner->id, 'name' => 'Shared field styling', 'display' => 'table',
+            'query_definition' => ['connection_id' => $connection->id, 'source' => 'events', 'mode' => 'rows', 'metrics' => [], 'dimensions' => [], 'filters' => [], 'sort' => [], 'limit' => 20],
+            'visualization_settings' => [],
+        ]);
+        foreach (['edit', 'copy'] as $action) {
+            $component = Livewire::test(ListAnalyticsReports::class)->mountTableAction($action, $report);
+            $form = $component->instance()->getMountedTableActionForm();
+            $this->assertSharedPanelFields($form, $names, $component->html());
+            if ($action === 'edit') {
+                $this->assertArrayNotHasKey('x-data', $form->getFlatFields(withHidden: true)['version']->getExtraFieldWrapperAttributes());
+            }
+        }
+    }
+
 }

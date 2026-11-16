@@ -144,7 +144,7 @@ export const notebookFlowMethods = {
         if (position === 'source' && !this.notebookSectionVisible(stage, 'expression', q.expressions?.length)) actions.push(['expression', stage]);
         if (position === 'bottom' && !scalar) {
             if (!this.notebookSectionVisible(stage, 'sort', q.sort.length)) actions.push(['sort', stage]);
-        if (this.notebookSectionVisible(stage, 'limit', q.limit_explicit)) html += this.notebookStep(stage, 'limit', `<div class="mb-step-box mb-limit-cell">${button(q.limit_explicit ? `${q.limit} ردیف` : 'تعیین حداکثر ردیف‌ها', 'editNotebookLimit', '', `data-stage="${stage}"`)}</div>`);
+            if (!this.notebookSectionVisible(stage, 'limit', q.limit_explicit)) actions.push(['limit', stage]);
         }
         if (position === 'bottom' && stage > 0 && !(this.notebookDefinition(stage - 1).mode === 'aggregate' && !this.notebookDefinition(stage - 1).dimensions.length) && !q.filters.length) actions.unshift(['filter', stage]);
         if (position === 'bottom' && stage > 0 && !(this.notebookDefinition(stage - 1).mode === 'aggregate' && !this.notebookDefinition(stage - 1).dimensions.length) && q.mode !== 'aggregate') actions.unshift(['summarize', stage]);

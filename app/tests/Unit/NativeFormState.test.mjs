@@ -41,6 +41,54 @@ test('date and relative query filters initialize their own typed state', () => {
     assert.deepEqual(source.value, ['2026-01-01', '2026-02-01']);
 });
 
+test('date calendars round-trip canonical scalar, range and excluded range values', () => {
+    const scalar = valueFormState('2026-11-10', 'eq');
+    assert.equal(scalar.date_value, '2026-11-10');
+    assert.equal(readValueState({ value_mode: 'specific', date_value: '2026-11-10' }, 'date', 'eq'), '2026-11-10');
+    const range = valueFormState(['2026-11-01', '2026-11-15'], 'between');
+    assert.equal(range.date_from, '2026-11-01');
+    assert.equal(range.date_to, '2026-11-15');
+    assert.deepEqual(readValueState({ value_mode: 'range', date_from: range.date_from, date_to: range.date_to }, 'date', 'between'), ['2026-11-01', '2026-11-15']);
+    const excluded = { kind: 'date_range', from: '2026-11-01', to: '2026-11-15', exclude: true };
+    assert.deepEqual(readValueState(valueFormState(excluded), 'date', 'between'), excluded);
+    assert.throws(() => readValueState({ value_mode: 'range', date_from: '2026-11-15', date_to: '2026-11-01' }, 'date', 'between'));
+    assert.throws(() => readValueState({ value_mode: 'range', date_from: null, date_to: '2026-11-15' }, 'date', 'between'));
+});
+
+test('a specific dashboard date stays a scalar for each binding to interpret independently', () => {
+    const date = '2026-11-04';
+    for (const operator of ['eq', 'between', 'not_between']) {
+        const draft = valueFormState(date, operator);
+        assert.equal(draft.value_mode, 'specific');
+        assert.equal(draft.date_value, date);
+        assert.equal(readValueState(draft, 'date', operator), date);
+        assert.equal(readValueState({ value_mode: 'specific', date_value: date }, 'date', operator), date);
+        assert.equal(readValueState({ value_mode: 'specific', value: date }, 'date', operator), date);
+    }
+});
+
+test('calendar drafts reject malformed saved dates without changing text or numeric values', () => {
+    for (const value of ['not-a-date', '2026-02-30', '2026-13-01', '2026-11-01 extra']) {
+        const state = valueFormState(value);
+        assert.equal(state.date_value, null);
+        assert.equal(state.value, value);
+    }
+    assert.equal(valueFormState('2028-02-29').date_value, '2028-02-29');
+    const state = filterFormState({ field: 'ordered_at', operator: 'between', value: ['2026-11-01', '2026-11-15'] });
+    assert.equal(state.date_value, null);
+    assert.equal(state.date_from, '2026-11-01');
+    assert.equal(state.date_to, '2026-11-15');
+    assert.equal(readValueState(valueFormState('a date-like text'), 'text', 'eq'), 'a date-like text');
+    assert.deepEqual(readValueState(valueFormState([0, 10], 'between'), 'number', 'between'), [0, 10]);
+});
+
+test('date lists retain every selection rather than using the scalar calendar value', () => {
+    for (const operator of ['in', 'not_in']) {
+        const dates = ['2026-11-01', '2026-11-05', '2026-11-15'];
+        assert.deepEqual(readValueState(valueFormState(dates, operator), 'date', operator), dates);
+    }
+});
+
 test('FormData adapter preserves repeated values and checkbox semantics', () => {
     const data = nativeFormData({ columns: ['one', 'two'], auto_apply: true, required: false, limit: 0 });
     assert.deepEqual(data.getAll('columns'), ['one', 'two']);

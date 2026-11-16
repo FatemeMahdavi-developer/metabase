@@ -6,6 +6,7 @@ use App\Domain\Analytics\ClickBehaviorValidator;
 use App\Domain\Analytics\ConnectionUniqueness;
 use App\Domain\Analytics\DashboardStore;
 use App\Domain\Analytics\DrillService;
+use App\Domain\Analytics\DrillResultPage;
 use App\Domain\Analytics\Drivers\ConnectionManager;
 use App\Domain\Analytics\ReportRunner;
 use App\Models\AnalyticsConnection;
@@ -26,7 +27,7 @@ use Illuminate\Validation\ValidationException;
 
 class AnalyticsController extends Controller
 {
-    public function __construct(private ReportRunner $runner, private DashboardStore $store, private ConnectionManager $connections, private DrillService $drills) {}
+    public function __construct(private ReportRunner $runner, private DashboardStore $store, private ConnectionManager $connections, private DrillService $drills, private DrillResultPage $drillPages) {}
 
     public function index(Request $request): array
     {
@@ -427,15 +428,21 @@ class AnalyticsController extends Controller
 
     private function interact(Request $request, array $definition, int $ownerId, array $extra = []): array
     {
+        $paging = str_ends_with($request->path(), '/interactions/page');
         $data = $request->validate([
-            'context' => 'required|array', 'path' => 'sometimes|array|max:8',
+            'context' => 'required|array', 'path' => $paging ? 'required|array|min:1|max:8' : 'sometimes|array|max:8',
             'path.*.context' => 'required|array', 'path.*.action_id' => 'required|string|max:400', 'path.*.input' => 'sometimes|array|max:3',
-            'action_id' => 'sometimes|required|string|max:400', 'input' => 'sometimes|array|max:3',
+            'action_id' => $paging ? 'prohibited' : 'sometimes|required|string|max:400', 'input' => $paging ? 'prohibited' : 'sometimes|array|max:3',
+            'pagination' => 'sometimes|array:page,page_size,search,sort',
         ]);
         foreach ($data['path'] ?? [] as $step) {
             $next = $this->drills->apply($definition, $ownerId, $step['context'], $step['action_id'], $extra, $step['input'] ?? []);
             $definition = $next['query_definition'];
             $extra = [];
+        }
+
+        if ($paging) {
+            return $this->drillPages->run($definition, $ownerId, $data['pagination'] ?? []);
         }
 
         return isset($data['action_id'])

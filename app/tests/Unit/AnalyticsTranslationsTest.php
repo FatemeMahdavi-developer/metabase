@@ -32,4 +32,15 @@ class AnalyticsTranslationsTest extends TestCase
         $this->assertSame('رفتار کلیک', WorkbenchForms::title('click'));
         $this->assertSame('نام', __('analytics.forms.fields.name'));
     }
+
+    public function test_filter_and_confirmation_titles_use_persian_when_the_server_locale_has_no_translation(): void
+    {
+        foreach (['fa', 'en'] as $locale) {
+            app()->setLocale($locale);
+
+            $this->assertSame('تأیید عملیات', WorkbenchForms::title('confirm'));
+            $this->assertSame('تنظیم فیلتر داشبورد', WorkbenchForms::title('dashboard_filter'));
+            $this->assertSame('مقدار فیلتر', WorkbenchForms::title('filter_value'));
+        }
+    }
 }

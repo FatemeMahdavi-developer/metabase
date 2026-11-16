@@ -17,6 +17,7 @@ Route::prefix('analytics/api')->middleware(['auth', 'throttle:180,1'])->group(fu
     Route::post('reports/expression/validate', [AnalyticsController::class, 'validateExpression']);
     Route::post('reports/interactions/options', [AnalyticsController::class, 'reportInteraction']);
     Route::post('reports/interactions/apply', [AnalyticsController::class, 'reportInteraction']);
+    Route::post('reports/interactions/page', [AnalyticsController::class, 'reportInteraction']);
     Route::post('reports', [AnalyticsController::class, 'reportSave']);
     Route::get('reports/{report}', [AnalyticsController::class, 'reportShow']);
     Route::put('reports/{report}', [AnalyticsController::class, 'reportSave']);
@@ -30,6 +31,7 @@ Route::prefix('analytics/api')->middleware(['auth', 'throttle:180,1'])->group(fu
     Route::post('dashboards/{dashboard}/widgets/{widget}/query', [AnalyticsController::class, 'widgetQuery']);
     Route::post('dashboards/{dashboard}/widgets/{widget}/interactions/options', [AnalyticsController::class, 'widgetInteraction']);
     Route::post('dashboards/{dashboard}/widgets/{widget}/interactions/apply', [AnalyticsController::class, 'widgetInteraction']);
+    Route::post('dashboards/{dashboard}/widgets/{widget}/interactions/page', [AnalyticsController::class, 'widgetInteraction']);
     Route::post('dashboards/{dashboard}/widgets/{widget}/click-report', [AnalyticsController::class, 'widgetClickReport']);
     Route::post('dashboards/{dashboard}/widgets/{widget}/preview', [AnalyticsController::class, 'dashboardPreview']);
     Route::post('dashboards/{dashboard}/filters/{filter}/options', [AnalyticsController::class, 'filterOptions']);

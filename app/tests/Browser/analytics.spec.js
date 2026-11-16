@@ -280,10 +280,10 @@ test('manual join, multiple ON conditions, typed filter, formula and table pagin
     for (const row of result.rows) { expect(row[join.alias + '.city']).toBe('تهران'); expect(row[formula]).toBeCloseTo(row.total * .09, 2); }
     await expect(page.locator('.mb-preview-body tbody tr')).toHaveCount(25);
     await page.locator('[data-page=next]').click();
-    await expect(page.locator('.mb-table-pagination')).toContainText('26–');
+    await expect(page.locator('.mb-table-pagination')).toContainText('نمایش ۲۶ تا');
     await page.locator('[data-table-sort=total]').click();
     await page.locator('[data-drill-menu] [data-drill-action="sort:asc"]').click();
-    await expect(page.locator('.mb-table-pagination')).toContainText('1–25');
+    await expect(page.locator('.mb-table-pagination')).toContainText('نمایش ۱ تا ۲۵');
     await page.screenshot({ path: 'tests/Browser/artifacts/join-result.png', fullPage: true });
     expect(errors).toEqual([]);
 });

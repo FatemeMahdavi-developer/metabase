@@ -82,7 +82,7 @@ class AnalyticsDashboardResource extends Resource
                         abort_unless($record->canEdit(static::ownerId()), 403);
                     })
                     ->afterStateUpdated(fn ($livewire) => $livewire->redirect(static::getUrl())),
-                TextColumn::make('name')->label(__('analytics.resources.columns.dashboard_name'))->searchable()->sortable()->icon('heroicon-o-squares-2x2')->description(fn (AnalyticsDashboard $record) => $record->description)->wrap(),
+                TextColumn::make('name')->label(__('analytics.resources.columns.dashboard_name'))->alignStart()->extraHeaderAttributes(['class' => 'text-start'])->searchable()->sortable()->icon('heroicon-o-squares-2x2')->description(fn (AnalyticsDashboard $record) => $record->description)->wrap(),
                 TextColumn::make('folder_id')->label(__('analytics.resources.fields.folder'))->formatStateUsing(fn ($state) => AnalyticsFolder::query()->where('id', $state)->value('name') ?? __('analytics.resources.fields.no_folder'))->placeholder(__('analytics.resources.fields.no_folder'))->toggleable(),
                 TextColumn::make('access')->label(__('analytics.resources.columns.access'))->getStateUsing(fn (AnalyticsDashboard $record) => $record->owner_id === static::ownerId() ? __('analytics.resources.roles.owner') : ($record->canEdit(static::ownerId()) ? __('analytics.resources.roles.editor') : __('analytics.resources.roles.viewer')))->badge(),
                 TextColumn::make('updated_at')->label(__('analytics.resources.columns.updated_at'))->since()->sortable(),

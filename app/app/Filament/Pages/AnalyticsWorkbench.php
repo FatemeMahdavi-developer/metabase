@@ -123,7 +123,7 @@ abstract class AnalyticsWorkbench extends Page
             'analyticsReadOnly' => $this->analyticsReadOnly,
             'analyticsRoutes' => $this->getAnalyticsRoutes(),
             'analyticsInitial' => $this->getAnalyticsInitial(),
-            'analyticsFormComponents' => collect(['textarea', 'select', 'color-picker'])->mapWithKeys(fn ($name) => [
+            'analyticsFormComponents' => collect(['textarea', 'select', 'color-picker', 'date-time-picker'])->mapWithKeys(fn ($name) => [
                 Str::camel($name).'FormComponent' => FilamentAsset::getAlpineComponentSrc($name, 'filament/forms'),
             ])->all(),
         ];

@@ -5,8 +5,15 @@ export const chartSeriesKey = (kind, column, value, metric) => JSON.stringify(me
 export const chartCategoryLabel = (value, column = {}) => value == null ? 'خالی' : value === '' ? 'متن تهی' : column.type === 'boolean' ? [true, 1, '1', 'true'].includes(value) ? 'بله' : 'خیر' : typeof value === 'object' ? JSON.stringify(value) : String(value);
 export const sanitizeSeriesColors = colors => Object.fromEntries(Object.entries(colors || {}).filter(([, value]) => validChartColor(value)).slice(0, 12000));
 
-export function chartDefaultPalette(display, root) {
+export function hasCustomChartColor(settings = {}) {
+    return validChartColor(settings.color) && (settings.color_custom === true || settings.color_custom !== false && settings.color.toLowerCase() !== '#509ee3');
+}
+
+export function chartDefaultPalette(display, root, settings = {}) {
     const theme = analyticsPalette(root); const colors = theme.colors.slice();
+    if (display === 'bar') return settings.horizontal
+        ? [theme.lineColor, theme.horizontalSecondary, ...colors.slice(2)]
+        : theme.bars;
     if (['pie', 'doughnut'].includes(display)) return [colors[1], colors[2], colors[3], colors[4], colors[5], colors[0]];
     if (['line', 'area'].includes(display) && validChartColor(theme.lineColor)) colors[0] = theme.lineColor;
     if (display === 'gauge' && validChartColor(theme.gaugeColor)) colors[0] = theme.gaugeColor;
@@ -38,22 +45,60 @@ export function chartColorEntries(result, display, settings = {}) {
 }
 
 export function resolveSeriesColors(result, display, settings = {}, root) {
-    const palette = chartDefaultPalette(display, root);
-    // The old scaffold's blue was its default, rather than a chosen category color.
-    if (validChartColor(settings.color) && (settings.color.toLowerCase() !== '#509ee3' || settings.color_custom)) palette[0] = settings.color;
-    const colors = { ...sanitizeSeriesColors(settings._series_colors), ...sanitizeSeriesColors(settings.series_colors) };
-    const entries = chartColorEntries(result, display, settings);
-    const assigned = Object.keys(colors).length;
-    let next = assigned;
-    for (const entry of entries) if (!validChartColor(colors[entry.key])) colors[entry.key] = palette[next++ % palette.length];
+    const palette = chartDefaultPalette(display, root, settings);
+    if (hasCustomChartColor(settings)) palette[0] = settings.color;
+    const explicit = sanitizeSeriesColors(settings.series_colors);
+    const colors = { ...sanitizeSeriesColors(settings._series_colors), ...explicit };
+    // Keep automatic slots separate from chosen colors so defaults follow the theme.
+    const slots = settings._series_color_indexes ||= {};
+    let next = Math.max(-1, ...Object.values(slots).filter(Number.isInteger)) + 1;
+    for (const entry of chartColorEntries(result, display, settings)) {
+        if (validChartColor(explicit[entry.key])) {
+            if (!Number.isInteger(slots[entry.key])) slots[entry.key] = next++;
+            continue;
+        }
+        if (!Number.isInteger(slots[entry.key])) {
+            if (validChartColor(colors[entry.key])) continue; // Inherited drill color.
+            slots[entry.key] = next++;
+        }
+        colors[entry.key] = palette[slots[entry.key] % palette.length];
+    }
     return colors;
 }
 
+export function chartAreaFill(context, root) {
+    const palette = analyticsPalette(root);
+    const area = context.chart.chartArea;
+    if (!area) return palette.fill;
+    const gradient = context.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    gradient.addColorStop(0, palette.card);
+    gradient.addColorStop(1, palette.fill);
+    return gradient;
+}
+
 export function applyChartTheme(chart, root) {
+    if (!chart?.ctx || !chart.canvas?.isConnected) return;
     const palette = analyticsPalette(root);
     chart.options.color = palette.muted;
     chart.options.font = { ...chart.options.font, family: palette.fontFamily };
-    for (const dataset of chart.data.datasets) if (dataset._analyticsThemeFill) dataset.backgroundColor = palette.fill;
+    const rendered = root._analyticsVisualization;
+    if (rendered) {
+        const { result, display, settings } = rendered;
+        const resolved = resolveSeriesColors(result, display, settings, root);
+        const colors = settings._series_colors ||= {};
+        Object.assign(colors, resolved);
+        const { x } = chartAxes(result, settings);
+        const primary = hasCustomChartColor(settings) ? settings.color : chartDefaultPalette(display, root, settings)[0];
+        for (const dataset of chart.data.datasets) {
+            const color = colors[dataset._seriesKey] || primary;
+            const categoryColors = dataset._categoryColors
+                ? result.rows.map(row => colors[chartSeriesKey('category', x.key, row[x.key])] || primary) : null;
+            dataset.borderColor = categoryColors || color;
+            dataset.backgroundColor = categoryColors || (dataset._analyticsThemeFill ? context => chartAreaFill(context, root) : color + (display === 'area' ? '22' : ''));
+            dataset.hoverBackgroundColor = categoryColors || undefined;
+            dataset.pointBackgroundColor = color;
+        }
+    }
     if (chart.options.scales) for (const axis of Object.values(chart.options.scales)) {
         if (axis.ticks) { axis.ticks.color = palette.muted; axis.ticks.font = { ...axis.ticks.font, family: palette.fontFamily }; }
         if (axis.title) { axis.title.color = palette.text; axis.title.font = { ...axis.title.font, family: palette.fontFamily }; }

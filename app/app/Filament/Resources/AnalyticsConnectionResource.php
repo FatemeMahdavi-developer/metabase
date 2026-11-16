@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Domain\Analytics\Filament\PanelActions;
+use App\Domain\Analytics\Filament\PanelFormFields;
 use App\Enums\AnalyticsDatabaseDriver;
 use App\Enums\AnalyticsSslMode;
 use App\Filament\Pages\AnalyticsDatabaseBrowser;
@@ -67,9 +68,9 @@ class AnalyticsConnectionResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form->schema([
+        return $form->schema(PanelFormFields::floating([
             TextInput::make('name')->label(__('analytics.connections.fields.name'))->required()->maxLength(150)->autofocus()->helperText(__('analytics.connections.helpers.unique_name')),
-            Select::make('driver')->label(__('analytics.connections.fields.driver'))->options(AnalyticsDatabaseDriver::options())->required()->default(AnalyticsDatabaseDriver::POSTGRESQL->value)->native()->live()
+            Select::make('driver')->label(__('analytics.connections.fields.driver'))->options(AnalyticsDatabaseDriver::options())->required()->default(AnalyticsDatabaseDriver::POSTGRESQL->value)->live()
                 ->afterStateUpdated(function (string $state, Set $set): void {
                     $set('configuration', ['host' => 'localhost', 'port' => $state === 'pgsql' ? 5432 : 8123, 'database' => $state === 'pgsql' ? 'unisq' : '', 'username' => $state === 'pgsql' ? 'postgres' : 'default', 'ssl' => false, 'sslmode' => 'prefer']);
                 }),
@@ -83,7 +84,7 @@ class AnalyticsConnectionResource extends Resource
                 Select::make('configuration.sslmode')->label(__('analytics.connections.fields.ssl_mode'))->options(AnalyticsSslMode::options())->default(AnalyticsSslMode::PREFER->value)->visible(fn (Get $get) => $get('driver') === AnalyticsDatabaseDriver::POSTGRESQL->value),
             ])->columns(2),
             Toggle::make('test_first')->label(__('analytics.connections.fields.test_first'))->default(false)->helperText(__('analytics.connections.helpers.test_first')),
-        ]);
+        ]));
     }
 
     public static function table(Table $table): Table

@@ -343,6 +343,9 @@ class DashboardStore
             $this->invalid('parameters', 'مقدار ویژهٔ فیلتر معتبر نیست؛ متغیر SQL مقدار تهی نمی‌پذیرد.');
         }
 
+        if (! $native && $filter['type'] === 'date' && is_string($value) && in_array($binding['operator'], ['between', 'not_between'], true)) {
+            $value = [$value, $value];
+        }
         $condition = ['field' => $binding['target'], 'operator' => $binding['operator'], 'value' => $value];
         if ($filter['type'] === 'text' && in_array($binding['operator'], ['contains', 'not_contains', 'starts_with', 'ends_with'], true)) {
             $condition['case_sensitive'] = (bool) ($filter['settings']['case_sensitive'] ?? false);

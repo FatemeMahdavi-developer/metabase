@@ -1,12 +1,14 @@
-<x-filament::modal id="analytics-native-form" width="4xl" sticky-header sticky-footer>
-    <x-slot name="heading">{{ \App\Domain\Analytics\Filament\WorkbenchForms::title($this->workbenchKind) }}</x-slot>
+<x-filament::modal id="analytics-native-form" width="4xl" class="soar-form-modal" sticky-header sticky-footer>
+    <x-slot name="heading">
+        <span wire:key="analytics-native-form-heading-{{ $this->workbenchKind }}-{{ $this->workbenchRequest }}">{{ \App\Domain\Analytics\Filament\WorkbenchForms::title($this->workbenchKind) }}</span>
+    </x-slot>
     <form wire:key="analytics-native-form-{{ $this->workbenchRequest }}" wire:submit="submitWorkbenchForm" id="analytics-native-form-body" data-analytics-native-form class="space-y-6" novalidate>
-        <fieldset wire:loading.attr="disabled" wire:target="workbenchData,submitWorkbenchForm,workbenchCommand" class="space-y-6">
+        <fieldset wire:loading.attr="disabled" wire:target="submitWorkbenchForm,workbenchCommand" class="space-y-6">
         {{ $this->workbenchForm }}
         @if ($workbenchError)
             <p role="alert" class="text-sm text-danger-600 dark:text-danger-400">{{ $workbenchError }}</p>
         @endif
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="fi-modal-footer-actions">
             <x-filament::button type="submit" wire:loading.attr="disabled" wire:target="submitWorkbenchForm">اعمال</x-filament::button>
             <x-filament::button color="gray" x-on:click="$dispatch('close-modal', { id: 'analytics-native-form' })">انصراف</x-filament::button>
             @if ($this->workbenchKind === 'tab' && ($this->workbenchContext['existing'] ?? false))

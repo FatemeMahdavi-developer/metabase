@@ -6,6 +6,10 @@ export function cleanDrillContext(context) {
     const result = { column_key: context.column_key, row_index: context.row_index ?? null, kind: context.kind || (context.row_index == null ? 'header' : 'cell') };
     if (context.result_signature) result.result_signature = context.result_signature;
     if (context.scope_fields) result.scope_fields = [...context.scope_fields];
+    if (context.pagination) {
+        const { page, page_size, search = '', sort = null } = context.pagination;
+        result.pagination = { page, page_size, search, sort: sort ? { key: sort.key, direction: sort.direction } : null };
+    }
     return result;
 }
 
@@ -18,7 +22,7 @@ export function formatDrillNumber(value, settings = {}, display = null) {
 }
 
 export function copyPresentationSettings(settings = {}) {
-    const result = clone(Object.fromEntries(Object.entries(settings || {}).filter(([key, value]) => (!key.startsWith('_') || key === '_series_colors') && typeof value !== 'function')));
+    const result = clone(Object.fromEntries(Object.entries(settings || {}).filter(([key, value]) => (!key.startsWith('_') || key === '_series_colors' || key === '_series_color_indexes') && typeof value !== 'function')));
     if (result._series_colors) result._series_colors = colorMap(result._series_colors);
     if (result.series_colors) result.series_colors = colorMap(result.series_colors);
     return result;
@@ -37,9 +41,11 @@ export function clickPresentation(context = {}) {
 export function captureDrillPresentation(presentation = {}, context = {}) {
     const settings = copyPresentationSettings(presentation.settings);
     let colors = { ...colorMap(settings._series_colors), ...colorMap(context.series_colors) };
+    if (settings._series_color_indexes) for (const key of Object.keys(colorMap(context.series_colors))) delete settings._series_color_indexes[key];
     const selection = clickPresentation(context);
     if (selection.color && selection.series_key) {
         delete colors[selection.series_key];
+        if (settings._series_color_indexes) delete settings._series_color_indexes[selection.series_key];
         colors = { [selection.series_key]: selection.color, ...colors };
     }
     if (Object.keys(colors).length) settings._series_colors = colorMap(colors);
@@ -48,6 +54,7 @@ export function captureDrillPresentation(presentation = {}, context = {}) {
 
 export function nextDrillPresentation(previous = {}, frame = {}, context = {}) {
     const presentation = captureDrillPresentation({ display: frame.display || previous.display, settings: frame.settings ?? frame.visualization_settings ?? previous.settings, selection: frame.selection ?? previous.selection }, context);
+    if (presentation.display === 'table' && previous.display !== 'table' && frame.settings == null && frame.visualization_settings == null) delete presentation.settings.visible_columns;
     const keys = new Set((frame.result?.columns || []).map(column => column.key));
     if (frame.result?.columns) {
         for (const key of ['x', 'y', 'split']) if (presentation.settings[key] && !keys.has(presentation.settings[key])) delete presentation.settings[key];
@@ -61,8 +68,10 @@ export function nextDrillPresentation(previous = {}, frame = {}, context = {}) {
 
 export function persistedPresentationSettings(settings = {}) {
     const result = copyPresentationSettings(settings);
-    const colors = colorMap({ ...colorMap(result._series_colors), ...colorMap(result.series_colors) });
+    const inherited = Object.fromEntries(Object.entries(colorMap(result._series_colors)).filter(([key]) => !Number.isInteger(result._series_color_indexes?.[key])));
+    const colors = colorMap({ ...inherited, ...colorMap(result.series_colors) });
     delete result._series_colors;
+    delete result._series_color_indexes;
     if (Object.keys(colors).length) result.series_colors = colors;
     return result;
 }

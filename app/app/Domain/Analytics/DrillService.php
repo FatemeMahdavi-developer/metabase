@@ -41,7 +41,15 @@ class DrillService
             $query = $this->structuredAction($state, $action, $input);
         }
         $query = $this->runner->validate($query, $ownerId);
-        $result = $this->runner->run($query, $ownerId);
+        $paged = in_array($action['type'], ['underlying', 'related_records'], true)
+            || (isset($state['context']['pagination']) && in_array($action['type'], ['quick_filter', 'custom_filter', 'foreign_filter', 'sort'], true));
+        $pageOptions = ['page' => 1, 'page_size' => 25];
+        if ($action['type'] === 'sort' && isset($state['context']['pagination'])) {
+            $pageOptions = [...$pageOptions, ...array_intersect_key($state['context']['pagination'], array_flip(['page_size', 'search'])), 'sort' => ['key' => $state['column']['key'], 'direction' => $action['direction']]];
+        }
+        $result = $paged
+            ? app(DrillResultPage::class)->run($query, $ownerId, $pageOptions)
+            : $this->runner->run($query, $ownerId);
         $record = null;
         if (in_array($action['type'], ['object_details', 'foreign_details', 'related_records'])) {
             $table = collect($state['connection']->catalog)->firstWhere('key', $query['source']);
@@ -53,7 +61,7 @@ class DrillService
 
     private function prepare(array $definition, int $ownerId, array $context, array $extraFilters): array
     {
-        if (array_diff(array_keys($context), ['column_key', 'row_index', 'result_signature', 'kind', 'scope_fields'])) {
+        if (array_diff(array_keys($context), ['column_key', 'row_index', 'result_signature', 'kind', 'scope_fields', 'pagination'])) {
             $this->invalid('context', 'برای انتخاب داده فقط شناسهٔ ستون و شمارهٔ ردیف مجاز است.');
         }
         $context = Validator::make($context, [
@@ -61,13 +69,16 @@ class DrillService
             'result_signature' => 'sometimes|string|regex:/^[a-f0-9]{64}$/',
             'kind' => ['sometimes', Rule::in(['header', 'cell', 'point', 'total'])],
             'scope_fields' => 'sometimes|array|max:6', 'scope_fields.*' => 'required|string|distinct|max:200',
+            'pagination' => 'sometimes|array:page,page_size,total,search,sort',
         ])->validate();
         $definition = $this->runner->validate($definition, $ownerId);
         $connection = AnalyticsConnection::where('owner_id', $ownerId)->findOrFail($definition['connection_id']);
         $connection->catalog = $connection->displayCatalog();
         $definition = $this->materialize($definition, $connection, $extraFilters);
         $definition = $this->runner->validate($definition, $ownerId);
-        $result = $this->runner->run($definition, $ownerId);
+        $result = isset($context['pagination'])
+            ? app(DrillResultPage::class)->run($definition, $ownerId, array_intersect_key($context['pagination'], array_flip(['page', 'page_size', 'search', 'sort'])))
+            : $this->runner->run($definition, $ownerId);
         $column = collect($result['columns'])->firstWhere('key', $context['column_key']);
         if (! $column) {
             $this->invalid('column_key', 'ستون انتخاب‌شده در خروجی این پرسش وجود ندارد.');
@@ -98,6 +109,10 @@ class DrillService
                 $summary = $stage;
                 break;
             }
+        }
+        // Detail membership is the terminal row scope; earlier summaries are input data.
+        if (isset($definition['matching_groups'])) {
+            $summary = null;
         }
         $breakouts = $summary ? array_column($summary['definition']['dimensions'], 'field') : ($definition['mode'] === 'native' ? array_values(array_diff(array_column($result['columns'], 'key'), [$column['key']])) : []);
         $scope = $context['scope_fields'] ?? $breakouts;
@@ -140,7 +155,7 @@ class DrillService
 
         return ['definition' => $definition, 'connection' => $connection, 'owner_id' => $ownerId, 'result' => $result,
             'row' => $row, 'column' => $column, 'value' => $value, 'contexts' => $contexts, 'last' => $last, 'summary' => $summary,
-            'context' => ['column_key' => $column['key'], 'row_index' => $rowIndex, 'kind' => $kind, 'scope_fields' => $scope, 'column_label' => $column['label'], 'label' => $column['label'], ...collect($column)->only(['original_name', 'display_names', 'label_kind'])->all(), 'type' => $column['type'], 'value' => $value, 'result_signature' => $signature]];
+            'context' => ['column_key' => $column['key'], 'row_index' => $rowIndex, 'kind' => $kind, 'scope_fields' => $scope, 'column_label' => $column['label'], 'label' => $column['label'], ...collect($column)->only(['original_name', 'display_names', 'label_kind'])->all(), 'type' => $column['type'], 'value' => $value, 'result_signature' => $signature, ...isset($context['pagination']) ? ['pagination' => $result['meta']['pagination']] : []]];
     }
 
     private function materialize(array $query, AnalyticsConnection $connection, array $filters): array
@@ -184,7 +199,8 @@ class DrillService
         $native = $query['mode'] === 'native';
         $header = $state['context']['kind'] === 'header';
         $last = $native ? null : $state['last']['definition'];
-        $canFilter = $native ? count($query['parameters']) < 10 : ($last['mode'] !== 'aggregate' || count($query['stages'] ?? []) < 5);
+        $needsFilterStage = ! $native && $last['mode'] === 'aggregate' && ($column['role'] ?? null) === 'metric';
+        $canFilter = $native ? count($query['parameters']) < 10 : (! $needsFilterStage || count($query['stages'] ?? []) < 5);
         $add = function (string $id, string $type, string $label, string $group, array $attributes = []) use (&$actions) {
             $actions[] = ['id' => $id, 'type' => $type, 'label' => $label, 'group' => $group, ...$attributes];
         };
@@ -199,7 +215,7 @@ class DrillService
                     $add('sort:'.$direction, 'sort', $label, 'sort', ['direction' => $direction]);
                 }
             }
-            if ($native || ($last['mode'] === 'rows' && ($column['role'] ?? null) !== 'metric')) {
+            if (! isset($query['matching_groups']) && ($native || ($last['mode'] === 'rows' && ($column['role'] ?? null) !== 'metric'))) {
                 $structured = in_array($column['semantic_type'] ?? '', ['description', 'comment']) || preg_match('/json|map|array|tuple/i', $column['raw_type'] ?? '');
                 if (! $structured && empty($column['primary']) && ($column['type'] !== 'number' || $native || count($last['expressions'] ?? []) < 10)) {
                     $add('distribution', 'distribution', 'توزیع مقادیر این ستون', 'distribution', ['display' => 'bar']);
@@ -221,7 +237,8 @@ class DrillService
             return $actions;
         }
         $filterableValue = $state['value'] === null || ($column['type'] === 'text' ? is_string($state['value']) && mb_strlen($state['value']) <= 500 : true);
-        if ($state['context']['kind'] !== 'total' && $canFilter && $filterableValue && empty($column['primary']) && empty($column['relation']) && ($native || $last['mode'] !== 'aggregate' || count($last['dimensions']) > 0)) {
+        $structured = preg_match('/json|map|array|tuple/i', $column['raw_type'] ?? '');
+        if ($state['context']['kind'] !== 'total' && $canFilter && $filterableValue && ! $structured && empty($column['primary']) && empty($column['relation']) && ($native || $last['mode'] !== 'aggregate' || count($last['dimensions']) > 0)) {
             $empty = $state['value'] === null || ($column['type'] === 'text' && $state['value'] === '');
             $operators = $empty ? ($column['type'] === 'text' ? ['is_empty' => 'خالی است', 'not_empty' => 'خالی نیست'] : ['is_null' => 'خالی است', 'not_null' => 'خالی نیست']) : ['eq' => 'برابر با', 'neq' => 'برابر نیست با'];
             if ($state['value'] !== null && in_array($column['type'], ['number', 'date'])) {
@@ -230,7 +247,8 @@ class DrillService
             foreach ($operators as $operator => $label) {
                 $add('filter:'.$operator, 'quick_filter', $label, 'quick_filter', ['operator' => $operator]);
             }
-            if ($column['type'] === 'text' && ! $empty) {
+            if ($column['type'] === 'text' && ! $empty && in_array($column['semantic_type'] ?? '', ['description', 'comment'], true)) {
+                $actions = array_values(array_filter($actions, fn ($action) => $action['group'] !== 'quick_filter'));
                 foreach (['contains' => 'شامل متن', 'not_contains' => 'شامل متن نیست'] as $operator => $label) {
                     $add('filter:'.$operator, 'quick_filter', $label, 'quick_filter', ['operator' => $operator, 'requires_input' => true, 'field_type' => 'text']);
                 }
@@ -316,14 +334,7 @@ class DrillService
             case 'quick_filter':
             case 'custom_filter':
             case 'foreign_filter':
-                $filter = $this->filter($state, $action, $input);
-                if ($stage['mode'] === 'aggregate') {
-                    $query['stages'][] = $this->rowStage();
-                    $lastIndex++;
-                    $stage = $query['stages'][array_key_last($query['stages'])];
-                }
-                $stage['filters'][] = $filter;
-                break;
+                return $this->filteredQuery($state, $action, $this->filter($state, $action, $input));
             case 'sort':
                 $stage['sort'] = [['key' => $column['key'], 'direction' => $action['direction']]];
                 break;
@@ -405,6 +416,34 @@ class DrillService
         }
 
         return $this->replaceStage($query, $lastIndex, $stage);
+    }
+
+    private function filteredQuery(array $state, array $action, array $filter): array
+    {
+        $query = $state['definition'];
+        $index = $state['last']['index'];
+        $stage = $state['last']['definition'];
+        // Metabase quick_filter/column_filter: only aggregate values need a later
+        // stage. Breakouts, expressions and source columns filter their own stage.
+        if ($stage['mode'] === 'aggregate' && ($state['column']['role'] ?? null) === 'metric') {
+            $query['stages'][] = [...$this->rowStage(), 'filters' => [$filter]];
+
+            return $query;
+        }
+        // A click on a month/week/etc represents the complete bucket, including
+        // timestamps at its end. Keep the original grouping and measures intact.
+        if ($action['type'] === 'quick_filter' && ! empty($state['column']['grain']) && $filter['value'] !== null && in_array($filter['operator'], ['eq', 'neq', 'lt', 'gt'], true)) {
+            $range = $this->dimensionFilter(['field' => $filter['field'], 'grain' => $state['column']['grain']], $filter['value'])['value'];
+            $filter = match ($filter['operator']) {
+                'eq' => [...$filter, 'operator' => 'between', 'value' => $range],
+                'neq' => [...$filter, 'operator' => 'not_between', 'value' => $range],
+                'lt' => [...$filter, 'value' => $range[0]],
+                'gt' => [...$filter, 'value' => $range[1]],
+            };
+        }
+        $stage['filters'][] = $filter;
+
+        return $this->replaceStage($query, $index, $stage);
     }
 
     private function filter(array $state, array $action, array $input): array

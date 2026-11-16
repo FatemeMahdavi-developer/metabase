@@ -23,18 +23,40 @@ body .fi-page #analytics-studio .mb-fullscreen { z-index: 35; }
 body .fi-page #analytics-studio .mb-toolbar {
     padding: 18px 24px;
     border: 1px solid var(--mb-border);
-    border-radius: 12px;
+    border-radius: var(--soar-radius-md);
     gap: 16px;
     margin-bottom: 20px;
-    background: var(--mb-surface);
 }
-body .fi-page #analytics-studio .mb-toolbar h1 { font-size: 18px; }
 body .fi-page #analytics-studio .mb-toolbar:has(h1:empty) { display: none; }
 body .fi-page #analytics-studio .mb-content { padding: 0; }
-body .fi-page #analytics-studio :is(.mb-list, .mb-db-page, .mb-question-result, .mb-preview, .mb-notebook) { border-radius: 12px; }
+body .fi-page #analytics-studio :is(.mb-list, .mb-db-page, .mb-question-result, .mb-preview, .mb-notebook, .mb-native-editor) { border-radius: var(--soar-radius-md); }
+/* Keep long SQL inside its panel; shared panel tokens own the appearance. */
+body .fi-page #analytics-studio .mb-native-editor {
+    min-width: 0;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+body .fi-page #analytics-studio .mb-native-editor > header { flex-wrap: wrap; }
+body .fi-page #analytics-studio .mb-native-editor > [data-sql-preview] {
+    max-width: 100%;
+    max-height: 24rem;
+    margin: 0;
+    padding: 20px 25px;
+    overflow: auto;
+    white-space: pre;
+    resize: none;
+    outline: none;
+}
+body .fi-page #analytics-studio .mb-native-editor:has(> [data-sql-preview]:focus-visible) {
+    outline: 2px solid var(--mb-focus);
+    outline-offset: 2px;
+}
 body .fi-page #analytics-studio :is(.mb-canvas, .mb-notebook-v2) { padding-inline: 0; }
-body .fi-page #analytics-studio .mb-editbar { padding: 12px 20px; border-radius: 12px; margin-bottom: 16px; }
+body .fi-page #analytics-studio .mb-editbar { padding: 12px 20px; border-radius: var(--soar-radius-md); margin-bottom: 16px; }
 body .fi-page #analytics-studio :is(.mb-filterbar, .mb-tabs) { padding-inline: 20px; }
+#analytics-studio .mb-filterbar > [data-action="resetFilters"] {
+    margin-inline-start: auto;
+}
 
 /* Retain the exact native Filament modal overlay, focus trap and transitions. */
 body #analytics-studio .fi-modal-window.mb-dialog {
@@ -46,10 +68,6 @@ body #analytics-studio .fi-modal-window.mb-dialog {
     padding: 0;
     margin: auto;
     overflow: hidden;
-    border: 0;
-    border-radius: 12px;
-    background: var(--mb-surface);
-    color: var(--mb-text);
 }
 body #analytics-studio .fi-modal-window.mb-dialog.wide { max-width: min(72rem, calc(100vw - 32px)); }
 body #analytics-studio .fi-modal-slide-over-window.mb-dialog.side {
@@ -65,12 +83,6 @@ body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-header {
     padding: 24px;
     flex-shrink: 0;
     border-bottom: 1px solid var(--mb-border);
-    background: var(--mb-surface);
-}
-body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-heading {
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--mb-text);
 }
 body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-content { min-height: 0; padding: 0; overflow: auto; }
 body #analytics-studio .fi-modal-window.mb-dialog .analytics-workbench-form {
@@ -82,56 +94,30 @@ body #analytics-studio .fi-modal-window.mb-dialog .analytics-workbench-form {
 body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-body { padding: 24px; overflow: visible; }
 body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-footer {
     padding: 20px 24px;
-    background: var(--mb-surface);
     border-top: 1px solid var(--mb-border);
     flex-shrink: 0;
 }
 body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-footer[hidden] { display: none; }
-body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-footer {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    display: flex;
-    gap: 12px;
-    justify-content: flex-start;
-}
+body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-footer { padding: 0; }
 body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-error { margin-inline: 24px; }
 
-body #analytics-studio .mb-btn.fi-btn {
-    border-radius: var(--soar-btn-radius, 8px);
-    min-height: 36px;
-    padding: 8px 14px;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 20px;
-}
-body #analytics-studio .mb-btn.fi-btn .fi-btn-label { display: inline-flex; align-items: center; gap: 7px; }
-body #analytics-studio .mb-btn.fi-btn.small { min-height: 30px; padding: 4px 10px; font-size: 12px; }
-body #analytics-studio .mb-btn.fi-btn:disabled { cursor: default; }
-body #analytics-studio .mb-form-field > .fi-fo-field-wrp-label { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-body #analytics-studio .mb-form-field > .fi-input-wrp {
-    display: flex;
+/* Generated SQL scrolls inside the modal without stretching its window. */
+body #analytics-studio .fi-modal-window.mb-dialog .mb-generated-sql {
+    min-width: 0;
     width: 100%;
-    border-radius: var(--soar-input-radius, 8px);
-    background: var(--mb-input-bg);
+    max-width: 100%;
+    min-height: 0;
+    max-height: min(50dvh, 28rem);
+    margin: 0;
+    overflow: auto;
+    white-space: pre;
+    overflow-wrap: normal;
+    word-break: normal;
+    resize: none;
 }
-body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > .mb-input {
-    border: 0;
-    border-radius: inherit;
-    box-shadow: none;
-    background-color: transparent;
-    min-height: 36px;
-    height: auto;
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 24px;
-    color: var(--mb-text);
-}
-body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > textarea.mb-input { min-height: 92px; }
-body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > .mb-input:focus { box-shadow: none; outline: none; }
-body #analytics-studio .mb-form-field > .fi-input-wrp:focus-within { outline: 2px solid var(--mb-focus); outline-offset: 1px; }
-body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > select.mb-input { padding-inline-end: 34px; }
+
+/* Button appearance comes from the native Filament component and panel theme. */
+#analytics-studio .mb-native-search { width: 100%; max-width: 360px; }
 
 @media (max-width: 640px) {
     body .fi-page #analytics-studio .mb-toolbar { padding: 16px; align-items: flex-start; flex-direction: column; }
@@ -139,4 +125,136 @@ body #analytics-studio .mb-form-field > .fi-input-wrp > .fi-input-wrp-input > se
     body #analytics-studio .fi-modal-window.mb-dialog .mb-dialog-body { padding: 20px 16px; }
     body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-header { padding: 20px 16px; }
     body #analytics-studio .fi-modal-window.mb-dialog .fi-modal-footer { padding: 16px; }
+}
+
+/* Dashboard view: one rounded controls panel, aligned with the visible cards. */
+body .fi-page #analytics-studio[data-read-only="true"] .mb-filterbar {
+    border-radius: var(--mb-card-radius) var(--mb-card-radius) 0 0;
+}
+body .fi-page #analytics-studio[data-read-only="true"] .mb-tabs {
+    border-radius: var(--mb-card-radius);
+}
+body .fi-page #analytics-studio[data-read-only="true"] .mb-filterbar + .mb-tabs {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+}
+body .fi-page #analytics-studio[data-read-only="true"] .mb-canvas > .grid-stack {
+    /* GridStack insets each card on both sides; retain its internal gutters. */
+    margin-left: calc(0px - var(--gs-item-margin-left, 7px));
+    margin-right: calc(0px - var(--gs-item-margin-right, 7px));
+}
+
+/* Table cards keep their controls visible and scroll only the table viewport. */
+
+/* Native Filament tables fit dashboard cards without an outer scroll area. */
+#analytics-studio .mb-native-table {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+}
+#analytics-studio .mb-card-body:has(> .mb-native-table) {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+#analytics-studio .mb-card-body > .mb-native-table {
+    flex: 1 1 0%;
+    min-height: 0;
+}
+#analytics-studio .mb-native-table > .mb-table-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+#analytics-studio .mb-card-body > .mb-native-table > .mb-table-wrap {
+    max-height: none;
+}
+#analytics-studio .mb-native-table > :is(.mb-native-table-toolbar, .mb-table-pagination) {
+    flex-shrink: 0;
+}
+#analytics-studio .mb-native-table .fi-ta-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+#analytics-studio .mb-native-table [hidden] {
+    display: none !important;
+}
+
+/* Visual display choices retain Filament's native radio state and keyboard controls. */
+.analytics-display-options {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    --display-choice-accent: var(--soar-primary);
+    --display-choice-grid: var(--soar-border);
+    --display-choice-muted: var(--soar-muted);
+}
+.analytics-display-option {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--soar-border);
+    border-radius: var(--soar-radius-lg);
+    background: var(--soar-surface);
+    color: var(--soar-text);
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s, box-shadow .15s;
+}
+.analytics-display-option > input[type="radio"] {
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-end: 12px;
+    margin: 0;
+    accent-color: var(--display-choice-accent);
+}
+.analytics-display-option-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 82px;
+    margin-block: 4px 2px;
+    padding-inline: 8px;
+    color: var(--display-choice-accent);
+}
+.analytics-display-option-preview svg {
+    display: block;
+    width: 128px;
+    height: 76px;
+    max-width: 100%;
+    overflow: visible;
+}
+.analytics-display-chart-grid { stroke: var(--display-choice-grid); stroke-width: 1.5; }
+.analytics-display-chart-muted { stroke: var(--display-choice-muted); }
+.analytics-display-chart-needle { stroke: var(--soar-text-soft); }
+.analytics-display-option-label { font-size: 14px; font-weight: 600; line-height: 1.6; }
+.analytics-display-option-description { font-size: 12px; line-height: 1.7; color: var(--soar-muted); }
+.analytics-display-option:hover { border-color: var(--display-choice-accent); }
+.analytics-display-option:has(input:checked) {
+    border-color: var(--display-choice-accent);
+    background: var(--soar-primary-soft);
+    box-shadow: 0 0 0 1px var(--display-choice-accent);
+}
+.analytics-display-option:has(input:focus-visible) {
+    outline: 3px solid var(--display-choice-accent);
+    outline-offset: 3px;
+}
+.analytics-display-option:has(input:disabled) { opacity: .5; cursor: default; }
+@media (max-width: 740px) {
+    .analytics-display-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+    .analytics-display-options { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .analytics-display-option { padding: 12px; }
+    .analytics-display-option-preview { padding-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .analytics-display-option { transition: none; }
 }

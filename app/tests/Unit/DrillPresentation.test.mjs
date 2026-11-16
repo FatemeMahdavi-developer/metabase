@@ -35,12 +35,28 @@ test('selected segment preserves its exact color and typed category keys without
     assert.equal(nextDrillPresentation(pinned, { display: null }).settings._series_colors[categoryKey('last')], '#f2a86f');
 });
 
-test('Donut quick filter keeps display and the surviving category color after row reduction', () => {
+test('underlying-records explicitly render a table and retain selection without changing the source chart', () => {
     const previous = captureDrillPresentation(source(), { color: colors[categoryKey('pending')], series_key: categoryKey('pending'), series_colors: colors });
-    const frame = nextDrillPresentation(previous, { display: null, result: { columns, rows: [{ status: 'pending', sales: 40 }] } });
-    assert.equal(frame.display, 'doughnut');
+    previous.settings.visible_columns = ['status'];
+    const frame = nextDrillPresentation(previous, { display: 'table', action: { type: 'underlying' }, result: { columns, rows: [{ status: 'pending', sales: 40 }] } });
+    assert.equal(frame.display, 'table');
+    assert.equal(frame.settings.visible_columns, undefined);
+    assert.equal(previous.display, 'doughnut');
+    assert.deepEqual(previous.settings.visible_columns, ['status']);
     assert.equal(frame.settings._series_colors[categoryKey('pending')], '#f2a86f');
     assert.deepEqual(frame.selection, previous.selection);
+});
+
+test('Metabase quick filters inherit every source display and retain axes, projection and colors', () => {
+    for (const display of ['bar', 'line', 'area', 'pie', 'doughnut', 'scatter', 'funnel', 'number', 'progress', 'gauge', 'table', 'pivot']) {
+        const previous = source();
+        previous.display = display;
+        previous.settings.visible_columns = ['status'];
+        const frame = nextDrillPresentation(previous, { display: null, action: { type: 'quick_filter' }, result: { columns, rows: [{ status: 'pending', sales: 40 }] } });
+        assert.equal(frame.display, display);
+        assert.deepEqual(frame.settings, previous.settings);
+        assert.notEqual(frame.settings, previous.settings);
+    }
 });
 
 test('underlying table stays a table on further quick filters and history frames retain separate settings', () => {
@@ -54,6 +70,23 @@ test('underlying table stays a table on further quick filters and history frames
     filtered.settings._series_colors[categoryKey('pending')] = '#000000';
     assert.equal(underlying.settings._series_colors[categoryKey('pending')], '#f2a86f');
     assert.equal(original.settings._series_colors[categoryKey('pending')], '#f2a86f');
+});
+
+test('table drill history and explicit projections survive while zoom and breakout keep their displays', () => {
+    const previous = source();
+    previous.settings.visible_columns = ['status'];
+    const filtered = nextDrillPresentation(previous, { display: 'table', result: { columns } });
+    filtered.settings.visible_columns = ['sales'];
+    const further = nextDrillPresentation(filtered, { display: 'table', result: { columns } });
+    assert.deepEqual(further.settings.visible_columns, ['sales']);
+    const history = nextDrillPresentation(previous, { display: 'table', settings: filtered.settings, result: { columns } });
+    assert.deepEqual(history.settings.visible_columns, ['sales']);
+    history.settings.visible_columns.push('status');
+    assert.deepEqual(filtered.settings.visible_columns, ['sales']);
+    assert.equal(nextDrillPresentation(previous, { display: 'line', result: { columns } }).display, 'line');
+    assert.equal(nextDrillPresentation(previous, { display: 'bar', result: { columns } }).display, 'bar');
+    assert.equal(nextDrillPresentation(previous, { display: null, result: { columns } }).display, 'doughnut');
+    assert.deepEqual(previous.settings.visible_columns, ['status']);
 });
 
 test('changing output columns removes obsolete axes and table projections while retaining compatible settings', () => {
@@ -178,4 +211,17 @@ test('theme initialization and Livewire teardown remove listeners and pending re
         assert.equal(changes.length, 1);
         assert.deepEqual(writes, []);
     });
+});
+
+test('paged drill contexts retain only page coordinates and do not alias caller sort settings', () => {
+    const context = {
+        column_key: 'id', row_index: 4, kind: 'cell', result_signature: 'b'.repeat(64),
+        pagination: { page: 101, page_size: 25, total: 2505, search: 'late', sort: { key: 'id', direction: 'desc', sql: 'forged' }, sql: 'forged' },
+    };
+    const clean = cleanDrillContext(context);
+    assert.deepEqual(clean.pagination, { page: 101, page_size: 25, search: 'late', sort: { key: 'id', direction: 'desc' } });
+    clean.pagination.sort.key = 'other';
+    assert.equal(context.pagination.sort.key, 'id');
+    const settings = copyPresentationSettings({ _fetch_page: () => Promise.resolve({ rows: [] }), page_size: 25 });
+    assert.deepEqual(settings, { page_size: 25 });
 });

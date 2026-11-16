@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Concerns;
 
 use App\Domain\Analytics\Filament\PanelActions;
+use App\Domain\Analytics\Filament\PanelFormFields;
 use App\Models\AnalyticsFolder;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -35,11 +36,11 @@ trait AnalyticsResourceHelpers
 
     public static function metadataSchema(): array
     {
-        return [
+        return PanelFormFields::floating([
             TextInput::make('name')->label(__('analytics.resources.fields.name'))->required()->maxLength(150)->autofocus(),
             Textarea::make('description')->label(__('analytics.resources.fields.description'))->maxLength(3000)->rows(3),
             Select::make('folder_id')->label(__('analytics.resources.fields.folder'))->options(fn () => static::folders())->placeholder(__('analytics.resources.fields.no_folder'))->nullable()->searchable(),
-        ];
+        ]);
     }
 
     public static function folderFilter(): SelectFilter
@@ -52,7 +53,7 @@ trait AnalyticsResourceHelpers
         return Action::make('createFolder')
             ->label(__('analytics.resources.actions.new_folder'))->icon('heroicon-o-folder-plus')->color('gray')
             ->modalHeading(__('analytics.resources.actions.create_folder'))->modalSubmitActionLabel(__('analytics.resources.actions.create'))
-            ->form([TextInput::make('name')->label(__('analytics.resources.actions.folder_name'))->required()->maxLength(100)])
+            ->form(PanelFormFields::floating([TextInput::make('name')->label(__('analytics.resources.actions.folder_name'))->required()->maxLength(100)]))
             ->action(function (array $data, Form $form): void {
                 $actions = app(PanelActions::class);
                 $actions->withForm($form, fn () => $actions->createFolder($data));

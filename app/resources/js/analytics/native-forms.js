@@ -1,7 +1,7 @@
 import { nativeFormData, filterFormState, valueFormState, readValueState } from './native-form-state.js';
 import { copy, uid, e, button, icon } from './ui';
 import { readQueryFilter } from './notebook-flow';
-import { chartColorEntries, chartDefaultPalette, resolveSeriesColors } from './chart-style';
+import { chartColorEntries, chartDefaultPalette, resolveSeriesColors, hasCustomChartColor } from './chart-style';
 import { persistedPresentationSettings } from './drill-presentation';
 import { expressionFunctions } from './expression-editor';
 
@@ -13,6 +13,10 @@ function filterRow(data, fields) {
     const column = fields.find(field => field.key === data.field);
     const values = { ...data };
     if (column?.type === 'date' && !['in', 'not_in', 'between', 'not_between'].includes(data.operator)) values.value = data.date_value;
+    if (column?.type === 'date' && ['between', 'not_between'].includes(data.operator)) {
+        values.from = data.date_from;
+        values.to = data.date_to;
+    }
     if (column?.type === 'boolean') values.value = data.boolean_value === 'false' ? '0' : '1';
     if (column?.type === 'date' && data.date_part && ['in', 'not_in'].includes(data.operator)) values.value = list(data.value);
     return readQueryFilter(nativeFormData(values), column);
@@ -143,7 +147,7 @@ export const nativeFormMethods = {
     },
     nativeEditorHtml(connection) {
         const q = this.report.query_definition;
-        return `<section class="mb-native-editor"><header><strong dir="ltr">SQL</strong>${button(icon('database') + e(connection?.name), 'changeSource', 'small')}${button('ویرایش SQL', 'editNativeSql')}${button('متغیرها', 'nativeParameters')}${button(icon('play') + 'نمایش نتیجه', 'runReport', 'primary')}</header><pre class="mb-sql" dir="ltr" data-sql-preview>${e(q.sql || '')}</pre>${this.sqlSchemaOpen ? `<nav class="mb-sql-schema">${(connection?.catalog || []).map(table => `<details><summary>${e(table.label)}</summary>${table.fields.map(field => button(e(field.label), 'insertSqlField', 'small', `data-key="${e(field.key)}"`)).join('')}</details>`).join('')}</nav>` : ''}<div class="mb-native-variables">${(q.parameters || []).map(row => `<span class="mb-chip">{{${e(row.key)}}} ${e(row.default ?? '')}</span>`).join('')}</div></section>`;
+        return `<section class="mb-native-editor"><header><strong dir="ltr">SQL</strong>${button(icon('database') + e(connection?.name), 'changeSource', 'small')}${button('ویرایش SQL', 'editNativeSql')}${button('متغیرها', 'nativeParameters')}${button(icon('play') + 'نمایش نتیجه', 'runReport', 'primary')}</header><pre class="mb-sql" dir="ltr" data-sql-preview tabindex="0" aria-label="پیش‌نمایش SQL">${e(q.sql || '')}</pre>${this.sqlSchemaOpen ? `<nav class="mb-sql-schema">${(connection?.catalog || []).map(table => `<details><summary>${e(table.label)}</summary>${table.fields.map(field => button(e(field.label), 'insertSqlField', 'small', `data-key="${e(field.key)}"`)).join('')}</details>`).join('')}</nav>` : ''}<div class="mb-native-variables">${(q.parameters || []).map(row => `<span class="mb-chip">{{${e(row.key)}}} ${e(row.default ?? '')}</span>`).join('')}</div></section>`;
     },
     editNativeSql(sql = this.report.query_definition.sql) {
         if (typeof sql !== 'string') sql = this.report.query_definition.sql;
@@ -205,8 +209,9 @@ export const nativeFormMethods = {
     visualizationPanel() {
         const s = this.vizDraft; const entries = this.vizResult ? chartColorEntries(this.vizResult, this.vizDisplay, s).slice(0, 100) : [];
         const colors = this.vizResult ? resolveSeriesColors(this.vizResult, this.vizDisplay, s, this.root) : {};
-        const data = { ...s, display: this.vizDisplay, color: s.color || chartDefaultPalette(this.vizDisplay, this.root)[0], decimals: s.decimals ?? 0, page_size: s.page_size || 25, target: s.target ?? 100, ring_thickness: s.ring_thickness ?? 28, center_mode: s.center_mode || 'total', gauge_style: s.gauge_style || 'semi', percent_visibility: s.percent_visibility || 'off', visible_columns: s.visible_columns?.length ? s.visible_columns : this.vizColumns.map(row => row.key), series_colors: entries.map(row => ({ key: row.key, label: row.label, color: colors[row.key] })) };
-        for (const key of ['legend', 'show_total', 'show_x', 'show_y', 'points', 'smooth']) data[key] = s[key] !== false;
+        const data = { ...s, display: this.vizDisplay, color: hasCustomChartColor(s) ? s.color : chartDefaultPalette(this.vizDisplay, this.root, s)[0], decimals: s.decimals ?? 0, page_size: s.page_size || 25, target: s.target ?? 100, ring_thickness: s.ring_thickness ?? 28, center_mode: s.center_mode || 'total', gauge_style: s.gauge_style || 'semi', percent_visibility: s.percent_visibility || 'off', visible_columns: s.visible_columns?.length ? s.visible_columns : this.vizColumns.map(row => row.key), series_colors: entries.map(row => ({ key: row.key, label: row.label, color: colors[row.key] })) };
+        for (const key of ['legend', 'show_total', 'show_x', 'show_y', 'smooth']) data[key] = s[key] !== false;
+        data.points = s.points === true;
         return this.nativeForm('visualization', data, { fields: this.vizColumns, colors: entries }, values => {
             const { display, series_colors, reset_colors, ...settings } = values;
             const categoryColors = reset_colors ? {} : { ...(s.series_colors || {}) };
@@ -217,7 +222,10 @@ export const nativeFormMethods = {
             if (settings.y_min != null && settings.y_min !== '' && settings.y_max != null && settings.y_max !== '' && settings.y_min >= settings.y_max) throw new Error('بیشینهٔ محور باید بزرگ‌تر از کمینه باشد.');
             this.vizDisplay = display;
             this.vizDraft = { ...s, ...settings, series_colors: categoryColors, color_custom: !!s.color_custom || changedColor };
-            if (changedColor || reset_colors || display !== data.display) delete this.vizDraft._series_colors;
+            if (changedColor || reset_colors || display !== data.display) {
+                delete this.vizDraft._series_colors;
+                delete this.vizDraft._series_color_indexes;
+            }
             const final = persistedPresentationSettings(this.vizDraft);
             if (display === 'table' && !final.visible_columns?.length) throw new Error('حداقل یک ستون انتخاب کنید.');
             if (this.vizTarget === 'report') { this.report.display = display; this.report.visualization_settings = final; }
@@ -260,7 +268,7 @@ export const nativeFormMethods = {
             } catch { /* Free input remains available when no saved binding can be queried. */ }
         }
         this.valueFilter = filter;
-        return this.nativeForm('filter_value', filter.type === 'time_grain' ? { value: this.filterValues[filter.key] } : valueFormState(this.filterValues[filter.key], operator), { type: filter.type, suggestions, dashboard_id: this.dashboard.id, filter_key: filter.key, parameters: this.filterValues }, data => {
+        return this.nativeForm('filter_value', filter.type === 'time_grain' ? { value: this.filterValues[filter.key] } : valueFormState(this.filterValues[filter.key], operator), { type: filter.type, operator, suggestions, dashboard_id: this.dashboard.id, filter_key: filter.key, parameters: this.filterValues }, data => {
             const value = filter.type === 'time_grain' ? data.value || null : readValueState(data, filter.type, operator);
             this.setDashboardFilterValue(filter.key, value);
         }, { clear: () => this.setDashboardFilterValue(filter.key, null) });

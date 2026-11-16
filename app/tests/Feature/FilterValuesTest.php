@@ -225,6 +225,87 @@ class FilterValuesTest extends TestCase
         $this->assertSame(251.0, $store->widgetQuery($this->dashboard, 'card', [])['rows'][0]['id']);
     }
 
+    public function test_specific_dates_in_range_bindings_include_or_exclude_the_whole_day_and_preserve_saved_defaults(): void
+    {
+        $pdo = new PDO('sqlite:'.$this->path);
+        $pdo->exec("INSERT INTO records VALUES
+            (253, 'Start', 0, '2026-11-04 00:00:00', 0),
+            (254, 'Noon', 0, '2026-11-04 12:00:00', 0),
+            (255, 'End', 0, '2026-11-04 23:59:59', 0),
+            (256, 'Before', 0, '2026-11-03 23:59:59', 0),
+            (257, 'After', 0, '2026-11-05 00:00:00', 0)");
+        $pdo = null;
+        $this->report->update(['query_definition' => $this->query(['limit' => null, 'limit_explicit' => false, 'sort' => [['key' => 'id', 'direction' => 'asc']]])]);
+        $store = app(DashboardStore::class);
+        $url = '/analytics/api/dashboards/'.$this->dashboard->id.'/widgets/card/query';
+        foreach (['between', 'not_between'] as $operator) {
+            $filter = $this->filter('period', 'happened_at', 'date', [
+                'default_value' => '2026-11-04',
+                'bindings' => [['widget_key' => 'card', 'target' => 'happened_at', 'operator' => $operator]],
+            ]);
+            $saved = $store->save($this->dashboard->fresh(), $this->savePayload([$filter]), $this->owner->id);
+            $this->assertSame('2026-11-04', $saved['filters'][0]['default_value']);
+            $this->assertSame(['field' => 'happened_at', 'operator' => $operator, 'value' => ['2026-11-04', '2026-11-04']], $store->interactionContext($this->dashboard, 'card')['extra_filters'][0]);
+            $expected = $operator === 'between' ? [253, 254, 255] : [...range(1, 252), 256, 257];
+            foreach ([[], ['period' => '2026-11-04']] as $parameters) {
+                $response = $this->postJson($url, ['parameters' => $parameters, 'refresh' => true])->assertOk();
+                $this->assertSame($expected, array_map('intval', array_column($response->json('rows'), 'id')));
+            }
+            $this->assertSame('2026-11-04', $store->snapshot($this->dashboard->fresh())['filters'][0]['default_value']);
+        }
+    }
+
+    public function test_specific_dates_in_range_bindings_still_reject_invalid_dates_and_defaults(): void
+    {
+        $store = app(DashboardStore::class);
+        $url = '/analytics/api/dashboards/'.$this->dashboard->id.'/widgets/card/query';
+        foreach (['between', 'not_between'] as $operator) {
+            $filter = $this->filter('period', 'happened_at', 'date', [
+                'default_value' => '2026-11-04',
+                'bindings' => [['widget_key' => 'card', 'target' => 'happened_at', 'operator' => $operator]],
+            ]);
+            $store->save($this->dashboard->fresh(), $this->savePayload([$filter]), $this->owner->id);
+            foreach (['not-a-date', '2026-02-30', '2026-13-04'] as $invalid) {
+                $this->postJson($url, ['parameters' => ['period' => $invalid]])->assertUnprocessable()->assertJsonValidationErrors('value');
+                try {
+                    $store->save($this->dashboard->fresh(), $this->savePayload([[...$filter, 'default_value' => $invalid]]), $this->owner->id);
+                    $this->fail('An invalid specific date default was accepted.');
+                } catch (ValidationException $exception) {
+                    $this->assertArrayHasKey('value', $exception->errors());
+                }
+            }
+            $this->assertSame('2026-11-04', $store->snapshot($this->dashboard->fresh())['filters'][0]['default_value']);
+        }
+    }
+
+    public function test_specific_date_equality_and_native_parameters_keep_scalar_values(): void
+    {
+        $store = app(DashboardStore::class);
+        $date = '2026-03-15';
+        $expected = [...range(14, 239, 15), 251];
+        $this->report->update(['query_definition' => $this->query(['limit' => null, 'limit_explicit' => false, 'sort' => [['key' => 'id', 'direction' => 'asc']]])]);
+        $url = '/analytics/api/dashboards/'.$this->dashboard->id.'/widgets/card/query';
+        $filter = $this->filter('period', 'happened_at', 'date', ['default_value' => $date]);
+        $store->save($this->dashboard, $this->savePayload([$filter]), $this->owner->id);
+        $condition = $store->interactionContext($this->dashboard, 'card')['extra_filters'][0];
+        $this->assertSame('eq', $condition['operator']);
+        $this->assertSame($date, $condition['value']);
+        $response = $this->postJson($url, ['parameters' => ['period' => $date], 'refresh' => true])->assertOk();
+        $this->assertSame($expected, array_map('intval', array_column($response->json('rows'), 'id')));
+
+        $this->report->update(['query_definition' => $this->query([
+            'mode' => 'native', 'sql' => 'SELECT id FROM records WHERE date(happened_at) = {{since}} ORDER BY id',
+            'parameters' => [['key' => 'since', 'type' => 'date', 'default' => $date]],
+            'limit' => null, 'limit_explicit' => false,
+        ])]);
+        $filter = $this->filter('period', 'since', 'date', ['default_value' => $date]);
+        $saved = $store->save($this->dashboard->fresh(), $this->savePayload([$filter]), $this->owner->id);
+        $this->assertSame($date, $saved['filters'][0]['default_value']);
+        $this->assertSame($date, $store->interactionContext($this->dashboard, 'card')['extra_filters'][0]['value']);
+        $response = $this->postJson($url, ['parameters' => ['period' => $date], 'refresh' => true])->assertOk();
+        $this->assertSame($expected, array_map('intval', array_column($response->json('rows'), 'id')));
+    }
+
     public function test_custom_lists_and_free_inputs_cannot_have_linked_value_dependencies(): void
     {
         foreach ([['widget_type' => 'input'], ['widget_type' => 'dropdown', 'values' => ['Name001']]] as $settings) {

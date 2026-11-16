@@ -22,6 +22,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -53,7 +54,15 @@ class WorkbenchForms
 
     public static function title(string $kind): string
     {
-        return __('analytics.forms.titles.'.self::TITLES[$kind]);
+        $key = 'analytics.forms.titles.'.self::TITLES[$kind];
+        $locale = app()->getLocale();
+
+        // LAN deployments may retain the default English application locale.
+        if (! app('translator')->hasForLocale($key, $locale)) {
+            $locale = 'fa';
+        }
+
+        return __($key, [], $locale);
     }
 
     public function schema(string $kind, array $context): array
@@ -63,7 +72,7 @@ class WorkbenchForms
         $name = fn (string $label = 'analytics.forms.fields.name', int $max = 150) => TextInput::make('name')->label(__($label))->required()->maxLength($max);
         $description = fn () => Textarea::make('description')->label(__('analytics.forms.fields.description'))->rows(3)->maxLength(3000);
 
-        return match ($kind) {
+        $schema = match ($kind) {
             'report' => [$name(), $description(), Select::make('folder_id')->label(__('analytics.forms.fields.folder'))->options($folders)->searchable()->nullable()->rule(Rule::exists(AnalyticsFolder::class, 'id')->where('owner_id', Filament::auth()->id())), Toggle::make('add_to_dashboard')->label(__('analytics.forms.fields.add_to_dashboard'))],
             'dashboard' => [$name(), $description(), Select::make('folder_id')->label(__('analytics.forms.fields.folder'))->options($folders)->disabled(! ($context['is_owner'] ?? false)), Select::make('width')->label(__('analytics.forms.fields.width'))->options(['wide' => __('analytics.forms.options.wide'), 'fixed' => __('analytics.forms.options.fixed')])->required(), Select::make('refresh_interval')->label(__('analytics.forms.fields.refresh_interval'))->options([0 => __('analytics.forms.options.off'), 30 => __('analytics.forms.options.seconds_30'), 60 => __('analytics.forms.options.minute_1'), 300 => __('analytics.forms.options.minutes_5')])->required(), Toggle::make('auto_apply')->label(__('analytics.forms.fields.auto_apply'))],
             'folder' => [$name('analytics.forms.fields.folder_name', 100)],
@@ -81,7 +90,7 @@ class WorkbenchForms
             'expression' => $this->expression($context),
             'parameters' => [Repeater::make('parameters')->label(__('analytics.forms.fields.sql_variables'))->schema([TextInput::make('key')->label(__('analytics.forms.fields.variable'))->readOnly()->required(), Select::make('type')->label(__('analytics.forms.fields.type'))->options(array_intersect_key(AnalyticsFieldType::options(), array_flip(['text', 'number', 'date'])))->required(), TextInput::make('default')->label(__('analytics.forms.fields.default_value')), Toggle::make('required')->label(__('analytics.forms.fields.required_value'))])->addable(false)->deletable(false)->reorderable(false)->columns(2)],
             'sql' => [Textarea::make('sql')->label('SQL')->rows(18)->required()->maxLength(50000)->extraInputAttributes(['dir' => 'ltr', 'spellcheck' => 'false'])->helperText(__('analytics.forms.helpers.sql'))],
-            'display' => [Select::make('display')->label(__('analytics.forms.fields.display_type'))->options(AnalyticsDisplay::options())->required()],
+            'display' => [Radio::make('display')->label(__('analytics.forms.fields.display_type'))->options(AnalyticsDisplay::options())->descriptions(__('analytics.display_descriptions', [], 'fa'))->required()->in(array_column(AnalyticsDisplay::cases(), 'value'))->view('filament.forms.components.analytics-display-options')],
             'visualization' => $this->visualization($context),
             'metadata' => [TextInput::make('original')->label(__('analytics.forms.fields.original_name'))->readOnly()->dehydrated(false), TextInput::make('label_fa')->label(__('analytics.forms.fields.persian_label'))->maxLength(150)->helperText(__('analytics.forms.helpers.original_fallback')), TextInput::make('label_en')->label(__('analytics.forms.fields.english_label'))->maxLength(150), $description(), Select::make('semantic_type')->label(__('analytics.forms.fields.semantic_type'))->options(__('analytics.semantic_types'))->visible($context['column'] ?? false), Toggle::make('hidden')->label(__('analytics.forms.fields.hidden_column'))->visible($context['column'] ?? false)],
             'source' => [$this->select('connection_id', __('analytics.forms.fields.database'), $context['connections'] ?? [])->required()->live()->afterStateUpdated(fn ($set) => $set('source', null)), Select::make('source')->label(__('analytics.forms.fields.table_or_view'))->options(fn (Get $get) => $this->options(collect($context['connections'] ?? [])->firstWhere('key', $get('connection_id'))['catalog'] ?? []))->searchable()->required()],
@@ -95,6 +104,8 @@ class WorkbenchForms
             'confirm' => [Placeholder::make('message')->label('')->content($context['message'] ?? '')],
             default => throw new \InvalidArgumentException('Unknown analytics form'),
         };
+
+        return PanelFormFields::floating($schema);
     }
 
     private function options(array $rows): array
@@ -143,11 +154,12 @@ class WorkbenchForms
             Select::make('operator')->label(__('analytics.forms.fields.condition'))->options(fn (Get $get) => $this->operators($type($get)))->required()->live(),
             Select::make('date_mode')->label(__('analytics.forms.fields.date_type'))->options(['specific' => __('analytics.forms.options.specific_date'), 'relative' => __('analytics.forms.options.relative_range')])->live()->visible(fn (Get $get) => $type($get) === 'date' && $range($get)),
             Select::make('date_part')->label(__('analytics.forms.fields.date_part'))->options(['day_of_week' => __('analytics.forms.options.day_of_week'), 'month' => __('analytics.forms.options.month'), 'quarter' => __('analytics.forms.options.quarter'), 'hour' => __('analytics.forms.options.hour')])->nullable()->live()->visible(fn (Get $get) => $type($get) === 'date' && $multiple($get)),
-            TextInput::make('value')->label(__('analytics.forms.fields.value'))->maxLength(4000)->visible(fn (Get $get) => ! $empty($get) && ! $range($get) && ($type($get) !== 'date' || $multiple($get)) && $type($get) !== 'boolean')->helperText(__('analytics.forms.helpers.multi_value')),
+            TextInput::make('value')->label(__('analytics.forms.fields.value'))->maxLength(4000)->visible(fn (Get $get) => ! $empty($get) && ! $range($get) && ($type($get) !== 'date' || $multiple($get)) && $type($get) !== 'boolean')->required(fn (Get $get) => $type($get) === 'date')->rules(fn (Get $get): array => $type($get) === 'date' && ! $get('date_part') ? [$this->dateListRule()] : [])->helperText(__('analytics.forms.helpers.multi_value')),
             Select::make('boolean_value')->label(__('analytics.forms.fields.value'))->options(['true' => __('analytics.forms.options.yes'), 'false' => __('analytics.forms.options.no')])->visible(fn (Get $get) => $type($get) === 'boolean' && ! $empty($get)),
-            DatePicker::make('date_value')->label(__('analytics.forms.fields.date'))->native()->visible(fn (Get $get) => $type($get) === 'date' && ! $empty($get) && ! $range($get) && ! $multiple($get) && $get('date_mode') !== 'relative'),
-            Grid::make(2)->schema([TextInput::make('from')->label(__('analytics.forms.fields.from'))->maxLength(500), TextInput::make('to')->label(__('analytics.forms.fields.to'))->maxLength(500)])->visible(fn (Get $get) => $range($get) && ($type($get) !== 'date' || $get('date_mode') !== 'relative')),
-            Grid::make(3)->schema([TextInput::make('relative_amount')->label(__('analytics.forms.fields.amount'))->integer()->minValue(1)->maxValue(365)->required(), Select::make('relative_unit')->label(__('analytics.forms.fields.unit'))->options(AnalyticsTimeGrain::options())->required(), Select::make('relative_direction')->label(__('analytics.forms.fields.direction'))->options(['past' => __('analytics.forms.options.past'), 'current' => __('analytics.forms.options.current'), 'future' => __('analytics.forms.options.future')])->required(), Toggle::make('include_current')->label(__('analytics.forms.fields.include_current'))])->visible(fn (Get $get) => $type($get) === 'date' && $get('date_mode') === 'relative' && ! $empty($get) && ! $multiple($get)),
+            $this->datePicker('date_value', __('analytics.forms.fields.date'))->required()->visible(fn (Get $get) => $type($get) === 'date' && ! $empty($get) && ! $range($get) && ! $multiple($get)),
+            Grid::make(2)->schema([TextInput::make('from')->label(__('analytics.forms.fields.from'))->maxLength(500), TextInput::make('to')->label(__('analytics.forms.fields.to'))->maxLength(500)])->visible(fn (Get $get) => $range($get) && $type($get) !== 'date'),
+            Grid::make(2)->schema([$this->datePicker('date_from', __('analytics.forms.fields.from'))->required(), $this->datePicker('date_to', __('analytics.forms.fields.to'))->required()->afterOrEqual('date_from')])->visible(fn (Get $get) => $range($get) && $type($get) === 'date' && $get('date_mode') !== 'relative'),
+            Grid::make(3)->schema([TextInput::make('relative_amount')->label(__('analytics.forms.fields.amount'))->integer()->minValue(1)->maxValue(365)->required(), Select::make('relative_unit')->label(__('analytics.forms.fields.unit'))->options(AnalyticsTimeGrain::options())->required(), Select::make('relative_direction')->label(__('analytics.forms.fields.direction'))->options(['past' => __('analytics.forms.options.past'), 'current' => __('analytics.forms.options.current'), 'future' => __('analytics.forms.options.future')])->required(), Toggle::make('include_current')->label(__('analytics.forms.fields.include_current'))])->visible(fn (Get $get) => $type($get) === 'date' && $range($get) && $get('date_mode') === 'relative'),
             Toggle::make('case_sensitive')->label(__('analytics.forms.fields.case_sensitive'))->visible(fn (Get $get) => $type($get) === 'text' && in_array($get('operator'), ['contains', 'not_contains', 'starts_with', 'ends_with'])),
         ];
     }
@@ -187,8 +199,16 @@ class WorkbenchForms
         ];
     }
 
-    private function dateValueFields(?string $fixedType = null): array
+    private function datePicker(string $name, string $label): DatePicker
     {
+        return DatePicker::make($name)->label($label)->native(false)->format('Y-m-d')->displayFormat('Y-m-d')->closeOnDateSelection();
+    }
+
+    private function dateValueFields(?string $fixedType = null, ?string $fixedOperator = null): array
+    {
+        $isDate = fn (Get $get): bool => ($fixedType ?? $get('type') ?? 'text') === 'date';
+        $isDateList = fn (Get $get): bool => in_array($fixedOperator ?? $get('operator'), ['in', 'not_in']);
+
         return [
             Select::make('value_mode')->label(__('analytics.forms.fields.value_type'))->options(function (Get $get) use ($fixedType) {
                 $type = $fixedType ?? $get('type') ?? 'text';
@@ -199,14 +219,30 @@ class WorkbenchForms
                     + ($type !== 'time_grain' ? ['null' => __('analytics.forms.options.null')] : [])
                     + ($type === 'text' ? ['empty' => __('analytics.forms.options.empty')] : []);
             })->live()->required(),
-            TextInput::make('value')->label(__('analytics.forms.fields.comma_values'))->maxLength(50000)->visible(fn (Get $get) => $get('value_mode') === 'specific'),
-            Grid::make(2)->schema([TextInput::make('from')->label(__('analytics.forms.fields.from'))->required(), TextInput::make('to')->label(__('analytics.forms.fields.to'))->required()])->visible(fn (Get $get) => $get('value_mode') === 'range'),
+            TextInput::make('value')->label(__('analytics.forms.fields.comma_values'))->maxLength(50000)->required(fn (Get $get) => $isDate($get))->rules(fn (Get $get): array => $isDate($get) ? [$this->dateListRule()] : [])->visible(fn (Get $get) => $get('value_mode') === 'specific' && (! $isDate($get) || $isDateList($get))),
+            $this->datePicker('date_value', __('analytics.forms.fields.date'))->required()->visible(fn (Get $get) => $get('value_mode') === 'specific' && $isDate($get) && ! $isDateList($get)),
+            Grid::make(2)->schema([TextInput::make('from')->label(__('analytics.forms.fields.from'))->required(), TextInput::make('to')->label(__('analytics.forms.fields.to'))->required()])->visible(fn (Get $get) => $get('value_mode') === 'range' && ! $isDate($get)),
+            Grid::make(2)->schema([$this->datePicker('date_from', __('analytics.forms.fields.from'))->required(), $this->datePicker('date_to', __('analytics.forms.fields.to'))->required()->afterOrEqual('date_from')])->visible(fn (Get $get) => $get('value_mode') === 'range' && $isDate($get)),
             Grid::make(3)->schema([TextInput::make('relative_amount')->label(__('analytics.forms.fields.amount'))->integer()->minValue(1)->maxValue(365)->required(), Select::make('relative_unit')->label(__('analytics.forms.fields.unit'))->options(AnalyticsTimeGrain::options())->required(), Select::make('relative_direction')->label(__('analytics.forms.fields.direction'))->options(['past' => __('analytics.forms.options.past'), 'current' => __('analytics.forms.options.current'), 'future' => __('analytics.forms.options.future')])->required(), Toggle::make('include_current')->label(__('analytics.forms.fields.include_current'))])->visible(fn (Get $get) => $get('value_mode') === 'relative'),
             Select::make('date_part')->label(__('analytics.forms.fields.date_part'))->options(['day_of_week' => __('analytics.forms.options.day_of_week_range'), 'month' => __('analytics.forms.options.month_range'), 'quarter' => __('analytics.forms.options.quarter_range'), 'hour' => __('analytics.forms.options.hour_range')])->visible(fn (Get $get) => $get('value_mode') === 'parts')->required(),
             TextInput::make('part_values')->label(__('analytics.forms.fields.date_part_values'))->helperText(__('analytics.forms.helpers.date_parts'))->visible(fn (Get $get) => $get('value_mode') === 'parts')->required(),
             Toggle::make('presence_empty')->label(__('analytics.forms.fields.presence_empty'))->visible(fn (Get $get) => $get('value_mode') === 'presence'),
             Toggle::make('exclude')->label(__('analytics.forms.fields.exclude'))->visible(fn (Get $get) => in_array($get('value_mode'), ['range', 'relative', 'parts'])),
         ];
+    }
+
+    private function dateListRule(): \Closure
+    {
+        return static function (string $attribute, mixed $value, \Closure $fail): void {
+            $dates = array_map('trim', explode(',', (string) $value));
+            $validator = \Illuminate\Support\Facades\Validator::make(['dates' => $dates], [
+                'dates' => ['required', 'array', 'min:1'],
+                'dates.*' => ['required', 'date_format:Y-m-d'],
+            ]);
+            if ($validator->fails()) {
+                $fail(__('validation.date_format', ['attribute' => __('analytics.forms.fields.date'), 'format' => 'Y-m-d']));
+            }
+        };
     }
 
     private function filterValue(array $context): array
@@ -216,7 +252,7 @@ class WorkbenchForms
         }
 
         return [
-            ...$this->dateValueFields($context['type'] ?? 'text'),
+            ...$this->dateValueFields($context['type'] ?? 'text', $context['operator'] ?? null),
             Select::make('suggestions')->label(__('analytics.forms.fields.database_values'))->multiple()->searchable()->options($this->options($context['suggestions'] ?? []))->getSearchResultsUsing(fn (string $search) => $this->filterSearch($context, $search))->getOptionLabelsUsing(fn (array $values) => collect($values)->mapWithKeys(fn ($value) => [(string) $value => (string) $value])->all())->live()->afterStateUpdated(fn ($set) => $set('value_mode', 'specific'))->visible(in_array($context['type'] ?? '', ['text', 'number', 'boolean']))->helperText(__('analytics.forms.helpers.suggestions')),
         ];
     }

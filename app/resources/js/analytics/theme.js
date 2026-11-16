@@ -10,8 +10,10 @@ export function analyticsPalette(root) {
         fontFamily: style.fontFamily || 'Vazir, Tahoma, Arial, sans-serif',
         resolved: host?.dataset.analyticsTheme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light'),
         page: color('page-bg'), surface: color('surface'), card: color('card-bg'),
-        text: color('text'), muted: color('muted'), grid: color('chart-grid'), track: color('chart-track'), fill: color('chart-fill'),
+        text: color('chart-text') || color('text'), muted: color('chart-muted') || color('muted'), grid: color('chart-grid'), track: color('chart-track'), fill: color('chart-fill'),
         colors: Array.from({ length: 6 }, (_, index) => color('chart-' + (index + 1))),
+        bars: Array.from({ length: 6 }, (_, index) => color('bar-' + (index + 1))),
+        horizontalSecondary: color('chart-horizontal-secondary'),
         lineColor: color('chart-line'), gaugeColor: color('chart-gauge'),
         tooltipBg: color('chart-tooltip-bg'), tooltipText: color('chart-tooltip-text'),
     };

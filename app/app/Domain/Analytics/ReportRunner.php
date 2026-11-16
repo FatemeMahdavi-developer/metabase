@@ -15,6 +15,11 @@ class ReportRunner
 
     public function validate(array $definition, int $ownerId, ?AnalyticsConnection $stageConnection = null): array
     {
+        foreach ($definition['stages'] ?? [] as $stage) {
+            if (is_array($stage) && array_key_exists('matching_groups', $stage)) {
+                $this->invalid('matching_groups', 'مسیر جزئیات گزارش معتبر نیست.');
+            }
+        }
         $data = Validator::make($definition, [
             'connection_id' => 'required|integer', 'source' => 'required|string|max:200',
             'mode' => ['required', Rule::in(['aggregate', 'rows', 'native'])],
@@ -52,6 +57,9 @@ class ReportRunner
             $data['expressions'][$index]['expression'] = $fields[$expression['key']]['expression'];
         }
         if ($data['mode'] === 'native') {
+            if (array_key_exists('matching_groups', $definition)) {
+                $this->invalid('matching_groups', 'نمایش ردیف‌های سازنده برای این پرس‌وجو پشتیبانی نمی‌شود.');
+            }
             if (! empty($data['stages'])) {
                 $this->invalid('stages', 'مراحل بعدی را در خود SQL تعریف کنید.');
             }
@@ -132,7 +140,53 @@ class ReportRunner
             }
         }
 
+        if (array_key_exists('matching_groups', $definition)) {
+            if ($stageConnection) {
+                $this->invalid('matching_groups', 'مسیر جزئیات گزارش معتبر نیست.');
+            }
+            $data['matching_groups'] = $this->validateMatchingGroups($data, $definition['matching_groups'], $connection, $ownerId);
+        }
+
         return $data;
+    }
+
+    private function validateMatchingGroups(array $data, mixed $membership, AnalyticsConnection $connection, int $ownerId): array
+    {
+        $membership = Validator::make(['matching_groups' => $membership], [
+            'matching_groups' => 'required|array:query_definition,dimensions',
+            'matching_groups.query_definition' => 'required|array',
+            'matching_groups.dimensions' => 'present|array|max:6',
+            'matching_groups.dimensions.*' => 'required|array:field,grain',
+            'matching_groups.dimensions.*.field' => 'required|string|distinct|max:200',
+            'matching_groups.dimensions.*.grain' => ['nullable', Rule::in(['day', 'week', 'month', 'quarter', 'year'])],
+        ])->validate()['matching_groups'];
+        $terminal = empty($data['stages']) ? $data : $data['stages'][array_key_last($data['stages'])];
+        $groupQuery = $membership['query_definition'];
+        if ($terminal['mode'] !== 'rows' || isset($groupQuery['matching_groups']) || collect($groupQuery['stages'] ?? [])->contains(fn ($stage) => is_array($stage) && array_key_exists('matching_groups', $stage))) {
+            $this->invalid('matching_groups', 'ردیف‌های سازندهٔ این مرحله قابل بازیابی نیست؛ به گزارش اصلی برگردید.');
+        }
+        if ((int) ($groupQuery['connection_id'] ?? 0) !== $connection->id || ($groupQuery['source'] ?? null) !== $data['source'] || ($groupQuery['mode'] ?? null) === 'native') {
+            $this->invalid('matching_groups', 'منبع ردیف‌های جزئیات با گزارش انتخاب‌شده یکسان نیست.');
+        }
+        $groupQuery = $this->validate($groupQuery, $ownerId);
+        $contexts = $this->stageContexts($groupQuery, $connection);
+        $summary = collect($contexts)->reverse()->first(fn ($context) => $context['definition']['mode'] === 'aggregate');
+        $dimensions = array_map(fn ($dimension) => ['field' => $dimension['field'], 'grain' => $dimension['grain'] ?? null], $membership['dimensions']);
+        $expected = array_map(fn ($dimension) => ['field' => $dimension['field'], 'grain' => $dimension['grain'] ?? null], $summary['definition']['dimensions'] ?? []);
+        if (! $summary || $dimensions !== $expected) {
+            $this->invalid('matching_groups', 'گروه‌بندی گزارش برای بازیابی جزئیات معتبر نیست.');
+        }
+        $rawColumns = collect($this->compile($data, $connection)['columns'])->keyBy('key');
+        $groupColumns = collect($this->compile($groupQuery, $connection)['columns'])->keyBy('key');
+        foreach ($dimensions as $dimension) {
+            $raw = $rawColumns->get($dimension['field']);
+            $group = $groupColumns->get($dimension['field']);
+            if (! $raw || ! $group || $raw['type'] !== $group['type'] || ($dimension['grain'] && $raw['type'] !== 'date')) {
+                $this->invalid('matching_groups', 'ستون‌های گروه‌بندی در این مرحله در دسترس نیستند؛ جزئیات را از مرحلهٔ اصلی باز کنید.');
+            }
+        }
+
+        return ['query_definition' => $groupQuery, 'dimensions' => $dimensions];
     }
 
     private function stageConnection(AnalyticsConnection $connection, array $columns): AnalyticsConnection
@@ -146,7 +200,7 @@ class ReportRunner
     public function stageContexts(array $definition, AnalyticsConnection $connection): array
     {
         $base = $definition;
-        unset($base['stages']);
+        unset($base['stages'], $base['matching_groups']);
         $contexts = [];
         $virtual = $connection;
         foreach ([$base, ...($definition['stages'] ?? [])] as $index => $stage) {
@@ -400,7 +454,7 @@ class ReportRunner
             foreach ($data['stages'] ?? [] as $index => $stage) {
                 $sql = preg_replace('/ LIMIT \d+$/', $previousExplicitLimit ? ' LIMIT '.$previousLimit : '', $sql);
                 $virtual = $this->stageConnection($connection, $columns);
-                $compiled = $this->compile([...$stage, 'source' => 'analytics_stage', 'connection_id' => $connection->id], $virtual, $stageFilters[$index] ?? [], false, 's'.$index.'_', '('.$sql.')');
+                $compiled = $this->compile([...$stage, 'source' => 'analytics_stage', 'connection_id' => $connection->id], $virtual, $stageFilters[$index] ?? [], false, $bindingPrefix.'s'.$index.'_', '('.$sql.')');
                 $sql = $compiled['sql'];
                 $columns = $compiled['columns'];
                 $bindings = [...$bindings, ...$compiled['bindings']];
@@ -409,7 +463,53 @@ class ReportRunner
             }
         }
 
+        if (isset($data['matching_groups'])) {
+            return $this->compileMatchingGroups($data, $connection, $sql, $bindings, $columns, $bindingPrefix);
+        }
+
         return ['sql' => $sql, 'bindings' => $bindings, 'columns' => $columns];
+    }
+
+    private function compileMatchingGroups(array $data, AnalyticsConnection $connection, string $sql, array $bindings, array $columns, string $bindingPrefix): array
+    {
+        $membership = $data['matching_groups'];
+        $groupQuery = $membership['query_definition'];
+        $compiled = $this->compile($groupQuery, $connection, [], false, $bindingPrefix.'mg_');
+        $groupTerminal = empty($groupQuery['stages']) ? $groupQuery : $groupQuery['stages'][array_key_last($groupQuery['stages'])];
+        $groupSql = preg_replace('/ LIMIT \d+$/D', ! empty($groupTerminal['limit_explicit']) ? ' LIMIT '.(int) $groupTerminal['limit'] : '', $compiled['sql']);
+        preg_match('/ LIMIT (\d+)$/D', $sql, $limit);
+        $rawSql = preg_replace('/ LIMIT \d+$/D', '', $sql);
+        $quote = fn ($key) => $this->quote($key, $connection->driver);
+        $rawAlias = $quote('analytics_detail_rows');
+        $groupAlias = $quote('analytics_matching_groups');
+        $keysAlias = $quote('analytics_group_keys');
+        $keys = array_map(fn ($dimension) => $groupAlias.'.'.$quote($dimension['field']), $membership['dimensions']);
+        $selection = $keys ? implode(', ', $keys) : '1 AS '.$quote('matched');
+        $groupsSql = 'SELECT DISTINCT '.$selection.' FROM ('.$groupSql.') '.$groupAlias;
+        $sql = 'SELECT '.$rawAlias.'.* FROM ('.$rawSql.') '.$rawAlias;
+        if (! $keys) {
+            $sql .= ' CROSS JOIN ('.$groupsSql.') '.$keysAlias;
+        } else {
+            $conditions = [];
+            foreach ($membership['dimensions'] as $dimension) {
+                $left = $rawAlias.'.'.$quote($dimension['field']);
+                if ($dimension['grain']) {
+                    $left = $this->dateExpression($left, $dimension['grain'], $connection->driver);
+                }
+                $right = $keysAlias.'.'.$quote($dimension['field']);
+                $conditions[] = $connection->driver === 'clickhouse' ? 'isNotDistinctFrom('.$left.', '.$right.')' : '('.$left.' = '.$right.' OR ('.$left.' IS NULL AND '.$right.' IS NULL))';
+            }
+            $sql .= ' INNER JOIN ('.$groupsSql.') '.$keysAlias.' ON '.implode(' AND ', $conditions);
+        }
+        $terminal = empty($data['stages']) ? $data : $data['stages'][array_key_last($data['stages'])];
+        $columnKeys = array_column($columns, 'key');
+        $sort = array_filter($terminal['sort'], fn ($item) => in_array($item['key'], $columnKeys, true));
+        if ($sort) {
+            $sql .= ' ORDER BY '.implode(', ', array_map(fn ($item) => $rawAlias.'.'.$quote($item['key']).' '.strtoupper($item['direction']), $sort));
+        }
+        $sql .= isset($limit[1]) ? ' LIMIT '.$limit[1] : '';
+
+        return ['sql' => $sql, 'bindings' => [...$bindings, ...$compiled['bindings']], 'columns' => $columns];
     }
 
     public function run(array $definition, int $ownerId, array $extraFilters = [], bool $refresh = false, bool $details = false): array

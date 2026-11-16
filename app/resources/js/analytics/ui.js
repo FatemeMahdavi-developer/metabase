@@ -1,8 +1,9 @@
 import Chart from 'chart.js/auto';
 import { marked } from 'marked';
 import { analyticsPalette } from './theme';
-import { chartAxes, chartSeriesKey, chartCategoryLabel, chartDefaultPalette, resolveSeriesColors, validChartColor, applyChartTheme } from './chart-style';
+import { chartAxes, chartSeriesKey, chartCategoryLabel, chartDefaultPalette, resolveSeriesColors, validChartColor, hasCustomChartColor, chartAreaFill, applyChartTheme } from './chart-style';
 import { uid } from './uid';
+import { nativeTableElement, nativeTablePart } from './native-table';
 
 export { uid };
 
@@ -40,9 +41,27 @@ export const button = (label, action, kind = '', attrs = '') => {
     const attributes = document.createElement('template');
     attributes.innerHTML = `<button ${attrs}></button>`;
     for (const attribute of attributes.content.firstElementChild.attributes) control.setAttribute(attribute.name, attribute.value);
-    control.querySelector('.fi-btn-label').innerHTML = label;
+    const labelElement = control.querySelector('.fi-btn-label');
+    labelElement.innerHTML = label;
+    // Filament places the icon beside the label in its button grid.
+    for (const iconElement of labelElement.querySelectorAll(':scope > svg.mb-icon')) {
+        iconElement.classList.add('fi-btn-icon');
+        control.insertBefore(iconElement, labelElement);
+    }
+    if (!labelElement.textContent.trim() && !labelElement.childElementCount) labelElement.remove();
     return control.outerHTML;
 };
+// The field itself comes from Filament's input and input.wrapper Blade components.
+export function searchField(attribute, placeholder, value = '') {
+    const field = document.getElementById('analytics-native-search-field').content.firstElementChild.cloneNode(true);
+    const input = field.querySelector('input');
+    input.setAttribute(attribute, '');
+    input.setAttribute('placeholder', placeholder);
+    input.setAttribute('aria-label', placeholder);
+    input.setAttribute('value', value);
+    return field.outerHTML;
+}
+
 export const iconButton = (name, label, action, attrs = '') => `<button type="button" class="mb-icon-btn" title="${e(label)}" aria-label="${e(label)}" data-action="${action}" ${attrs}>${icon(name)}</button>`;
 export const options = (items, selected, placeholder = null) => (placeholder !== null ? `<option value="">${e(placeholder)}</option>` : '') + items.map(item => {
     const key = typeof item === 'string' ? item : item.key;
@@ -64,7 +83,11 @@ export function markdown(text) {
     return document.body.innerHTML;
 }
 export function tableHtml(result, action = '') {
-    return `<div class="mb-table-wrap"><table class="mb-table"><thead><tr>${result.columns.map(column => `<th>${e(column.label)}</th>`).join('')}</tr></thead><tbody>${result.rows.map((row, index) => `<tr ${action ? `data-action="${action}" data-row="${index}" style="cursor:pointer"` : ''}>${result.columns.map(column => `<td class="${column.type === 'number' ? 'mb-number' : ''}">${e(row[column.key] ?? '—')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return nativeTableElement({
+        result, columns: result.columns, rows: result.rows,
+        formatCell: (row, column) => columnValueText(column, row[column.key]),
+        rowAction: action, interactive: false,
+    }).outerHTML;
 }
 const resultValueText = value => value === null || value === undefined ? '—' : typeof value === 'object' ? JSON.stringify(value) : String(value);
 export const columnValueText = (column, value) => column?.type === 'boolean' && value !== null && value !== undefined ? [true, 1, '1', 'true'].includes(value) ? 'بله' : 'خیر' : resultValueText(value);
@@ -74,40 +97,163 @@ const clickable = (node, handler) => {
     node.addEventListener('click', event => { event.stopPropagation(); handler(event); });
     node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handler(event); } });
 };
+function tablePagination(page, pageSize, total, truncated) {
+    const last = Math.max(1, Math.ceil(total / pageSize)), current = page + 1;
+    const footer = nativeTablePart('pagination');
+    const format = value => new Intl.NumberFormat(footer.dataset.numberLocale).format(value);
+    const range = (start, end) => Array.from({ length: end - start + 1 }, (_, i) => start + i);
+    // Match Filament's LengthAwarePaginator::onEachSide(0) window.
+    const pages = last < 8 ? range(1, last)
+        : current <= 4 ? [...range(1, 4), '…', last - 1, last]
+        : current > last - 4 ? [1, 2, '…', ...range(last - 3, last)]
+        : [1, 2, '…', current, '…', last - 1, last];
+    const arrow = direction => {
+        const item = nativeTablePart('pagination-' + direction);
+        item.querySelector('button').dataset.page = direction;
+        return item;
+    };
+    const items = pages.map(value => {
+        const item = nativeTablePart('pagination-' + (typeof value !== 'number' ? 'ellipsis' : value === current ? 'active' : 'page'));
+        const control = item.querySelector('button');
+        item.querySelector('.fi-pagination-item-label').textContent = typeof value === 'number' ? String(value) : '…';
+        if (typeof value === 'number') {
+            control.dataset.page = value - 1;
+            control.setAttribute('aria-label', 'صفحه ' + value);
+            if (value === current) control.setAttribute('aria-current', 'page');
+        } else item.setAttribute('aria-hidden', 'true');
+        return item;
+    });
+    const numbered = footer.querySelector('.fi-pagination-items');
+    numbered.replaceChildren(...(page > 0 ? [arrow('previous')] : []), ...items, ...(current < last ? [arrow('next')] : []));
+    if (last === 1) numbered.hidden = true;
+    for (const direction of ['previous', 'next']) {
+        const control = footer.querySelector('.fi-pagination-' + direction + '-btn');
+        if ((direction === 'previous' && page === 0) || (direction === 'next' && current >= last)) control.remove();
+        else control.dataset.page = direction;
+    }
+    const values = { first: format(total ? page * pageSize + 1 : 0), last: format(Math.min(current * pageSize, total)), total: format(total) };
+    footer.querySelector('.fi-pagination-overview').textContent = footer.dataset.overviewTemplate.replace(/\{(first|last|total)\}/g, (_, key) => values[key]) + (truncated ? ' (نتیجه محدود شده)' : '');
+    const sizes = [...new Set([10, 25, 50, 100, pageSize])].sort((a, b) => a - b);
+    footer.querySelectorAll('.fi-pagination-records-per-page-select select').forEach(select => {
+        select.dataset.tablePageSize = '';
+        select.setAttribute('aria-label', footer.dataset.pageSizeLabel);
+        select.replaceChildren(...sizes.map(size => {
+            const option = document.createElement('option');
+            option.value = size; option.textContent = String(size); option.selected = size === pageSize;
+            return option;
+        }));
+    });
+    return footer;
+}
+
 export function mountTable(container, result, settings = {}, onClick = null) {
-    let page = 0; let sort = null; let search = '';
-    const pageSize = Math.max(5, Math.min(100, Number(settings.page_size) || 25));
+    const remote = !!result.meta?.pagination && typeof settings._fetch_page === 'function';
+    let page = remote ? result.meta.pagination.page - 1 : 0;
+    let sort = remote && result.meta.pagination.sort ? { key: result.meta.pagination.sort.key, direction: result.meta.pagination.sort.direction === 'desc' ? -1 : 1 } : null;
+    let search = remote ? result.meta.pagination.search : '';
+    let busy = false; let revision = 0; let searchTimer;
+    let pageSize = Math.max(5, Math.min(100, Math.trunc(Number(settings.page_size) || 25)));
+    if (remote) pageSize = result.meta.pagination.page_size;
     const columns = settings.visible_columns?.length ? result.columns.filter(column => settings.visible_columns.includes(column.key)) : result.columns;
-    const context = (column, row, event, anchor) => ({ column_key: column.key, row_index: row ? result.rows.indexOf(row) : null, kind: row ? 'cell' : 'header', event, anchor, result_signature: result.meta?.result_signature });
+    const pageOptions = () => ({ page: page + 1, page_size: pageSize, search, sort: sort ? { key: sort.key, direction: sort.direction === -1 ? 'desc' : 'asc' } : null });
+    const context = (column, row, event, anchor) => ({ column_key: column.key, row_index: row ? result.rows.indexOf(row) : null, kind: row ? 'cell' : 'header', event, anchor, result_signature: result.meta?.result_signature, ...(remote ? { pagination: pageOptions() } : {}) });
+    const setBusy = value => {
+        busy = value;
+        container.setAttribute('aria-busy', String(value));
+        container.querySelectorAll('[data-page], [data-table-page-size], [data-table-sort]').forEach(node => { node.disabled = value; });
+        container.querySelectorAll('[data-table-cell]').forEach(node => node.setAttribute('aria-disabled', String(value)));
+    };
+    const refresh = async (restoreSearch = false) => {
+        clearTimeout(searchTimer);
+        const requestRevision = ++revision;
+        setBusy(true);
+        container.querySelector('[data-table-error]')?.remove();
+        try {
+            const next = await settings._fetch_page(pageOptions(), () => revision === requestRevision && container.isConnected);
+            if (!next || revision !== requestRevision || !container.isConnected) return false;
+            result = next;
+            const pagination = result.meta.pagination;
+            page = pagination.page - 1; pageSize = pagination.page_size; search = pagination.search;
+            sort = pagination.sort ? { key: pagination.sort.key, direction: pagination.sort.direction === 'desc' ? -1 : 1 } : null;
+            paint(restoreSearch);
+            return true;
+        } catch (error) {
+            if (revision === requestRevision && container.isConnected) {
+                // Keep the previously loaded page usable if a request fails.
+                const pagination = result.meta.pagination;
+                page = pagination.page - 1; pageSize = pagination.page_size; search = pagination.search;
+                sort = pagination.sort ? { key: pagination.sort.key, direction: pagination.sort.direction === 'desc' ? -1 : 1 } : null;
+                paint();
+                const message = document.createElement('div');
+                message.dataset.tableError = ''; message.setAttribute('role', 'alert');
+                message.textContent = error.message;
+                container.prepend(message);
+            }
+            return false;
+        } finally {
+            if (revision === requestRevision && container.isConnected) setBusy(false);
+        }
+    };
     const paint = (restoreSearch = false) => {
         const selection = container.querySelector('[data-result-search]')?.selectionStart;
         const term = search.trim().toLocaleLowerCase();
-        const rows = result.rows.filter(row => !term || columns.some(column => columnValueText(column, row[column.key]).toLocaleLowerCase().includes(term)));
-        if (sort) rows.sort((a, b) => { const x = a[sort.key], y = b[sort.key]; const comparison = x == null ? -1 : y == null ? 1 : typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'fa'); return comparison * sort.direction; });
-        const slice = rows.slice(page * pageSize, (page + 1) * pageSize);
-        const headers = columns.map(column => '<th><button type="button" data-table-sort="' + e(column.key) + '" title="' + (onClick ? 'عملیات ستون ' : 'مرتب‌سازی ') + e(column.label) + '">' + icon(column.type === 'number' ? 'number' : column.type === 'date' ? 'calendar' : 'text') + e(column.label) + (sort?.key === column.key ? (sort.direction === 1 ? ' ↑' : ' ↓') : '') + '</button></th>').join('');
-        const body = slice.map(row => '<tr>' + columns.map(column => {
+        const rows = remote ? result.rows : result.rows.filter(row => !term || columns.some(column => columnValueText(column, row[column.key]).toLocaleLowerCase().includes(term)));
+        if (sort && !remote) rows.sort((a, b) => { const x = a[sort.key], y = b[sort.key]; const numeric = columns.find(column => column.key === sort.key)?.type === 'number'; const comparison = x == null && y == null ? 0 : x == null ? -1 : y == null ? 1 : numeric && Number.isFinite(Number(x)) && Number.isFinite(Number(y)) ? Number(x) - Number(y) : String(x).localeCompare(String(y), 'fa'); return comparison * sort.direction; });
+        const total = remote ? result.meta.pagination.total : rows.length;
+        page = Math.max(0, Math.min(page, Math.max(0, Math.ceil(total / pageSize) - 1)));
+        const slice = remote ? rows : rows.slice(page * pageSize, (page + 1) * pageSize);
+        const formatCell = (row, column) => {
             const value = row[column.key];
-            const formatted = settings._cell_labels?.(row, column.key) ?? (column.type === 'number' && Number.isFinite(Number(value)) && value !== null ? new Intl.NumberFormat('fa-IR', { maximumFractionDigits: settings.decimals ?? 6, useGrouping: !settings._field_metadata?.[column.key]?.primary }).format(value) : columnValueText(column, value));
-            return '<td data-table-cell data-column="' + e(column.key) + '" data-row-index="' + result.rows.indexOf(row) + '" title="' + e(settings._cell_title?.(column.key) || '') + '" class="' + (column.type === 'number' ? 'mb-number' : '') + '">' + e(formatted) + '</td>';
-        }).join('') + '</tr>').join('');
-        container.innerHTML = (settings.table_search === false ? '' : '<label class="mb-search mb-result-search">' + icon('search') + '<input type="search" data-result-search aria-label="جست‌وجو در نتیجهٔ نمایش‌داده‌شده" placeholder="جست‌وجو در نتیجهٔ نمایش‌داده‌شده…" value="' + e(search) + '"></label>') + '<div class="mb-table-wrap"><table class="mb-table"><thead><tr>' + headers + '</tr></thead><tbody>' + body + '</tbody></table>' + (!rows.length ? '<div class="mb-table-empty">مقداری با این جست‌وجو پیدا نشد.</div>' : '') + '</div><div class="mb-table-pagination"><span>' + (rows.length ? page * pageSize + 1 : 0) + '–' + Math.min((page + 1) * pageSize, rows.length) + ' از ' + rows.length + ' ردیف' + (result.meta?.truncated ? ' (نتیجه محدود شده)' : '') + '</span><button type="button" class="mb-icon-btn" data-page="previous" aria-label="صفحه قبل" ' + (page === 0 ? 'disabled' : '') + '>›</button><button type="button" class="mb-icon-btn" data-page="next" aria-label="صفحه بعد" ' + ((page + 1) * pageSize >= rows.length ? 'disabled' : '') + '>‹</button></div>';
+            return settings._cell_labels?.(row, column.key) ?? (column.type === 'number' && Number.isFinite(Number(value)) && value !== null
+                ? new Intl.NumberFormat('fa-IR', { maximumFractionDigits: settings.decimals ?? 6, useGrouping: !settings._field_metadata?.[column.key]?.primary }).format(value)
+                : columnValueText(column, value));
+        };
+        container.replaceChildren(nativeTableElement({
+            result, columns, rows: slice, formatCell, settings, sort,
+            search: settings.table_search === false ? null : search,
+            pagination: tablePagination(page, pageSize, total, result.meta?.truncated),
+            columnActions: !!onClick,
+        }));
         container.querySelectorAll('[data-table-sort]').forEach(node => { node.onclick = event => {
+            if (busy) return;
             const column = columns.find(item => item.key === node.dataset.tableSort);
             if (onClick) { event.stopPropagation(); onClick(null, context(column, null, event, node)); }
-            else { sort = { key: column.key, direction: sort?.key === column.key ? -sort.direction : 1 }; page = 0; paint(); }
+            else { sort = { key: column.key, direction: sort?.key === column.key ? -sort.direction : 1 }; page = 0; if (remote) refresh(); else paint(); }
         }; });
-        container.querySelector('[data-page=previous]').onclick = () => { page = Math.max(0, page - 1); paint(); };
-        container.querySelector('[data-page=next]').onclick = () => { page = Math.min(Math.max(0, Math.ceil(rows.length / pageSize) - 1), page + 1); paint(); };
+        container.querySelectorAll('[data-page]').forEach(control => {
+            control.onclick = async event => {
+                if (busy) return;
+                const target = control.dataset.page;
+                page = Math.max(0, Math.min(Math.max(0, Math.ceil(total / pageSize) - 1), target === 'previous' ? page - 1 : target === 'next' ? page + 1 : Number(target)));
+                if (remote) { if (!await refresh()) return; } else paint();
+                if (event.detail === 0) {
+                    const visible = selector => [...container.querySelectorAll(selector)].find(node => node.getClientRects().length);
+                    (visible('[data-page="' + target + '"]') || visible('[aria-current="page"], [data-table-page-size]'))?.focus({ preventScroll: true });
+                }
+            };
+        });
+        container.querySelectorAll('[data-table-page-size]').forEach(select => { select.onchange = async event => {
+            if (busy) return;
+            const compact = event.target.closest('label').classList.contains('fi-compact');
+            pageSize = Number(event.target.value); page = 0;
+            if (remote) { if (!await refresh()) return; } else paint();
+            container.querySelector('.fi-pagination-records-per-page-select' + (compact ? '.fi-compact' : ':not(.fi-compact)') + ' select')?.focus({ preventScroll: true });
+        }; });
         const input = container.querySelector('[data-result-search]');
         if (input) {
-            input.addEventListener('input', () => { search = input.value; page = 0; paint(true); });
+            input.addEventListener('input', () => {
+                search = input.value; page = 0;
+                if (remote) {
+                    clearTimeout(searchTimer); ++revision; setBusy(true);
+                    searchTimer = setTimeout(() => { if (container.isConnected) refresh(true); }, 200);
+                } else paint(true);
+            });
             if (restoreSearch) { input.focus(); input.setSelectionRange(selection ?? search.length, selection ?? search.length); }
         }
         if (onClick) container.querySelectorAll('[data-table-cell]').forEach(node => {
             if (settings._can_click_column && !settings._can_click_column(node.dataset.column)) return;
             const row = result.rows[Number(node.dataset.rowIndex)]; const column = columns.find(item => item.key === node.dataset.column);
-            clickable(node, event => onClick(row, context(column, row, event, node)));
+            clickable(node, event => { if (!busy) onClick(row, context(column, row, event, node)); });
         });
     };
     paint();
@@ -124,7 +270,59 @@ function mountPivot(container, result, settings, onClick) {
     const sum = values => { const present = values.filter(value => value !== null && value !== undefined); return present.length ? present.reduce((total, value) => total + Number(value), 0) : null; };
     const value = (row, column) => sum(matches(row, column).map(item => item[measure.key]));
     const format = number => number === null ? '—' : new Intl.NumberFormat('fa-IR', { maximumFractionDigits: Number(settings.decimals || 0) }).format(number);
-    container.innerHTML = '<div class="mb-table-wrap"><table class="mb-table mb-pivot"><thead><tr><th>' + e(rowColumn.label) + ' / ' + e(columnColumn.label) + '</th>' + columns.map((column, index) => '<th data-pivot-column="' + index + '">' + e(resultValueText(column)) + '</th>').join('') + '<th>مجموع</th></tr></thead><tbody>' + rows.map((row, rowIndex) => '<tr><th data-pivot-row="' + rowIndex + '">' + e(resultValueText(row)) + '</th>' + columns.map((column, columnIndex) => '<td class="mb-number" data-pivot-cell data-pivot-row-index="' + rowIndex + '" data-pivot-column-index="' + columnIndex + '">' + e(format(value(row, column))) + '</td>').join('') + '<td class="mb-number" data-pivot-total-row="' + rowIndex + '"><strong>' + e(format(sum(columns.map(column => value(row, column))))) + '</strong></td></tr>').join('') + '<tr><th>مجموع</th>' + columns.map((column, index) => '<td class="mb-number" data-pivot-total-column="' + index + '"><strong>' + e(format(sum(rows.map(row => value(row, column))))) + '</strong></td>').join('') + '<td class="mb-number" data-pivot-grand-total><strong>' + e(format(sum(result.rows.map(row => row[measure.key])))) + '</strong></td></tr></tbody></table></div>';
+    const matrixColumns = [
+        { key: 'dimension', label: rowColumn.label + ' / ' + columnColumn.label },
+        ...columns.map((column, index) => ({ key: 'value-' + index, label: resultValueText(column), type: 'number' })),
+        { key: 'total', label: 'مجموع', type: 'number' },
+    ];
+    const matrixRows = rows.map(row => ({
+        dimension: row,
+        ...Object.fromEntries(columns.map((column, index) => ['value-' + index, value(row, column)])),
+        total: sum(columns.map(column => value(row, column))),
+    }));
+    matrixRows.push({
+        dimension: 'مجموع',
+        ...Object.fromEntries(columns.map((column, index) => ['value-' + index, sum(rows.map(row => value(row, column)))])),
+        total: sum(result.rows.map(row => row[measure.key])),
+    });
+    const root = nativeTableElement({
+        result: { rows: matrixRows }, columns: matrixColumns, rows: matrixRows, interactive: false,
+        formatCell: (row, column) => column.type === 'number' ? format(row[column.key]) : resultValueText(row[column.key]),
+    });
+    const table = root.querySelector('.fi-ta-table');
+    table.classList.add('mb-pivot');
+    table.querySelectorAll('thead th').forEach((header, index) => {
+        header.scope = 'col';
+        if (index > 0 && index <= columns.length) header.dataset.pivotColumn = index - 1;
+    });
+    table.querySelectorAll('tbody tr').forEach((record, rowIndex) => {
+        const isTotal = rowIndex === rows.length;
+        const heading = nativeTablePart('header-none');
+        const label = document.createElement(isTotal ? 'strong' : 'span');
+        label.textContent = resultValueText(matrixRows[rowIndex].dimension);
+        heading.querySelector('[data-table-sort]').replaceWith(label);
+        heading.scope = 'row';
+        if (!isTotal) heading.dataset.pivotRow = rowIndex;
+        record.firstElementChild.replaceWith(heading);
+        [...record.children].slice(1).forEach((cell, columnIndex) => {
+            const isRowTotal = columnIndex === columns.length;
+            if (isTotal && isRowTotal) cell.dataset.pivotGrandTotal = '';
+            else if (isTotal) cell.dataset.pivotTotalColumn = columnIndex;
+            else if (isRowTotal) cell.dataset.pivotTotalRow = rowIndex;
+            else {
+                cell.dataset.pivotCell = '';
+                cell.dataset.pivotRowIndex = rowIndex;
+                cell.dataset.pivotColumnIndex = columnIndex;
+            }
+            if (isTotal || isRowTotal) {
+                const label = cell.querySelector('[data-native-cell-label]');
+                const total = document.createElement('strong');
+                total.textContent = label.textContent;
+                label.replaceChildren(total);
+            }
+        });
+    });
+    container.replaceChildren(root);
     const emit = (node, row, key, scope, total = false) => {
         if (!onClick || !row && !total) return;
         if (settings._can_click_column && !settings._can_click_column(key)) return;
@@ -152,7 +350,7 @@ export function visualize(container, result, display, settings = {}, onClick = n
     const colors = resolveSeriesColors(result, display, settings, container);
     settings._series_colors = colors;
     const palette = () => analyticsPalette(container);
-    const primaryColor = validChartColor(settings.color) && (settings.color.toLowerCase() !== '#509ee3' || settings.color_custom) ? settings.color : chartDefaultPalette(display, container)[0];
+    const primaryColor = hasCustomChartColor(settings) ? settings.color : chartDefaultPalette(display, container, settings)[0];
     const keyColor = key => colors[key] || primaryColor;
     const canClick = column => onClick && (!settings._can_click_column || settings._can_click_column(column.key));
     const emit = (row, column, event, anchor, extra = {}) => canClick(column) && onClick(row, { column_key: column.key, row_index: result.rows.indexOf(row), kind: 'point', event, anchor, result_signature: result.meta?.result_signature, color: primaryColor, series_colors: colors, ...extra });
@@ -171,7 +369,7 @@ export function visualize(container, result, display, settings = {}, onClick = n
             const valueText = e(settings.prefix || '') + e(formatNumber(value)) + e(settings.suffix || '');
             const gradientId = 'mb-gauge-' + uid();
             const endpointAngle = (135 + percentage * 2.7) * Math.PI / 180;
-            const ringGauge = '<div class="mb-gauge-face mb-gauge-ring-face"><svg class="mb-gauge mb-gauge-ring" viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="' + gradientId + '" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#f03b58"/><stop offset="50%" stop-color="#a737a2"/><stop offset="100%" stop-color="' + e(primaryColor) + '"/></linearGradient></defs><path d="M44.85 155.15 A78 78 0 1 1 155.15 155.15" fill="none" stroke="var(--mb-chart-track)" stroke-width="12" stroke-linecap="round" pathLength="100"/><path d="M44.85 155.15 A78 78 0 1 1 155.15 155.15" fill="none" stroke="url(#' + gradientId + ')" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="' + percentage + ' 100"/><circle cx="' + (100 + 78 * Math.cos(endpointAngle)) + '" cy="' + (100 + 78 * Math.sin(endpointAngle)) + '" r="8" fill="var(--mb-card-bg)" stroke="' + e(primaryColor) + '" stroke-width="5"/></svg><div class="mb-stat-value mb-gauge-value">' + valueText + '</div></div>';
+            const ringGauge = '<div class="mb-gauge-face mb-gauge-ring-face"><svg class="mb-gauge mb-gauge-ring" viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="' + gradientId + '" gradientUnits="userSpaceOnUse" x1="44.85" y1="155.15" x2="' + (100 + 78 * Math.cos(endpointAngle)) + '" y2="' + (100 + 78 * Math.sin(endpointAngle)) + '"><stop offset="0%" stop-color="var(--mb-gauge-start)"/><stop offset="50%" stop-color="var(--mb-gauge-mid)"/><stop offset="100%" stop-color="' + e(primaryColor) + '"/></linearGradient></defs><path d="M44.85 155.15 A78 78 0 1 1 155.15 155.15" fill="none" stroke="var(--mb-chart-track)" stroke-width="12" stroke-linecap="round" pathLength="100"/><path d="M44.85 155.15 A78 78 0 1 1 155.15 155.15" fill="none" stroke="url(#' + gradientId + ')" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="' + percentage + ' 100"/><circle cx="' + (100 + 78 * Math.cos(endpointAngle)) + '" cy="' + (100 + 78 * Math.sin(endpointAngle)) + '" r="8" fill="var(--mb-card-bg)" stroke="' + e(primaryColor) + '" stroke-width="5"/></svg><div class="mb-stat-value mb-gauge-value">' + valueText + '</div></div>';
             container.innerHTML = display === 'gauge'
                 ? '<div class="mb-stat mb-gauge-stat">' + (settings.gauge_style === 'ring' ? ringGauge : '<div class="mb-gauge-face"><svg class="mb-gauge" viewBox="0 0 200 124" aria-hidden="true"><path class="mb-gauge-track" d="M22 100 A78 78 0 0 1 178 100" fill="none" stroke="var(--mb-chart-track)" stroke-width="30" pathLength="100"/><path d="M22 100 A78 78 0 0 1 178 100" fill="none" stroke="' + e(primaryColor) + '" stroke-width="30" pathLength="100" stroke-dasharray="' + percentage + ' 100"/><path class="mb-gauge-needle" d="M100 8 L100 43" transform="rotate(' + (percentage * 1.8 - 90) + ' 100 100)" stroke="' + e(primaryColor) + '" stroke-width="4" stroke-linecap="round"/></svg><div class="mb-stat-value mb-gauge-value">' + valueText + '</div></div>') + '<div class="mb-stat-caption">' + e(settings.caption || 'از هدف') + ' ' + e(formatNumber(target)) + ' · ' + e(formatNumber(rawPercentage)) + '%</div></div>'
                 : '<div class="mb-stat mb-progress-stat"><div class="mb-stat-value">' + valueText + '</div><div class="mb-progress-track"><div style="width:' + percentage + '%;background:' + e(primaryColor) + '"></div></div><div class="mb-stat-caption">' + e(settings.caption || 'از هدف') + ' ' + e(formatNumber(target)) + ' · ' + e(formatNumber(rawPercentage)) + '%</div></div>';
@@ -202,15 +400,15 @@ export function visualize(container, result, display, settings = {}, onClick = n
         const series = [...new Map(result.rows.map(row => [JSON.stringify(row[split.key]), row[split.key]])).values()];
         datasets = series.flatMap(seriesValue => metrics.map(metric => {
             const seriesKey = chartSeriesKey('series', split.key, seriesValue, metric.key); const color = keyColor(seriesKey);
-            return { label: columnValueText(split, seriesValue) + (metrics.length > 1 ? ' · ' + metric.label : ''), _seriesValue: seriesValue, _seriesKey: seriesKey, _columnKey: metric.key, data: labelValues.map(value => chartNumber(result.rows.find(row => sameValue(row[x.key], value) && sameValue(row[split.key], seriesValue))?.[metric.key])), borderColor: color, backgroundColor: color + (display === 'area' ? '22' : ''), fill: display === 'area', tension: settings.smooth === false ? 0 : .35, borderWidth: 2, pointRadius: settings.points === false ? 0 : 2, pointHoverRadius: 5, borderRadius: display === 'bar' ? 11 : 0, borderSkipped: false, maxBarThickness: 44 };
+            return { label: columnValueText(split, seriesValue) + (metrics.length > 1 ? ' · ' + metric.label : ''), _seriesValue: seriesValue, _seriesKey: seriesKey, _columnKey: metric.key, data: labelValues.map(value => chartNumber(result.rows.find(row => sameValue(row[x.key], value) && sameValue(row[split.key], seriesValue))?.[metric.key])), borderColor: color, _analyticsThemeFill: display === 'area' && series.length === 1 && metrics.length === 1 && !hasCustomChartColor(settings) && !validChartColor(settings.series_colors?.[seriesKey]) && Number.isInteger(settings._series_color_indexes?.[seriesKey]), backgroundColor: display === 'area' && series.length === 1 && metrics.length === 1 && !hasCustomChartColor(settings) && !validChartColor(settings.series_colors?.[seriesKey]) && Number.isInteger(settings._series_color_indexes?.[seriesKey]) ? context => chartAreaFill(context, container) : color + (display === 'area' ? '22' : ''), fill: display === 'area', tension: settings.smooth === false ? 0 : .35, borderWidth: 2, pointRadius: settings.points === true ? 2 : 0, pointHoverRadius: 5, borderRadius: display === 'bar' ? 11 : 0, borderSkipped: false, maxBarThickness: settings.horizontal ? 6 : 44 };
         }));
     } else {
         const categories = circular || display === 'bar' && metrics.length === 1 && (settings.color_by_category ?? !settings.horizontal);
         datasets = metrics.map(metric => {
             const seriesKey = chartSeriesKey('metric', metric.key, null); const color = keyColor(seriesKey);
             const categoryColors = result.rows.map(row => keyColor(chartSeriesKey('category', x.key, row[x.key])));
-            const themedFill = display === 'area' && metrics.length === 1 && !settings.color_custom && color.toLowerCase() === chartDefaultPalette(display, container)[0].toLowerCase();
-            return { label: metric.label, _seriesKey: seriesKey, _columnKey: metric.key, _categoryColors: categories, _analyticsThemeFill: themedFill, data: result.rows.map(row => display === 'scatter' ? { x: chartNumber(row[x.key]), y: chartNumber(row[metric.key]) } : chartNumber(row[metric.key])), backgroundColor: categories ? categoryColors : themedFill ? palette().fill : color + (display === 'area' ? '22' : ''), hoverBackgroundColor: categories ? categoryColors : undefined, borderColor: categories ? categoryColors : color, borderWidth: circular || display === 'bar' ? 0 : 2, hoverBorderWidth: circular || display === 'bar' ? 0 : 2, hoverOffset: circular ? 5 : 0, fill: display === 'area', tension: settings.smooth === false ? 0 : .35, pointRadius: settings.points === false ? 0 : 2, pointHoverRadius: 5, pointBackgroundColor: color, borderRadius: display === 'bar' ? 11 : 0, borderSkipped: false, maxBarThickness: 44 };
+            const themedFill = display === 'area' && metrics.length === 1 && !hasCustomChartColor(settings) && !validChartColor(settings.series_colors?.[seriesKey]) && Number.isInteger(settings._series_color_indexes?.[seriesKey]);
+            return { label: metric.label, _seriesKey: seriesKey, _columnKey: metric.key, _categoryColors: categories, _analyticsThemeFill: themedFill, data: result.rows.map(row => display === 'scatter' ? { x: chartNumber(row[x.key]), y: chartNumber(row[metric.key]) } : chartNumber(row[metric.key])), backgroundColor: categories ? categoryColors : themedFill ? context => chartAreaFill(context, container) : color + (display === 'area' ? '22' : ''), hoverBackgroundColor: categories ? categoryColors : undefined, borderColor: categories ? categoryColors : color, borderWidth: circular || display === 'bar' ? 0 : 2, hoverBorderWidth: circular || display === 'bar' ? 0 : 2, hoverOffset: circular ? 5 : 0, fill: display === 'area', tension: settings.smooth === false ? 0 : .35, pointRadius: settings.points === true ? 2 : 0, pointHoverRadius: 5, pointBackgroundColor: color, borderRadius: display === 'bar' ? 11 : 0, borderSkipped: false, maxBarThickness: settings.horizontal ? 6 : 44 };
         });
     }
     const percentFormat = value => new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 1 }).format(value) + '%';
@@ -266,21 +464,55 @@ export function visualize(container, result, display, settings = {}, onClick = n
             const point = arc.tooltipPosition(); const rgb = row.color.slice(1).match(/../g).map(part => parseInt(part, 16)); context.fillStyle = rgb[0] * .299 + rgb[1] * .587 + rgb[2] * .114 > 165 ? '#241b3a' : '#ffffff'; context.fillText(percentFormat(row.percentage), point.x, point.y);
         }); context.restore();
     } };
+    const valueLabels = { id: 'analytics-soar-value-labels', afterDatasetsDraw: currentChart => {
+        if (display !== 'bar') return;
+        const ctx = currentChart.ctx;
+        const area = currentChart.chartArea;
+        ctx.save();
+        if (!settings.horizontal) {
+            ctx.strokeStyle = palette().grid;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(area.left, area.bottom); ctx.lineTo(area.right, area.bottom); ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        if (settings.stacked) { ctx.restore(); return; }
+        ctx.fillStyle = palette().muted;
+        ctx.font = `9px ${palette().fontFamily}`;
+        ctx.textBaseline = 'middle';
+        currentChart.data.datasets.forEach((dataset, datasetIndex) => {
+            if (!currentChart.isDatasetVisible(datasetIndex)) return;
+            const meta = currentChart.getDatasetMeta(datasetIndex);
+            meta.data.forEach((bar, index) => {
+                const value = dataset.data[index];
+                if (value == null || !Number.isFinite(Number(value))) return;
+                if (settings.horizontal) {
+                    if (meta.data.length > 25) return;
+                    ctx.textAlign = 'right';
+                    ctx.fillText(formatNumber(value), area.left - 8, bar.y);
+                } else if (bar.width >= 18) {
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(formatNumber(value), bar.x, Math.max(12, bar.y - 12));
+                }
+            });
+        });
+        ctx.restore();
+    } };
     const chart = new Chart(canvas, {
-        type: chartType, data: { labels, datasets }, plugins: circular ? [centerPlugin] : [],
+        type: chartType, data: { labels, datasets }, plugins: circular ? [centerPlugin] : display === 'bar' ? [valueLabels] : [],
         options: {
             responsive: true, maintainAspectRatio: false, animation: false, color: theme.muted, font: { family: theme.fontFamily },
             cutout: display === 'doughnut' ? (100 - Math.min(45, Math.max(10, Number(settings.ring_thickness) || 28))) + '%' : undefined,
-            layout: { padding: circular ? 7 : { top: 6, right: 4, bottom: 2, left: 2 } },
+            layout: { padding: circular ? 7 : { top: display === 'bar' && !settings.horizontal ? 26 : display === 'bar' ? 14 : 6, right: 4, bottom: 2, left: settings.horizontal ? 42 : 2 } },
             indexAxis: settings.horizontal && display === 'bar' ? 'y' : 'x',
-            elements: { point: { radius: settings.points === false ? 0 : 2 }, line: { tension: settings.smooth === false ? 0 : .35 } },
+            elements: { point: { radius: settings.points === true ? 2 : 0 }, line: { tension: settings.smooth === false ? 0 : .35 } },
             plugins: {
-                legend: { display: settings.legend !== false && (datasets.length > 1 || circular), position: 'bottom', rtl: true, labels: { color: theme.muted, usePointStyle: true, pointStyle: 'circle', boxWidth: 7, boxHeight: 7, padding: 15, font: { family: theme.fontFamily, size: 10 }, ...(circular ? { generateLabels: chart => Chart.overrides[chartType].plugins.legend.labels.generateLabels(chart).map(item => { const row = circularRow(chart, item.index); return { ...item, text: row.label + (['legend', 'both'].includes(settings.percent_visibility) ? ' (' + percentFormat(row.percentage) + ')' : ''), fillStyle: row.color, strokeStyle: row.color }; }) } : {}) } },
+                legend: { display: settings.legend !== false && (datasets.length > 1 || circular), position: display === 'bar' && settings.horizontal && settings.stacked ? 'top' : 'bottom', rtl: true, labels: { color: theme.muted, usePointStyle: true, pointStyle: 'circle', boxWidth: 7, boxHeight: 7, padding: 15, font: { family: theme.fontFamily, size: 10 }, ...(circular ? { generateLabels: chart => Chart.overrides[chartType].plugins.legend.labels.generateLabels(chart).map(item => { const row = circularRow(chart, item.index); return { ...item, text: row.label + (['legend', 'both'].includes(settings.percent_visibility) ? ' (' + percentFormat(row.percentage) + ')' : ''), fillStyle: row.color, strokeStyle: row.color }; }) } : {}) } },
                 tooltip: { enabled: !circular, external: circular ? externalTooltip : undefined, rtl: true, backgroundColor: theme.tooltipBg, titleColor: theme.tooltipText, bodyColor: theme.tooltipText, borderColor: theme.grid, borderWidth: 1, cornerRadius: 10, padding: 12, titleFont: { family: theme.fontFamily }, bodyFont: { family: theme.fontFamily }, footerFont: { family: theme.fontFamily } },
             },
             ...(!circular ? { scales: {
-                x: { display: settings.show_x !== false, stacked: !!settings.stacked, title: { display: !!settings.x_label, text: settings.x_label, color: theme.text, font: { family: theme.fontFamily } }, grid: { display: !!settings.horizontal, color: theme.grid, drawTicks: false }, border: { display: false, dash: [4, 4] }, ticks: { color: theme.muted, font: { family: theme.fontFamily, size: 10 }, padding: 7, ...(!settings.horizontal ? categoryTicks : { maxRotation: 0, autoSkip: true, autoSkipPadding: 10 }) } },
-                y: { display: settings.show_y !== false, stacked: !!settings.stacked, min: settings.y_min === '' || settings.y_min == null ? undefined : Number(settings.y_min), max: settings.y_max === '' || settings.y_max == null ? undefined : Number(settings.y_max), beginAtZero: settings.y_min === '' || settings.y_min == null, title: { display: !!settings.y_label, text: settings.y_label, color: theme.text, font: { family: theme.fontFamily } }, grid: { color: theme.grid, display: !settings.horizontal, drawTicks: false }, border: { display: false }, ticks: { color: theme.muted, font: { family: theme.fontFamily, size: 10 }, padding: 7, ...(settings.horizontal ? categoryTicks : {}) } },
+                x: { display: settings.show_x !== false, reverse: display === 'bar' && !!settings.horizontal, stacked: !!settings.stacked, title: { display: !!settings.x_label, text: settings.x_label, color: theme.text, font: { family: theme.fontFamily } }, grid: { display: !!settings.horizontal, color: theme.grid, drawTicks: false }, border: { display: false, color: theme.grid, dash: [5, 5] }, ticks: { color: theme.muted, font: { family: theme.fontFamily, size: 10 }, padding: 7, ...(!settings.horizontal ? categoryTicks : { maxRotation: 0, autoSkip: true, autoSkipPadding: 10 }) } },
+                y: { display: settings.show_y !== false, position: settings.horizontal ? 'right' : 'left', stacked: !!settings.stacked, min: settings.y_min === '' || settings.y_min == null ? undefined : Number(settings.y_min), max: settings.y_max === '' || settings.y_max == null ? undefined : Number(settings.y_max), beginAtZero: settings.y_min === '' || settings.y_min == null, title: { display: !!settings.y_label, text: settings.y_label, color: theme.text, font: { family: theme.fontFamily } }, grid: { color: theme.grid, display: display === 'scatter', drawTicks: false }, border: { display: false }, ticks: { color: theme.muted, font: { family: theme.fontFamily, size: 10 }, padding: 7, ...(settings.horizontal ? categoryTicks : {}) } },
             } } : {}),
             onHover: (_, elements, currentChart) => {
                 const key = elements.length ? datasets[elements[0].datasetIndex]?._columnKey : null;

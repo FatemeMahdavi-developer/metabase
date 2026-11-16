@@ -1,5 +1,3 @@
-
-
 /* راهنمای فایل تم — برای رفتن به هر بخش، THEME-XX را جست‌وجو کن.
 THEME-01: متغیرهای اصلی تم و رنگ‌های لایت / دارک
 THEME-02: فونت عمومی، پس‌زمینه و نوار بالا
@@ -30,10 +28,36 @@ THEME-19: Override نهایی رنگ ورودی، ریپیتر و دکمه‌ه�
 /* ===== THEME-01 | متغیرهای اصلی تم و رنگ‌های لایت / دارک ===== */
 
 :root {
+    /* Shared widget appearance and chart-only defaults (dashboard builder included). */
+    --soar-widget-bg: var(--soar-surface);
+    --soar-widget-border: var(--soar-border);
+    --soar-widget-radius: var(--soar-radius-lg);
+    --soar-on-accent: #ffffff;
+    --cm-orange: #ff8000;
+    --cm-gray: #7b7b7b;
+    --cm-font-family: "Vazirmatn", sans-serif;
+    --soar-chart-1: #3a4de9;
+    --soar-chart-2: #5947f9;
+    --soar-chart-3: #af65ff;
+    --soar-chart-4: #ca98ff;
+    --soar-chart-5: #ff9e69;
+    --soar-chart-6: #fdd0a6;
+    --soar-chart-line: #314cff;
+    --soar-chart-gauge: #2b43ff;
+    --soar-chart-bar-1: #e9ecf3;
+    --soar-chart-bar-2: #bfc5f5;
+    --soar-chart-bar-3: #8c99ff;
+    --soar-chart-bar-4: #5c6efe;
+    --soar-chart-bar-5: #bca9f7;
+    --soar-chart-bar-6: #a6b1ff;
+    --soar-chart-horizontal-secondary: var(--soar-chart-4);
+    --soar-gauge-start: #d60945;
+    --soar-gauge-mid: #9e279b;
     color-scheme: light;
     --soar-primary: rgba(58,77,233,1);
     --soar-primary-hover: #4f46e5;
     --soar-primary-soft: rgba(92, 110, 254, 0.10);
+    --soar-workbench-step-bg: var(--soar-primary-soft);
     --soar-primary-ring: rgba(92, 110, 254, 0.18);
     --soar-icon: #ffffff;
     --soar-icon-active: #000000;
@@ -44,7 +68,7 @@ THEME-19: Override نهایی رنگ ورودی، ریپیتر و دکمه‌ه�
     --soar-surface-hover: #f4f6ff;
     --soar-surface-active: #eef1ff;
     --soar-text: #111827;
-    --soar-text-soft: #374151;
+    --soar-text-soft: #000000;
     --soar-muted: #64748b;
     --soar-placeholder: #94a3b8;
     --soar-border: #e5e9f1;
@@ -54,6 +78,9 @@ THEME-19: Override نهایی رنگ ورودی، ریپیتر و دکمه‌ه�
     --soar-warning: #d97706;
     --soar-danger: #dc2626;
     --soar-info: #2563eb;
+    --soar-select-option-highlight-bg: rgb(var(--gray-50));
+    --soar-select-option-highlight-text: var(--soar-text-soft);
+    --soar-select-option-selected-bg: transparent;
     --soar-radius-sm: 8px;
     --soar-radius-md: 12px;
     --soar-radius-lg: 16px;
@@ -72,6 +99,14 @@ THEME-19: Override نهایی رنگ ورودی، ریپیتر و دکمه‌ه�
 }
 
 html.dark {
+    --soar-widget-bg: #000000;
+    --soar-chart-bar-1: #680dc9;
+    --soar-chart-bar-2: #af65ff;
+    --soar-chart-bar-3: #ca98ff;
+    --soar-chart-bar-4: #675cfd;
+    --soar-chart-bar-5: #9971ff;
+    --soar-chart-bar-6: #b5a0ff;
+    --soar-chart-horizontal-secondary: var(--soar-area-chart-col-2);
     color-scheme: dark;
     --soar-primary: #818cf8;
     --soar-primary-hover: #6366f1;
@@ -80,6 +115,7 @@ html.dark {
     --soar-page-bg: #383838;
     --soar-surface: #262626;
     --soar-surface-soft: #151f30;
+    --soar-workbench-step-bg: var(--soar-surface-soft);
     --soar-surface-hover: #192438;
     --soar-surface-active: #202c43;
     --soar-text: #f8fafc;
@@ -93,6 +129,9 @@ html.dark {
     --soar-warning: #fbbf24;
     --soar-danger: #f87171;
     --soar-info: #60a5fa;
+    --soar-select-option-highlight-bg: #302044;
+    --soar-select-option-highlight-text: var(--soar-on-accent);
+    --soar-select-option-selected-bg: #241932;
     --soar-shadow-xs: 0 2px 8px rgba(0, 0, 0, 0.16);
     --soar-shadow-sm: 0 7px 18px rgba(0, 0, 0, 0.20);
     --soar-shadow-card: 0 10px 28px rgba(0, 0, 0, 0.24);
@@ -257,7 +296,7 @@ body:not(:has(.fi-simple-layout))
 .fi-sidebar-nav {
     flex-shrink: 1 !important;
     scrollbar-color: var(--soar-border-strong)
-        transparent;
+    transparent;
 }
 
 /* =========================================================
@@ -283,9 +322,9 @@ body:not(:has(.fi-simple-layout))
     color: var(--soar-text-soft) !important;
     border-radius: 12px !important;
     transition: background-color 150ms ease,
-        color 150ms ease,
-        box-shadow 150ms ease,
-        transform 150ms ease !important;
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease !important;
 }
 
 /* =========================================================
@@ -407,11 +446,11 @@ body:not(:has(.fi-simple-layout))
     color: var(--soar-primary) !important;
     background: var(--soar-icon-bg-active) !important;
     box-shadow: inset 0 0 0 1px
-        color-mix(
-            in srgb,
-            var(--soar-primary) 18%,
-            transparent
-        );
+    color-mix(
+        in srgb,
+        var(--soar-primary) 18%,
+        transparent
+    );
 }
 
 /* Active label */
@@ -970,8 +1009,8 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
     border-radius: var(--soar-radius-md) !important;
     box-shadow: none !important;
     transition: border-color 150ms ease,
-        box-shadow 150ms ease,
-        background-color 150ms ease;
+    box-shadow 150ms ease,
+    background-color 150ms ease;
 }
 
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-input-wrp:hover {
@@ -1040,8 +1079,8 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
     font-weight: 750 !important;
     /* background: none !important; */
     transition: transform 140ms ease,
-        box-shadow 140ms ease,
-        filter 140ms ease;
+    box-shadow 140ms ease,
+    filter 140ms ease;
 }
 
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-btn:hover {
@@ -1105,6 +1144,8 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
 }
 
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-fo-date-time-picker-panel {
+    width: max-content;
+    max-width: calc(100vw - 2rem);
     color: var(--soar-text) !important;
 }
 
@@ -1119,7 +1160,7 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
 /* Modals */
 
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window {
-    background: var(--soar-surface) !important;
+    background: var(--soar-widget-bg) !important;
     border: 1px solid var(--soar-border) !important;
     border-radius: var(--soar-radius-modal) !important;
     box-shadow: var(--soar-shadow-modal) !important;
@@ -1128,6 +1169,18 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-header,
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-footer {
     border-color: var(--soar-border) !important;
+    background: inherit !important;
+}
+
+/* Round opaque sticky surfaces without clipping native select popovers. */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window > .fi-modal-header {
+    border-start-start-radius: inherit !important;
+    border-start-end-radius: inherit !important;
+}
+
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window > .fi-modal-footer {
+    border-end-start-radius: inherit !important;
+    border-end-end-radius: inherit !important;
 }
 
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-heading {
@@ -1211,10 +1264,11 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main-ctn:has([data-soar-dashboard-page])
 .soar-dashboard-widget .fi-section,
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main-ctn:has([data-soar-dashboard-page])
-.soar-dashboard-widget-full .fi-section {
-    background: var(--soar-surface) !important;
-    border: 1px solid var(--soar-border) !important;
-    border-radius: 16px !important;
+.soar-dashboard-widget-full .fi-section,
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) #analytics-studio .mb-card {
+    background: var(--soar-widget-bg) !important;
+    border: 1px solid var(--soar-widget-border) !important;
+    border-radius: var(--soar-widget-radius) !important;
     box-shadow: var(--soar-shadow-card) !important;
     overflow: hidden !important;
 }
@@ -1226,7 +1280,8 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main-ctn:has([data-soar-dashboard-page])
 .soar-dashboard-widget .fi-wi-widget-header-heading,
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main-ctn:has([data-soar-dashboard-page])
-.soar-dashboard-widget-full .fi-wi-widget-header-heading {
+.soar-dashboard-widget-full .fi-wi-widget-header-heading,
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) #analytics-studio .mb-card-title {
     color: var(--soar-text) !important;
     font-family: Vazir, sans-serif !important;
     font-size: 16px !important;
@@ -1445,7 +1500,8 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
     }
     body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-section,
     body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-ta-ctn,
-    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-wi-widget > .fi-section {
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-wi-widget > .fi-section,
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) #analytics-studio .mb-card {
         border-radius: 14px !important;
     }
     body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window {
@@ -1734,7 +1790,7 @@ html.dark body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([dat
     --soar-input-border-hover: #aab6ca;
     --soar-input-placeholder: #8794a8;
     --soar-input-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.035),
-        0 1px 2px rgba(15, 23, 42, 0.025);
+    0 1px 2px rgba(15, 23, 42, 0.025);
 }
 
 html.dark {
@@ -1744,7 +1800,7 @@ html.dark {
     --soar-input-border-hover: #64748b;
     --soar-input-placeholder: #7f8da3;
     --soar-input-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.30),
-        0 1px 2px rgba(0, 0, 0, 0.16);
+    0 1px 2px rgba(0, 0, 0, 0.16);
 }
 
 /* Labels */
@@ -1776,8 +1832,8 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
     border-radius: 11px !important;
     box-shadow: var(--soar-input-shadow) !important;
     transition: background-color 150ms ease,
-        border-color 150ms ease,
-        box-shadow 150ms ease !important;
+    border-color 150ms ease,
+    box-shadow 150ms ease !important;
 }
 
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main .fi-input-wrp:hover,
@@ -1791,7 +1847,7 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
     background: var(--soar-input-bg) !important;
     border-color: var(--soar-primary) !important;
     box-shadow: 0 0 0 3px var(--soar-primary-ring),
-        inset 0 1px 2px rgba(15, 23, 42, 0.035) !important;
+    inset 0 1px 2px rgba(15, 23, 42, 0.035) !important;
 }
 
 /* Text, select and textarea */
@@ -1880,7 +1936,7 @@ body:not(:has(.fi-simple-layout)) :not(:has(.glass-form)) :not(:has([data-soar-a
     width: 16px !important;
     height: 16px !important;
     border-radius: 4px !important;
-    background: rgba(217, 217, 217, 1) !important;
+    /* background: rgba(217, 217, 217, 1) !important; */
     box-sizing: border-box !important;
     vertical-align: middle !important;
 }
@@ -1895,13 +1951,7 @@ body:not(:has(.fi-simple-layout)) :not(:has(.glass-form)) :not(:has([data-soar-a
     padding: 0 !important;
 }
 
-body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main .fi-checkbox-input:checked,
-body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-main .fi-radio-input:checked,
-body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-checkbox-input:checked,
-body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-radio-input:checked {
-    background: var(--soar-primary) !important;
-    border-color: var(--soar-primary) !important;
-}
+
 
 /* Rich Editor and Tiptap */
 
@@ -2994,10 +3044,10 @@ body:not(:has(.fi-simple-layout))
     width: 100% !important;
     height: 38px !important;
     background: linear-gradient(
-            90deg,
-            rgba(125, 9, 246, 1) 0%,
-            rgba(89, 72, 249, 1) 100%
-        ) !important;
+        90deg,
+        rgba(125, 9, 246, 1) 0%,
+        rgba(89, 72, 249, 1) 100%
+    ) !important;
     border: 0 !important;
     border-radius: 35px !important;
     overflow: hidden !important;
@@ -3021,6 +3071,7 @@ body:not(:has(.fi-simple-layout))
 :not(:has(.glass-form))
 :not(:has([data-soar-auth-page]))
 .fi-ta-header-cell {
+    padding-block: 4px !important;
     background-image: none !important;
     border: 0 !important;
     color: #ffffff !important;
@@ -3275,16 +3326,15 @@ body:not(:has(.fi-simple-layout))
 
 /* وسط چین کردن تمامی رکورد ها بر اساس ستونشون */
 
-.fi-ta-header-cell,
-.fi-ta-header-cell > button,
-.fi-ta-header-cell > span {
+.fi-ta-header-cell:not(:is(.text-start, .text-center, .text-end, .text-left, .text-right, .text-justify)),
+.fi-ta-header-cell:not(:is(.text-start, .text-center, .text-end, .text-left, .text-right, .text-justify)) > :is(button, span) {
     text-align: center;
     justify-content: center;
 }
 
 .fi-ta-cell,
 .fi-ta-cell .fi-ta-col-wrp,
-.fi-ta-cell .fi-ta-text {
+.fi-ta-cell .fi-ta-text:not(:has(> :is(.text-start, .text-center, .text-end, .text-left, .text-right, .text-justify))) {
     text-align: center;
     justify-content: center;
 }
@@ -3473,9 +3523,11 @@ body:not(:has(.fi-simple-layout))
    ========================================================= */
 
 .soar-pagination {
-    height: 82px !important;
+    height: auto !important;
+    flex-wrap: wrap;
+    gap: 12px;
     min-height: 82px !important;
-    padding: 0 18px !important;
+    padding: 12px 18px !important;
     border-top: 1px solid rgba(241,241,245,0.5) !important;
     display: flex !important;
     align-items: center !important;
@@ -3488,6 +3540,8 @@ body:not(:has(.fi-simple-layout))
    ========================================================= */
 
 .soar-pagination-nav-group {
+    max-width: 100%;
+    flex-wrap: wrap;
     display: flex !important;
     align-items: center !important;
     flex-direction: row !important;
@@ -3704,6 +3758,13 @@ body:not(:has(.fi-simple-layout))
     appearance: auto !important;
 }
 
+/* The same pagination also fits narrow widgets and mobile tables. */
+@container (max-width: 540px) {
+    .soar-pagination { padding-inline: 0 !important; }
+    .soar-pagination-nav-group { gap: 8px !important; }
+    .soar-pagination-items { gap: 3px !important; }
+}
+
 /* =========================================================
    Overview - سمت راست
    ========================================================= */
@@ -3714,8 +3775,8 @@ body:not(:has(.fi-simple-layout))
     color: #000000 !important;
     font-size: 12px !important;
     font-weight: 400 !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
+    line-height: 1.7 !important;
+    white-space: normal !important;
     order: 1 !important;
 }
 
@@ -3725,8 +3786,8 @@ body:not(:has(.fi-simple-layout))
     color: #ffffff !important;
     font-size: 12px !important;
     font-weight: 400 !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
+    line-height: 1.7 !important;
+    white-space: normal !important;
     order: 1 !important;
 }
 
@@ -3752,8 +3813,8 @@ body:not(:has(.fi-simple-layout))
     :not(:has(.glass-form))
     :not(:has([data-soar-auth-page]))
     .fi-ta-ctn {
-        width: calc(100vw - 24px) !important;
-        max-width: calc(100vw - 24px) !important;
+        width: 100% !important;
+        max-width: 100% !important;
         border-radius: 14px !important;
     }
 }
@@ -3839,16 +3900,6 @@ html.dark body:not(:has(.fi-simple-layout))
     background: rgba(0, 0, 0, 1) !important;
 }
 
-html.dark body:not(:has(.fi-simple-layout))
-:not(:has(.glass-form))
-:not(:has([data-soar-auth-page])) .fi-main-ctn:has([data-soar-dashboard-page])
-.soar-dashboard-widget .fi-section,
-html.dark body:not(:has(.fi-simple-layout))
-:not(:has(.glass-form))
-:not(:has([data-soar-auth-page])) .fi-main-ctn:has([data-soar-dashboard-page])
-.soar-dashboard-widget-full .fi-section {
-    background: rgba(0, 0, 0, 1) !important;
-}
 
 /* باز و بسته شدن نرم ساید بار و عریض شدن محتوا بر اساس سایدبار */
 
@@ -3875,13 +3926,13 @@ html.dark body:not(:has(.fi-simple-layout))
         z-index: 9999 !important;
         width: var(--soar-sidebar-collapsed-width) !important;
         transition: width 140ms ease-out 0ms,
-            box-shadow 140ms ease-out 0ms !important;
+        box-shadow 140ms ease-out 0ms !important;
         will-change: width;
     }
     .fi-sidebar.fi-sidebar-open {
         width: var(--soar-sidebar-open-width) !important;
         transition: width var(--soar-open-duration) var(--soar-ease-out) 0ms,
-            box-shadow var(--soar-open-duration) ease 0ms !important;
+        box-shadow var(--soar-open-duration) ease 0ms !important;
     }
     /* محتوا */
     html:not([data-soar-sidebar-pinned]) .fi-main-ctn {
@@ -3946,7 +3997,7 @@ html.dark body:not(:has(.fi-simple-layout))
     /* سایدبار بدون مکث و سریع جمع شود */
     .fi-sidebar:not(.fi-sidebar-open) {
         transition: width 140ms ease-out 0ms,
-            box-shadow 140ms ease-out 0ms !important;
+        box-shadow 140ms ease-out 0ms !important;
     }
     /* محتوا هم موقع آن‌پین همراه سایدبار سریع برگردد */
     html:not([data-soar-sidebar-pinned]) .fi-main-ctn {
@@ -4157,16 +4208,16 @@ html.dark body:not(:has(.fi-simple-layout))
         --soar-bc-tools-space: 28rem;
         /* بدون پین: فقط عرض سایدبار بسته حساب شود */
         --soar-bc-sidebar-width: var(
-                --soar-sidebar-collapsed-width,
-                var(--collapsed-sidebar-width, 5rem)
-            );
+            --soar-sidebar-collapsed-width,
+            var(--collapsed-sidebar-width, 5rem)
+        );
     }
     /* فقط پین‌شدن مسیر را جابه‌جا کند؛ نه بازشدن با هاور */
     html[data-soar-sidebar-pinned] {
         --soar-bc-sidebar-width: var(
-                --soar-sidebar-open-width,
-                var(--sidebar-width, 20rem)
-            );
+            --soar-sidebar-open-width,
+            var(--sidebar-width, 20rem)
+        );
     }
     /* همان nav.fi-breadcrumbs موجود در هدر صفحه */
     body .fi-main .fi-header > div > nav.fi-breadcrumbs {
@@ -4177,9 +4228,9 @@ html.dark body:not(:has(.fi-simple-layout))
         bottom: auto !important;
         /* در پنل RTL، فاصله از سمت راست محاسبه می‌شود */
         inset-inline-start: calc(
-                var(--soar-bc-sidebar-width) +
-                var(--soar-bc-gap)
-            ) !important;
+            var(--soar-bc-sidebar-width) +
+            var(--soar-bc-gap)
+        ) !important;
         inset-inline-end: auto !important;
         transform: translateY(-50%) !important;
         /* بالاتر از Topbar استاندارد، پایین‌تر از سایدبار تو */
@@ -4187,15 +4238,15 @@ html.dark body:not(:has(.fi-simple-layout))
         width: max-content !important;
         /* مسیر طولانی روی ابزارهای Topbar نیفتد */
         max-width: max(
-                0px,
-                calc(
-                    100vw -
-                    var(--soar-bc-sidebar-width) -
-                    var(--soar-bc-gap) -
-                    var(--soar-bc-gap) -
-                    var(--soar-bc-tools-space)
-                )
-            ) !important;
+            0px,
+            calc(
+                100vw -
+                var(--soar-bc-sidebar-width) -
+                var(--soar-bc-gap) -
+                var(--soar-bc-gap) -
+                var(--soar-bc-tools-space)
+            )
+        ) !important;
         margin: 0 !important;
         padding: 0 !important;
         background: transparent !important;
@@ -4203,7 +4254,7 @@ html.dark body:not(:has(.fi-simple-layout))
         overflow-x: auto !important;
         scrollbar-width: none;
         transition: inset-inline-start 320ms cubic-bezier(0.4, 0, 0.2, 1),
-            max-width 320ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+        max-width 320ms cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     /* مسیر همیشه یک‌خطی بماند */
     body .fi-main .fi-header .fi-breadcrumbs-list {
@@ -5611,20 +5662,20 @@ body:not(:has(.fi-simple-layout))
     transform-origin: top;
     opacity: 0;
     background: radial-gradient(
-            circle at 50% 0%,
-            rgba(var(--loader-secondary), 0.13),
-            transparent 55%
-        ),
-        linear-gradient(
-            180deg,
-            rgba(var(--loader-primary), 0.02) 0%,
-            rgba(var(--loader-primary), 0.055) 45%,
-            rgba(var(--loader-primary), 0.11) 100%
-        );
+        circle at 50% 0%,
+        rgba(var(--loader-secondary), 0.13),
+        transparent 55%
+    ),
+    linear-gradient(
+        180deg,
+        rgba(var(--loader-primary), 0.02) 0%,
+        rgba(var(--loader-primary), 0.055) 45%,
+        rgba(var(--loader-primary), 0.11) 100%
+    );
     animation: soar-energy-fill
-        2.15s
-        cubic-bezier(.22, .61, .36, 1)
-        infinite;
+    2.15s
+    cubic-bezier(.22, .61, .36, 1)
+    infinite;
     pointer-events: none;
 }
 
@@ -5643,20 +5694,20 @@ body:not(:has(.fi-simple-layout))
     height: 26px;
     opacity: 0;
     background: linear-gradient(
-            180deg,
-            transparent 0%,
-            rgba(var(--loader-primary), 0.03) 20%,
-            rgba(var(--loader-primary), 0.14) 64%,
-            rgba(var(--loader-secondary), 0.95) 92%,
-            rgba(255, 255, 255, 0.9) 100%
-        );
+        180deg,
+        transparent 0%,
+        rgba(var(--loader-primary), 0.03) 20%,
+        rgba(var(--loader-primary), 0.14) 64%,
+        rgba(var(--loader-secondary), 0.95) 92%,
+        rgba(255, 255, 255, 0.9) 100%
+    );
     filter: drop-shadow(
-            0 5px 7px rgba(var(--loader-primary), 0.30)
-        );
+        0 5px 7px rgba(var(--loader-primary), 0.30)
+    );
     animation: soar-energy-scan
-        2.15s
-        cubic-bezier(.22, .61, .36, 1)
-        infinite;
+    2.15s
+    cubic-bezier(.22, .61, .36, 1)
+    infinite;
     pointer-events: none;
 }
 
@@ -5693,16 +5744,16 @@ body:not(:has(.fi-simple-layout))
     border-radius: 9px;
     overflow: hidden;
     background: linear-gradient(
-            110deg,
-            #e7e8ef 8%,
-            #f4f4f8 18%,
-            #e7e8ef 33%
-        );
+        110deg,
+        #e7e8ef 8%,
+        #f4f4f8 18%,
+        #e7e8ef 33%
+    );
     background-size: 220% 100%;
     animation: soar-skeleton-flow
-        1.55s
-        linear
-        infinite;
+    1.55s
+    linear
+    infinite;
 }
 
 /* =========================================================
@@ -5726,16 +5777,16 @@ body:not(:has(.fi-simple-layout))
     height: 29px;
     border-radius: 50%;
     background: linear-gradient(
-            110deg,
-            #e5e6ed 8%,
-            #f6f6fa 18%,
-            #e5e6ed 33%
-        );
+        110deg,
+        #e5e6ed 8%,
+        #f6f6fa 18%,
+        #e5e6ed 33%
+    );
     background-size: 220% 100%;
     animation: soar-skeleton-flow
-        1.55s
-        linear
-        infinite;
+    1.55s
+    linear
+    infinite;
 }
 
 /* =========================================================
@@ -5747,16 +5798,16 @@ body:not(:has(.fi-simple-layout))
     height: 11px;
     border-radius: 999px;
     background: linear-gradient(
-            110deg,
-            #e5e6ed 8%,
-            #f6f6fa 18%,
-            #e5e6ed 33%
-        );
+        110deg,
+        #e5e6ed 8%,
+        #f6f6fa 18%,
+        #e5e6ed 33%
+    );
     background-size: 220% 100%;
     animation: soar-skeleton-flow
-        1.55s
-        linear
-        infinite;
+    1.55s
+    linear
+    infinite;
 }
 
 /* =========================================================
@@ -5766,12 +5817,12 @@ body:not(:has(.fi-simple-layout))
 
 .soar-stats-loader__card {
     outline: 1px solid
-        rgba(var(--loader-primary), 0.05) !important;
+    rgba(var(--loader-primary), 0.05) !important;
     outline-offset: -1px !important;
     animation: soar-card-breathe
-        2.4s
-        ease-in-out
-        infinite;
+    2.4s
+    ease-in-out
+    infinite;
 }
 
 /* =========================================================
@@ -5911,12 +5962,12 @@ body:not(:has(.fi-simple-layout))
     100% {
         outline-color: rgba(var(--loader-primary), 0.04);
         box-shadow: 0 6px 18px
-            rgba(var(--loader-primary), 0.025);
+        rgba(var(--loader-primary), 0.025);
     }
     50% {
         outline-color: rgba(var(--loader-primary), 0.13);
         box-shadow: 0 8px 24px
-            rgba(var(--loader-primary), 0.08);
+        rgba(var(--loader-primary), 0.08);
     }
 }
 
@@ -5931,52 +5982,52 @@ body:not(:has(.fi-simple-layout))
 
 .dark .soar-stats-loader__number {
     background: linear-gradient(
-            110deg,
-            #30303a 8%,
-            #494958 18%,
-            #30303a 33%
-        );
+        110deg,
+        #30303a 8%,
+        #494958 18%,
+        #30303a 33%
+    );
     background-size: 220% 100%;
 }
 
 .dark .soar-stats-loader__icon,
 .dark .soar-stats-loader__label {
     background: linear-gradient(
-            110deg,
-            #30303a 8%,
-            #484857 18%,
-            #30303a 33%
-        );
+        110deg,
+        #30303a 8%,
+        #484857 18%,
+        #30303a 33%
+    );
     background-size: 220% 100%;
 }
 
 .dark .soar-stats-loader__card::before {
     background: radial-gradient(
-            circle at 50% 0%,
-            rgba(var(--loader-secondary), 0.14),
-            transparent 55%
-        ),
-        linear-gradient(
-            180deg,
-            rgba(var(--loader-primary), 0.015) 0%,
-            rgba(var(--loader-primary), 0.055) 45%,
-            rgba(var(--loader-primary), 0.14) 100%
-        );
+        circle at 50% 0%,
+        rgba(var(--loader-secondary), 0.14),
+        transparent 55%
+    ),
+    linear-gradient(
+        180deg,
+        rgba(var(--loader-primary), 0.015) 0%,
+        rgba(var(--loader-primary), 0.055) 45%,
+        rgba(var(--loader-primary), 0.14) 100%
+    );
 }
 
 .dark .soar-stats-loader__card::after {
     background: linear-gradient(
-            180deg,
-            transparent 0%,
-            rgba(var(--loader-primary), 0.04) 20%,
-            rgba(var(--loader-primary), 0.17) 64%,
-            rgba(var(--loader-secondary), 0.95) 92%,
-            rgba(210, 204, 255, 0.95) 100%
-        );
+        180deg,
+        transparent 0%,
+        rgba(var(--loader-primary), 0.04) 20%,
+        rgba(var(--loader-primary), 0.17) 64%,
+        rgba(var(--loader-secondary), 0.95) 92%,
+        rgba(210, 204, 255, 0.95) 100%
+    );
     filter: drop-shadow(
-            0 5px 8px
-            rgba(var(--loader-primary), 0.4)
-        );
+        0 5px 8px
+        rgba(var(--loader-primary), 0.4)
+    );
 }
 
 /* =========================================================
@@ -6022,37 +6073,38 @@ body:not(:has(.fi-simple-layout))
 /* form modal */
 
 /* ==========================================================
-   Filament 3 — CREATE & EDIT MODALS ONLY
+   Filament 3 — modal layout and shared native form fields
    جایگزین کامل استایل قبلی مدال
    ========================================================== */
 
+/* .soar-form-modal reuses field rules; action modal layout stays scoped separately. */
 /* ---------- تنظیمات ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) {
-    --cm-width: 70%;
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) {
+    --cm-width: 60%;
     --cm-height: 100%;
-    --cm-padding-x: 30px;
+    --cm-padding-x: 50px;
     --cm-footer-space: 66px;
-    --cm-field-height: 33px;
+    --cm-field-height: 39px;
     --cm-field-line-height: 24px;
     --cm-field-radius: 10px;
     /* Figma: 8px | متن درشت‌تر طبق درخواست: 12px */
     --cm-font-size: 12px;
-    --cm-font-family: "Vazirmatn", sans-serif;
     --cm-bg: #ffffff;
     --cm-text: #34343b;
     --cm-muted: #9292a2;
     --cm-border: #e2e2ea;
     --cm-purple: #ad6bfa;
-    --cm-orange: #ff8000;
-    --cm-gray: #7e7e7e;
     --cm-relation-add: #d5b9ff;
+}
+
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) {
     grid-template-rows: 1fr auto 1fr !important;
 }
 
 /* ---------- پنجره ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window {
     box-sizing: border-box !important;
     position: relative !important;
     width: var(--cm-width) !important;
@@ -6076,7 +6128,7 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- عنوان ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"])
 > .fi-modal-window > .fi-modal-header {
     position: relative !important;
     flex: 0 0 auto !important;
@@ -6089,7 +6141,7 @@ body:not(:has(.fi-simple-layout))
     text-align: right !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-modal-heading {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) .fi-modal-heading {
     margin: 0 !important;
     padding: 0 !important;
     color: #171717 !important;
@@ -6101,14 +6153,14 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- دکمهٔ بستن ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"])
 .fi-modal-header > div:has(> .fi-modal-close-btn) {
     top: 18px !important;
     left: 22px !important;
     right: auto !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-modal-close-btn {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) .fi-modal-close-btn {
     width: 24px !important;
     min-width: 24px !important;
     height: 24px !important;
@@ -6120,14 +6172,14 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-modal-close-btn svg {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) .fi-modal-close-btn svg {
     width: 20px !important;
     height: 20px !important;
 }
 
 /* ---------- محتوای اسکرول‌شونده ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"])
 > .fi-modal-window > .fi-modal-content {
     position: static !important;
     flex: 1 1 0% !important;
@@ -6142,35 +6194,35 @@ body:not(:has(.fi-simple-layout))
     scrollbar-color: #c6bfd3 transparent;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"])
 .fi-modal-content::-webkit-scrollbar {
     width: 5px;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"])
 .fi-modal-content::-webkit-scrollbar-thumb {
     border-radius: 10px;
     background: #c6bfd3;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-fo-component-ctn {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-fo-component-ctn {
     column-gap: 16px !important;
     row-gap: 18px !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-fo-field-wrp {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-fo-field-wrp {
     min-width: 0 !important;
 }
 
 /* ---------- عنوان و راهنمای فیلد ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-fo-field-wrp-label {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-fo-field-wrp-label {
     font-family: var(--cm-font-family) !important;
     font-size: 12px !important;
     line-height: 20px !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-field-wrp-helper-text {
     color: var(--cm-muted) !important;
     font-size: 10px !important;
@@ -6179,31 +6231,33 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- کادر فیلدها ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-input-wrp {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-input-wrp {
     box-sizing: border-box !important;
     border-radius: var(--cm-field-radius) !important;
     background: var(--cm-bg) !important;
+    font-family: var(--cm-font-family) !important;
+    color: var(--cm-text) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-input-wrp:not(.fi-invalid) {
     border: 1px solid var(--cm-border) !important;
     box-shadow: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-input-wrp:not(.fi-invalid):focus-within {
     border-color: var(--cm-purple) !important;
     box-shadow: 0 0 0 2px rgb(173 107 250 / 12%) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-input-wrp.fi-invalid {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-input-wrp.fi-invalid {
     border: 1px solid #ef4444 !important;
 }
 
 /* ارتفاع خود کادر، نه فقط input داخل آن */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 :is(.fi-fo-text-input, .fi-fo-select) {
     box-sizing: border-box !important;
     height: var(--cm-field-height) !important;
@@ -6215,7 +6269,7 @@ body:not(:has(.fi-simple-layout))
 
 /* لایهٔ میانی ورودی */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 :is(.fi-fo-text-input, .fi-fo-select) > .fi-input-wrp-input {
     display: flex !important;
     align-items: center !important;
@@ -6227,8 +6281,8 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- متن Input و Select معمولی ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-:is(.fi-fo-text-input input.fi-input, select.fi-select-input) {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
+:is(.fi-fo-text-input input.fi-input, select.fi-select-input, .choices__input) {
     box-sizing: border-box !important;
     position: static !important;
     width: 100% !important;
@@ -6251,16 +6305,17 @@ body:not(:has(.fi-simple-layout))
     text-align: start !important;
     text-indent: 0 !important;
     transform: none !important;
+    outline: none !important;
 }
 
 /* فضای فلش Select معمولی */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) select.fi-select-input {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) select.fi-select-input {
     padding-inline-end: 28px !important;
     background-position: left 8px center !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-text-input input.fi-input::placeholder {
     color: var(--cm-muted) !important;
     font-family: var(--cm-font-family) !important;
@@ -6272,7 +6327,7 @@ body:not(:has(.fi-simple-layout))
 
 /* آیکن‌ها و پسوند/پیشوند کنار ورودی */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 :is(.fi-fo-text-input, .fi-fo-select)
 > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) {
     align-items: center !important;
@@ -6281,13 +6336,13 @@ body:not(:has(.fi-simple-layout))
     padding-block: 0 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 :is(.fi-fo-text-input, .fi-fo-select) .fi-input-wrp-icon {
     width: 16px !important;
     height: 16px !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) .fi-icon-btn {
     width: 20px !important;
     min-width: 20px !important;
@@ -6297,13 +6352,13 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- Select قابل جست‌وجو: Choices ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-select > .fi-input-wrp-input > div:not(.hidden) {
     width: 100% !important;
     min-width: 0 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .choices {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .choices {
     position: relative !important;
     width: 100% !important;
     min-width: 0 !important;
@@ -6312,7 +6367,7 @@ body:not(:has(.fi-simple-layout))
     font-size: var(--cm-font-size) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .choices[data-type="select-one"] .choices__inner {
     box-sizing: border-box !important;
     display: flex !important;
@@ -6328,7 +6383,7 @@ body:not(:has(.fi-simple-layout))
     line-height: var(--cm-field-line-height) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .choices__list--single {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .choices__list--single {
     box-sizing: border-box !important;
     display: flex !important;
     align-items: center !important;
@@ -6338,7 +6393,7 @@ body:not(:has(.fi-simple-layout))
     padding: 0 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .choices__list--single > .choices__item {
     box-sizing: border-box !important;
     position: static !important;
@@ -6356,21 +6411,32 @@ body:not(:has(.fi-simple-layout))
     transform: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .choices__list--single > .choices__placeholder {
     color: var(--cm-muted) !important;
     opacity: 1 !important;
 }
 
+/* Shared option colors for native fields and modal listboxes. */
+body :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__item--choice.is-selected {
+    background: var(--soar-select-option-selected-bg) !important;
+}
+
+body :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__item--choice.is-highlighted,
+body .fi-modal-window [role="listbox"] > [role="option"]:is(:hover, :focus-visible, [aria-selected="true"]) {
+    background: var(--soar-select-option-highlight-bg) !important;
+    color: var(--soar-select-option-highlight-text) !important;
+}
+
 /* Select چندانتخابی با افزایش تگ‌ها بلندتر می‌شود */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-select:has(select[multiple]) {
     height: auto !important;
     min-height: var(--cm-field-height) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .choices[data-type="select-multiple"] .choices__inner {
     box-sizing: border-box !important;
     min-height: var(--cm-field-line-height) !important;
@@ -6378,40 +6444,48 @@ body:not(:has(.fi-simple-layout))
     border: 0 !important;
     background-color: transparent !important;
     font-size: var(--cm-font-size) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-block: var(--floating-multiple-padding, 2px) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-.choices__list--multiple .choices__item {
-    margin-block: 2px !important;
-    padding: 1px 8px !important;
-    border: 0 !important;
-    border-radius: 20px !important;
-    background: var(--cm-purple) !important;
-    color: #ffffff !important;
-    font-size: 11px !important;
-    line-height: 18px !important;
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .choices[data-type="select-multiple"] .choices__list--multiple {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+}
+
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .choices[data-type="select-multiple"] .choices__input {
+    flex: 1 1 8ch;
+    width: auto !important;
+    min-width: min(8ch, 100%) !important;
+    max-width: 100% !important;
 }
 
 /* ---------- ضربدر Select تک‌انتخابی: انتهای واقعی فیلد ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__inner,
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single,
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single > .choices__item {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__inner,
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single,
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single > .choices__item {
     /* Anchor the clear button to .choices, not the padded selected item. */
     position: static !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__inner {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__inner {
     padding: 0 !important;
     padding-inline: 8px 30px !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single > .choices__item {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single > .choices__item {
     min-width: 0 !important;
     padding: 0 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single > .choices__item > .choices__button {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__list--single > .choices__item > .choices__button {
     position: absolute !important;
     inset: auto !important;
     inset-inline-end: 6px !important;
@@ -6439,20 +6513,20 @@ body:not(:has(.fi-simple-layout))
 
 /* Clear occupies the arrow slot only when it has a removable selection. */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"]:not(.is-disabled):has(
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"]:not(.is-disabled):has(
     .choices__list--single > .choices__item:not(.choices__placeholder):not([data-value=""]) > .choices__button
 ) .choices__inner {
     background-image: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices[data-type="select-one"] .choices__button:focus-visible {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices[data-type="select-one"] .choices__button:focus-visible {
     outline: 2px solid var(--cm-purple) !important;
     outline-offset: 1px;
 }
 
 /* ---------- دکمهٔ ایجاد گزینهٔ رابطه؛ Figma: 17 × 17 / #D5B9FF ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-select
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-select
 :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix):has(.fi-icon-btn[wire\:click*="createOption"]) {
     flex: 0 0 auto !important;
     gap: 6px !important;
@@ -6462,7 +6536,7 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"] {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"] {
     box-sizing: border-box !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -6484,24 +6558,24 @@ body:not(:has(.fi-simple-layout))
     line-height: 1 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"] svg {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"] svg {
     width: 12px !important;
     height: 12px !important;
     color: inherit !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"]:enabled:hover {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"]:enabled:hover {
     background: var(--cm-purple) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"]:focus-visible {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-select .fi-icon-btn[wire\:click*="createOption"]:focus-visible {
     outline: 2px solid var(--cm-purple) !important;
     outline-offset: 2px;
 }
 
 /* ---------- Textarea چندخطی ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) textarea {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) textarea {
     box-sizing: border-box !important;
     min-height: 74px;
     padding: 8px 10px !important;
@@ -6512,14 +6586,14 @@ body:not(:has(.fi-simple-layout))
     color: var(--cm-text) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) textarea::placeholder {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) textarea::placeholder {
     color: var(--cm-muted) !important;
     opacity: 1 !important;
 }
 
 /* ---------- Footer ثابت مدال ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"])
 > .fi-modal-window > .fi-modal-footer {
     position: absolute !important;
     right: 0 !important;
@@ -6536,7 +6610,9 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-modal-footer-actions {
+/* One footer contract for form actions, confirmations, dialogs and slide-overs. */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-modal-footer-actions,
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-modal-footer-actions > .fi-ac {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: wrap !important;
@@ -6546,13 +6622,8 @@ body:not(:has(.fi-simple-layout))
     direction: ltr;
 }
 
-/* تولبار نوار توضیحات مدال */
-
-/* ---------- دکمه‌های پایین مدال و ویزارد ---------- */
-
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-:is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child)
-.fi-btn {
+/* Shared button geometry; semantic colors remain independent. */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window :is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child) .fi-btn {
     box-sizing: border-box !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -6567,8 +6638,7 @@ body:not(:has(.fi-simple-layout))
     padding: 0 18px !important;
     border: 0 !important;
     border-radius: 35px !important;
-    background: var(--cm-orange) !important;
-    color: #ffffff !important;
+    color: var(--soar-on-accent) !important;
     box-shadow: none !important;
     font-family: var(--cm-font-family) !important;
     font-size: 11px !important;
@@ -6580,9 +6650,7 @@ body:not(:has(.fi-simple-layout))
     direction: rtl;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-:is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child)
-.fi-btn-label {
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window :is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child) .fi-btn-label {
     position: static !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -6597,33 +6665,29 @@ body:not(:has(.fi-simple-layout))
     transform: none !important;
 }
 
-/* لغو و قبلی */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window :is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child) .fi-btn.fi-color-primary,
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-modal-footer-actions .fi-btn[wire\:click*="another"] {
+    background: var(--cm-orange) !important;
+}
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-.fi-modal-footer-actions .fi-btn.fi-color-gray,
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window :is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child) .fi-btn.fi-color-gray,
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard > div:last-child > span:nth-child(-n + 2) .fi-btn {
     background: var(--cm-gray) !important;
 }
 
-/* ایجاد و ایجاد یکی دیگر: عرض کافی و رنگ دکمهٔ ایجاد */
-
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-.fi-modal-footer-actions .fi-btn[wire\:click*="another"] {
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-modal-footer-actions .fi-btn[wire\:click*="another"] {
     min-width: 154px !important;
-    background: var(--cm-orange) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-:is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child)
-.fi-btn:focus-visible {
-    outline: 2px solid var(--cm-purple) !important;
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window :is(.fi-modal-footer-actions, .fi-fo-wizard > div:last-child) .fi-btn:focus-visible {
+    outline: 2px solid var(--soar-primary) !important;
     outline-offset: 3px !important;
 }
 
 /* ---------- حذف کادرهای اضافی ویزارد ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 :is(
     .fi-fo-wizard,
     .fi-fo-wizard-header,
@@ -6636,30 +6700,30 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 :is(.fi-fo-wizard, .fi-fo-wizard-header, .fi-fo-wizard-step)::before,
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 :is(.fi-fo-wizard, .fi-fo-wizard-header, .fi-fo-wizard-step)::after,
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step::before {
     content: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-fo-wizard {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) .fi-fo-wizard {
     position: static !important;
     min-width: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 > .fi-modal-window:has(.fi-fo-wizard) > .fi-modal-content {
     padding-top: 8px !important;
 }
 
 /* ---------- نوار مرحله‌ها ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-fo-wizard-header {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) .fi-fo-wizard-header {
     display: flex !important;
     width: 20rem !important;
     margin: 0 auto !important;
@@ -6667,7 +6731,7 @@ body:not(:has(.fi-simple-layout))
     overflow: visible !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step {
     position: relative !important;
     flex: 1 1 0 !important;
@@ -6678,7 +6742,7 @@ body:not(:has(.fi-simple-layout))
 
 /* خط اتصال مرحله‌ها حفظ می‌شود */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step:not(:last-child)::after {
     content: "" !important;
     position: absolute;
@@ -6691,12 +6755,12 @@ body:not(:has(.fi-simple-layout))
     pointer-events: none;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step:last-child::after {
     content: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-button {
     display: flex !important;
     flex-direction: column !important;
@@ -6714,13 +6778,13 @@ body:not(:has(.fi-simple-layout))
     opacity: 1 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-button:focus-visible {
     outline: 2px solid var(--cm-purple) !important;
     outline-offset: 4px;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-button > div:last-child {
     max-width: 100% !important;
     justify-items: center !important;
@@ -6728,7 +6792,7 @@ body:not(:has(.fi-simple-layout))
 
 /* دایرهٔ مراحل */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-icon-ctn {
     box-sizing: border-box !important;
     width: 16px !important;
@@ -6739,20 +6803,20 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step:is(.fi-active, .fi-completed)
 .fi-fo-wizard-header-step-icon-ctn {
     border-color: var(--cm-purple) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-icon-ctn > *,
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-separator {
     display: none !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step-label {
     color: #8290ae !important;
     font-family: var(--cm-font-family) !important;
@@ -6761,13 +6825,13 @@ body:not(:has(.fi-simple-layout))
     line-height: 20px !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-header-step:is(.fi-active, .fi-completed)
 .fi-fo-wizard-header-step-label {
     color: var(--cm-purple) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard-step.fi-active {
     margin: 36px 0 0 !important;
     padding: 0 !important;
@@ -6775,7 +6839,7 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- دکمه‌های ثابت خود ویزارد ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard > div:last-child {
     position: absolute !important;
     right: 0 !important;
@@ -6802,7 +6866,7 @@ body:not(:has(.fi-simple-layout))
    span دوم = لغو
    نمایش span بعدی همچنان توسط Alpine کنترل می‌شود. */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 .fi-fo-wizard:has(
     > .fi-fo-wizard-header
     > .fi-fo-wizard-header-step:first-child.fi-active
@@ -6815,7 +6879,7 @@ body:not(:has(.fi-simple-layout))
    تا وقتی آخرین مرحله فعال نشده، footer اصلی مدال مخفی است.
    شامل ایجاد، ایجاد یکی دیگر و لغو. */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]):has(.fi-fo-wizard-header):not(
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal):has(.fi-fo-wizard-header):not(
     :has(
         .fi-fo-wizard-header
         > .fi-fo-wizard-header-step:last-child.fi-active
@@ -6829,7 +6893,7 @@ body:not(:has(.fi-simple-layout))
    اگر footer اصلی مدال وجود دارد، همان دکمه‌های موجود نمایش
    داده می‌شوند و نوار داخلی Wizard دوباره تکرار نمی‌شود. */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]):has(
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal):has(
     .fi-fo-wizard-header
     > .fi-fo-wizard-header-step:last-child.fi-active
 )
@@ -6837,7 +6901,7 @@ body:not(:has(.fi-simple-layout))
     display: block !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal)
 > .fi-modal-window:has(> .fi-modal-footer)
 .fi-fo-wizard:has(
     > .fi-fo-wizard-header
@@ -6849,12 +6913,12 @@ body:not(:has(.fi-simple-layout))
 
 /* ---------- RichEditor ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) .fi-fo-rich-editor {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-fo-rich-editor {
     border-radius: 20px !important;
     background: #f8fafb !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-rich-editor-toolbar {
     padding: 6px 12px !important;
     border: 0 !important;
@@ -6864,7 +6928,7 @@ body:not(:has(.fi-simple-layout))
     color: #ffffff !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-rich-editor-toolbar-btn {
     width: 28px !important;
     min-width: 28px !important;
@@ -6872,18 +6936,18 @@ body:not(:has(.fi-simple-layout))
     color: #ffffff !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-rich-editor-toolbar-btn:is(:hover, :focus-visible, .trix-active) {
     background: rgb(255 255 255 / 18%) !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-rich-editor-toolbar-btn svg {
     width: 16px !important;
     height: 16px !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal)
 .fi-fo-rich-editor-editor {
     box-sizing: border-box !important;
     min-height: 198px !important;
@@ -6898,37 +6962,38 @@ body:not(:has(.fi-simple-layout))
 /* ---------- صفحهٔ کوچک ---------- */
 
 @media (max-width: 560px) {
-    :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) {
+    :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) {
+        --cm-width: 100%;
         --cm-padding-x: 16px;
         --cm-footer-space: 108px;
     }
-    :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"])
-    .fi-modal-footer-actions {
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-modal-footer-actions,
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])) .fi-modal-window .fi-modal-footer-actions > .fi-ac {
         gap: 8px !important;
     }
 }
 
 /* ---------- ترتیب لایه‌های خط اتصال ویزارد، در هر دو حالت ---------- */
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header {
     position: relative !important;
     isolation: isolate;
     overflow: visible !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header > .fi-fo-wizard-header-step {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header > .fi-fo-wizard-header-step {
     /* Do not isolate each step: its connector extends into the next step. */
     z-index: auto !important;
     isolation: auto !important;
     overflow: visible !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step > .fi-fo-wizard-header-step-button {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step > .fi-fo-wizard-header-step-button {
     position: relative !important;
     z-index: 1 !important;
 }
 
-:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step:not(:last-child)::after {
+:is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step:not(:last-child)::after {
     content: "" !important;
     position: absolute !important;
     inset: auto !important;
@@ -6948,54 +7013,52 @@ body:not(:has(.fi-simple-layout))
    Keep this section after the panel's general theme rules.
    ========================================================== */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) {
     --cm-bg: #000000;
     --cm-text: #eeeef2;
     --cm-muted: #aaa7b5;
     --cm-border: rgba(99, 99, 128, 1);
     --cm-purple: #ad6bfa;
-    --cm-orange: #ff8000;
-    --cm-gray: #7e7e7e;
     --cm-relation-add: #d5b9ff;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window > :is(.fi-modal-header, .fi-modal-content, .fi-modal-footer) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window > :is(.fi-modal-header, .fi-modal-content, .fi-modal-footer) {
     background: #000000 !important;
     color: var(--cm-text) !important;
     backdrop-filter: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window {
     border-color: #d2d2d2 !important;
     color-scheme: dark;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-heading {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-heading {
     color: #f5f5f5 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(.fi-modal-description, .fi-fo-field-wrp-helper-text, .fi-input-wrp-label) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window :is(.fi-modal-description, .fi-fo-field-wrp-helper-text, .fi-input-wrp-label) {
     color: var(--cm-muted) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-field-wrp-label {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-field-wrp-label {
     color: #e8e8ed !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-close-btn {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-close-btn {
     background: transparent !important;
     color: #a3a3a3 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-close-btn:hover {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-close-btn:hover {
     background: #202020 !important;
     color: #ffffff !important;
 }
 
 /* The border is painted once, on the outer wrapper. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp {
     background: #000000 !important;
     background-clip: padding-box !important;
     --tw-ring-offset-width: 0px !important;
@@ -7005,32 +7068,32 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp:not(.fi-invalid) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp:not(.fi-invalid) {
     border: 1px solid rgba(99, 99, 128, 1) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp:not(.fi-invalid):focus-within {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp:not(.fi-invalid):focus-within {
     border-color: rgba(99, 99, 128, 1) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-invalid {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-invalid {
     border: 1px solid #f87171 !important;
 }
 
 /* The wrapper owns the black fill; inner layers must not cover its curved border. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp > :is(
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp > :is(
     .fi-input-wrp-input, .fi-input-wrp-prefix, .fi-input-wrp-suffix
 ) {
     background: transparent !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp > .fi-input-wrp-input {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp > .fi-input-wrp-input {
     border-radius: inherit !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(.fi-fo-text-input input.fi-input, textarea, .choices__input) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window :is(.fi-fo-text-input input.fi-input, textarea, .choices__input) {
     background: transparent !important;
     color: var(--cm-text) !important;
     caret-color: var(--cm-text) !important;
@@ -7039,7 +7102,7 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window select.fi-select-input {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window select.fi-select-input {
     /* Keep background-image: Filament uses it for the dropdown arrow. */
     background-color: transparent !important;
     color: var(--cm-text) !important;
@@ -7048,63 +7111,58 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(.fi-fo-text-input input.fi-input, textarea, .choices__input)::placeholder {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window :is(.fi-fo-text-input input.fi-input, textarea, .choices__input)::placeholder {
     color: var(--cm-muted) !important;
     opacity: 1 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(.fi-fo-text-input input.fi-input, select.fi-select-input, textarea):disabled {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window :is(.fi-fo-text-input input.fi-input, select.fi-select-input, textarea):disabled {
     color: var(--cm-muted) !important;
     -webkit-text-fill-color: var(--cm-muted) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-text-input input.fi-input:is(:autofill, :-webkit-autofill) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-text-input input.fi-input:is(:autofill, :-webkit-autofill) {
     -webkit-text-fill-color: var(--cm-text) !important;
     -webkit-box-shadow: 0 0 0 1000px #000000 inset !important;
     box-shadow: 0 0 0 1000px #000000 inset !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window select.fi-select-input :is(option, optgroup) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window select.fi-select-input :is(option, optgroup) {
     background: #101014 !important;
     color: var(--cm-text) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) {
     border-color: #45414f !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp-icon.text-gray-400 {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp-icon.text-gray-400 {
     color: var(--cm-muted) !important;
 }
 
 /* Choices single and multiple selects. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-select .fi-input-wrp-input > div,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__list--single,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__list--single > .choices__item {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-select .fi-input-wrp-input > div,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__list--single,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__list--single > .choices__item {
     background: transparent !important;
     color: var(--cm-text) !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__inner {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__inner {
     background-color: transparent !important;
     color: var(--cm-text) !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__list--single > .choices__placeholder {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__list--single > .choices__placeholder {
     color: var(--cm-muted) !important;
     opacity: 1 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__list--multiple .choices__item {
-    background: var(--cm-purple) !important;
-    color: #ffffff !important;
-}
-
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(.choices__list--dropdown, .choices__list[aria-expanded]) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window :is(.choices__list--dropdown, .choices__list[aria-expanded]) {
     background: #101014 !important;
     color: var(--cm-text) !important;
     border: 1px solid rgba(99, 99, 128, 1) !important;
@@ -7112,107 +7170,96 @@ body:not(:has(.fi-simple-layout))
     box-shadow: 0 8px 24px rgb(0 0 0 / 45%) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__item--choice {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__item--choice {
     color: var(--cm-text) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__item--choice.is-selected {
-    background: #241932 !important;
-}
-
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__item--choice.is-highlighted {
-    background: #302044 !important;
-    color: #ffffff !important;
-}
-
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .choices__item--choice:is(.is-disabled, .choices__item--disabled) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .choices__item--choice:is(.is-disabled, .choices__item--disabled) {
     color: #777382 !important;
 }
 
 /* Wizard surfaces are black; the connector has its own higher paint layer. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window :is(
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window :is(
     .fi-fo-wizard,
     .fi-fo-wizard-header,
     .fi-fo-wizard-header-step,
     .fi-fo-wizard-header-step-button,
     .fi-fo-wizard-step
 ),
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step-button > div:last-child,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-step > .fi-fo-component-ctn {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step-button > div:last-child,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-step > .fi-fo-component-ctn {
     background: #000000 !important;
     border: 0 !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step-icon-ctn {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step-icon-ctn {
     background: #000000 !important;
     border-color: #8b93a8 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step-label {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step-label {
     color: #a5adc1 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step-description {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step-description {
     color: var(--cm-muted) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step:is(.fi-active, .fi-completed)
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step:is(.fi-active, .fi-completed)
 .fi-fo-wizard-header-step-icon-ctn {
     border-color: var(--cm-purple) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step:is(.fi-active, .fi-completed)
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step:is(.fi-active, .fi-completed)
 .fi-fo-wizard-header-step-label {
     color: var(--cm-purple) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard-header-step:not(:last-child)::after {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard-header-step:not(:last-child)::after {
     background: #8b93a8 !important;
 }
 
 /* Preserve the action bars' existing placement and visibility rules. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window > .fi-modal-footer,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard > div:last-child {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window > .fi-modal-footer,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard > div:last-child {
     background: #000000 !important;
     border: 0 !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-footer-actions,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-footer-actions > .fi-ac,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard > div:last-child > span {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard > div:last-child > span {
     background: #000000 !important;
     border: 0 !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window > .fi-modal-footer::before,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window > .fi-modal-footer::after,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard > div:last-child::before,
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-wizard > div:last-child::after {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window > .fi-modal-footer::before,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window > .fi-modal-footer::after,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard > div:last-child::before,
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-wizard > div:last-child::after {
     content: none !important;
 }
 
 /* Rich editor: preserve its separate Figma toolbar and border colors. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor {
     background: #000000 !important;
     color: var(--cm-text) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor:not(.fi-invalid) {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor:not(.fi-invalid) {
     border: 1px solid rgba(99, 99, 128, 1) !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor:not(.fi-invalid):focus-within {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor:not(.fi-invalid):focus-within {
     border-color: rgba(99, 99, 128, 1) !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor-editor {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor-editor {
     background: #000000 !important;
     color: var(--cm-text) !important;
     caret-color: var(--cm-text) !important;
@@ -7226,41 +7273,41 @@ body:not(:has(.fi-simple-layout))
     --tw-prose-counters: #aaa7b5;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor-editor:empty::before {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor-editor:empty::before {
     color: var(--cm-muted) !important;
     opacity: 1 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor-editor a {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor-editor a {
     color: #c498ff !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor .trix-dialog {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor .trix-dialog {
     background: #151519 !important;
     color: var(--cm-text) !important;
     border-color: #636380 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-fo-rich-editor .trix-dialog .trix-input {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-rich-editor .trix-dialog .trix-input {
     background: #000000 !important;
     color: var(--cm-text) !important;
     border-color: #636380 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-content {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-content {
     scrollbar-color: #61576f #000000;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-content::-webkit-scrollbar-track {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-content::-webkit-scrollbar-track {
     background: #000000;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-content::-webkit-scrollbar-thumb {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-content::-webkit-scrollbar-thumb {
     background: #61576f;
     border-radius: 10px;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-modal-content::-webkit-scrollbar-thumb:hover {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"]) > .fi-modal-window .fi-modal-content::-webkit-scrollbar-thumb:hover {
     background: #887399;
 }
 
@@ -7268,24 +7315,24 @@ body:not(:has(.fi-simple-layout))
 
 /* Keep inner paint transparent, including nested action containers. */
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp > .fi-input-wrp-input > div:not(.choices__list--dropdown),
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix),
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) > div {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp > .fi-input-wrp-input > div:not(.choices__list--dropdown),
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix),
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) > div {
     background: transparent !important;
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select {
     /* overflow:hidden would cut off the option list. */
     overflow: visible !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select > .fi-input-wrp-input {
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select > .fi-input-wrp-input {
     flex: 1 1 0% !important;
     min-width: 0 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 .choices[data-type="select-one"] .choices__list--single > .choices__item {
     /* Keep long option labels out of the action area on narrow fields. */
     min-width: 0 !important;
@@ -7294,7 +7341,7 @@ body:not(:has(.fi-simple-layout))
     text-overflow: ellipsis !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix):has(
     .fi-icon-btn:is([wire\:click*="createOption"], [wire\:click*="editOption"])
 ) {
@@ -7309,7 +7356,7 @@ body:not(:has(.fi-simple-layout))
     box-shadow: none !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 > :is(.fi-input-wrp-prefix, .fi-input-wrp-suffix)
 > div:has(.fi-icon-btn:is([wire\:click*="createOption"], [wire\:click*="editOption"])) {
     display: flex !important;
@@ -7321,7 +7368,7 @@ body:not(:has(.fi-simple-layout))
     background: transparent !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 .fi-icon-btn:is([wire\:click*="createOption"], [wire\:click*="editOption"]) {
     box-sizing: border-box !important;
     display: inline-flex !important;
@@ -7344,7 +7391,7 @@ body:not(:has(.fi-simple-layout))
     line-height: 1 !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 .fi-icon-btn:is([wire\:click*="createOption"], [wire\:click*="editOption"]) svg {
     flex: 0 0 14px !important;
     width: 14px !important;
@@ -7357,13 +7404,13 @@ body:not(:has(.fi-simple-layout))
     color: inherit !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 .fi-icon-btn:is([wire\:click*="createOption"], [wire\:click*="editOption"]):enabled:hover {
     background: transparent !important;
     color: #ffffff !important;
 }
 
-.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) > .fi-modal-window .fi-input-wrp.fi-fo-select
+.dark :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"], [wire\:key$=".actions.credential.modal"], .soar-form-modal) > .fi-modal-window .fi-input-wrp.fi-fo-select
 .fi-icon-btn:is([wire\:click*="createOption"], [wire\:click*="editOption"]):focus-visible {
     outline: 2px solid var(--cm-purple) !important;
     outline-offset: -2px !important;
@@ -7375,7 +7422,9 @@ body:not(:has(.fi-simple-layout))
 
 .dark :is(
     [wire\:key$=".actions.create.modal"],
-    [wire\:key$=".actions.create.modal"]
+    [wire\:key$=".actions.edit.modal"],
+    [wire\:key$=".actions.credential.modal"],
+    .soar-form-modal
 ) > .fi-modal-window {
     --soar-input-bg: #000000;
     --soar-input-bg-hover: #000000;
@@ -7389,8 +7438,7 @@ html.dark body:not(:has(.fi-simple-layout))
 :not(:has([data-soar-auth-page]))
 :is(
     [wire\:key$=".actions.create.modal"],
-    [wire\:key$=".actions.edit.modal"]
-) > .fi-modal-window .fi-fo-repeater {
+    [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-repeater {
     --soar-surface-soft: #000000;
     --soar-border: rgba(99, 99, 128, 1);
     --soar-shadow-xs: none;
@@ -7401,41 +7449,2692 @@ html.dark body:not(:has(.fi-simple-layout))
 :not(:has([data-soar-auth-page]))
 :is(
     [wire\:key$=".actions.create.modal"],
-    [wire\:key$=".actions.edit.modal"]
-) > .fi-modal-window .fi-fo-repeater-item-header {
+    [wire\:key$=".actions.edit.modal"], .soar-form-modal) > .fi-modal-window .fi-fo-repeater-item-header {
     background: #000000 !important;
 }
 
-/* دکمه لغو مدال به صورت خاکستری */
+/* ===== THEME-20 | تمام چک‌باکس‌های پنل؛ لایت و دارک ===== */
 
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(input[type="checkbox"], input.fi-checkbox-input[type="checkbox"]) {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    flex-shrink: 0 !important;
+
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+
+    background-color: rgba(217, 217, 217, 1) !important;
+    background-image: none !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100% !important;
+
+    color: #ffffff !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+/* انتخاب‌شده: بنفش با تیک سفید */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(input[type="checkbox"], input.fi-checkbox-input[type="checkbox"]):checked {
+    background-color: rgba(60, 0, 135, 1) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 8.25 6.7 11 12 5.25' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+/* انتخاب بخشی از گزینه‌ها: بنفش با خط سفید */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(input[type="checkbox"], input.fi-checkbox-input[type="checkbox"]):indeterminate {
+    background-color: rgba(60, 0, 135, 1) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4.5 8h7' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+}
+
+/* فوکوس با کیبورد */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(input[type="checkbox"], input.fi-checkbox-input[type="checkbox"]):focus-visible {
+    outline: 2px solid rgba(60, 0, 135, 1) !important;
+    outline-offset: 3px !important;
+}
+
+/* غیرفعال */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(input[type="checkbox"], input.fi-checkbox-input[type="checkbox"]):disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* ===== THEME-21 | حذف حرکت دکمه‌های هدر ریسورس ===== */
+
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-resource-list-records-page .fi-header .fi-ac
+> .fi-btn,
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-resource-list-records-page .fi-header .fi-ac
+> .fi-btn:is(:hover, :focus, :active) {
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+    transition-property: background-color, color, border-color, box-shadow, filter !important;
+}
+
+/* ===== THEME-22 | جای عدد تمام Statهای پنل ===== */
+
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat-value {
+    display: block !important;
+    width: auto !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+    margin-right: 48px !important;
+
+    text-align: right !important;
+    font-size: 40px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+}
+
+/* ===== THEME-23 | پس‌زمینهٔ یکدست جدول ریسورس‌ها در دارک ===== */
+
+/* قاب جدول و فضای اطراف بدنه */
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"])
+:is(.fi-ta, .fi-ta-ctn) {
+    background: #000000 !important;
+}
+
+/* هدر، تولبار، بدنه، فضای خالی و صفحه‌بندی */
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"]) .fi-ta
+:is(
+    .fi-ta-header,
+    .fi-ta-header-toolbar,
+    .fi-ta-selection-indicator,
+    .fi-ta-filters-above-content-ctn,
+    .fi-ta-content,
+    .fi-ta-table,
+    .fi-ta-table > tbody,
+    .fi-ta-empty-state,
+    .fi-ta-pagination,
+    .fi-pagination,
+    .soar-pagination
+) {
+    background: #000000 !important;
+}
+
+/* گوشه‌های قاب اصلی */
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"]) .fi-ta-ctn {
+    border-radius: 20px !important;
+}
+
+/* ردیف‌های عادی، شامل حالت هاور؛ رنگ از بدنه دیده شود */
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"]) .fi-ta-table
+tbody > tr.fi-ta-row:not(.active-playbook-version),
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"]) .fi-ta-table
+tbody > tr.fi-ta-row:not(.active-playbook-version):hover {
+    background: transparent !important;
+}
+
+/* زمینهٔ کادر جست‌وجو */
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"]) .fi-ta-search-field .fi-input-wrp {
+    background: #000000 !important;
+}
+/* گرد شدن هر دو لایهٔ قاب جدول */
+html.dark
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+:is(.fi-resource-list-records-page, .fi-wi-widget, [id="analytics-studio"])
+:is(.fi-ta, .fi-ta-ctn) {
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    background-clip: padding-box !important;
+}
+
+/* ===== THEME-25 | گردی نوار سرستون در Firefox ===== */
+
+@supports (-moz-appearance: none) {
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+    .fi-ta-table {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+    .fi-ta-table > thead {
+        border-radius: 35px !important;
+        clip-path: inset(0 round 35px) !important;
+    }
+
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+    .fi-ta-table > thead > tr {
+        border-radius: 35px !important;
+        clip-path: inset(0 round 35px) !important;
+    }
+}
+/* ===== THEME-26 | هماهنگی اندازهٔ انتخابگر آیکن ===== */
+
+/* مودال دارای همین انتخابگر آیکون */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window:has(div.absolute.z-50[x-show="open"]) {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 32px) !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+/* ارتفاع محتوا با باز و بسته شدن لیست تغییر کند */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window:has(div.absolute.z-50[x-show="open"])
+> .fi-modal-content {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin-bottom: 0 !important;
+    overflow: visible !important;
+}
+
+/* اصلاح خود لیست: وارد جریان صفحه شود و اسکرول داخلی نداشته باشد */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window div.absolute.z-50[x-show="open"] {
+    position: static !important;
+    inset: auto !important;
+
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    overflow: visible !important;
+    margin-top: 8px !important;
+}
+
+/* دکمه‌ها زیر لیست قرار بگیرند و روی آن نیفتند */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window:has(div.absolute.z-50[x-show="open"])
+> .fi-modal-footer {
+    position: static !important;
+    inset: auto !important;
+
+    flex: 0 0 auto !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* ارتفاع ثابت فیلد آیکون، با مقدار و بدون مقدار */
 :is(
     [wire\:key$=".actions.create.modal"],
     [wire\:key$=".actions.edit.modal"]
 ) > .fi-modal-window
-.fi-modal-footer-actions .fi-btn.fi-color-gray {
-    background: rgba(123, 123, 123, 1) !important;
-    color: #ffffff !important;
-    width: 106px !important;
+div.relative:has(> div.absolute.z-50[x-show="open"])
+> div.cursor-pointer {
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
-    height: 30px !important;
-    min-height: 30px !important;
-    padding: 0 18px !important;
-    border: none !important;
-    border-radius: 35px !important;
+
+    height: var(--cm-field-height, 33px) !important;
+    min-height: var(--cm-field-height, 33px) !important;
+    max-height: var(--cm-field-height, 33px) !important;
+
+    padding-block: 0 !important;
+    padding-inline: 10px !important;
+
+    border-radius: var(--cm-field-radius, 10px) !important;
+    overflow: hidden !important;
+}
+
+/* اندازه آیکون انتخاب‌شده داخل فیلد */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window
+div.relative:has(> div.absolute.z-50[x-show="open"])
+> div.cursor-pointer svg {
+    display: block !important;
+    flex: 0 0 20px !important;
+
+    width: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
+}
+/* چیدمان عنوان و فیلد آیکون در ایجاد و ویرایش */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window
+div.relative:has(> div.absolute.z-50[x-show="open"]) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    row-gap: 8px !important;
+    min-width: 0 !important;
+}
+
+/* عنوان، مانند عنوان سایر اینپوت‌ها */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window
+div.relative:has(> div.absolute.z-50[x-show="open"])
+> label {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 20px !important;
+    line-height: 20px !important;
+    margin: 0 0 6px !important;
+}
+
+/* خود فیلد انتخاب آیکون */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window
+div.relative:has(> div.absolute.z-50[x-show="open"])
+> div.cursor-pointer {
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    height: var(--cm-field-height, 33px) !important;
+    min-height: var(--cm-field-height, 33px) !important;
+    max-height: var(--cm-field-height, 33px) !important;
+
+    margin: 0 !important;
+    padding: 0 10px !important;
+
+    border-radius: var(--cm-field-radius, 10px) !important;
+    color: var(--cm-text, #34343b) !important;
+
+    font-family: var(--cm-font-family, inherit) !important;
+    font-size: var(--cm-font-size, 12px) !important;
+    line-height: 20px !important;
+
+    overflow: hidden !important;
+}
+
+/* حذف متن ثابتی که قبلاً با CSS اضافه کردیم */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window
+div.relative:has(> div.absolute.z-50[x-show="open"])
+> div.cursor-pointer::after {
+    content: none !important;
+}
+
+/* اندازه و رنگ آیکون انتخاب‌شده داخل فیلد */
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"]
+) > .fi-modal-window
+div.relative:has(> div.absolute.z-50[x-show="open"])
+> div.cursor-pointer svg {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+
+    height: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
+
+    margin: 0 !important;
+    color: var(--cm-text, #34343b) !important;
+}
+
+
+/*  hovweerrr*/
+/* Sidebar group hover — shared styles */
+
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button {
+    transition:
+        background-color 180ms ease,
+        color 180ms ease,
+        box-shadow 180ms ease !important;
+}
+
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button:is(:hover, :focus-visible) {
+    background: var(--sidebar-group-hover-bg) !important;
+    color: var(--sidebar-group-hover-text) !important;
+
+    border-radius: 14px !important;
+
+    box-shadow:
+        inset 0 0 0 1px var(--sidebar-group-hover-border),
+        0 4px 12px var(--sidebar-group-hover-shadow) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+}
+
+/* عنوان گروه */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button:is(:hover, :focus-visible)
+:is(.fi-sidebar-group-label, span) {
+    color: var(--sidebar-group-hover-text) !important;
+}
+
+/* آیکون گروه و فلش */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button:is(:hover, :focus-visible) svg {
+    color: var(--sidebar-group-hover-icon) !important;
+    fill: currentColor !important;
+}
+
+/* آیکون‌های خطی توپر نشوند */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button:is(:hover, :focus-visible)
+svg[fill="none"] {
+    fill: none !important;
+    stroke: currentColor !important;
+}
+
+/* فوکوس کیبورد */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button:focus-visible {
+    outline: 2px solid var(--sidebar-group-hover-icon) !important;
+    outline-offset: 3px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+    .fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button {
+        transition: none !important;
+    }
+}
+
+
+
+
+/* OPTION 2 — Translucent */
+
+:root {
+    --sidebar-group-hover-bg: rgba(255, 255, 255, 0.16);
+    --sidebar-group-hover-text: #ffffff;
+    --sidebar-group-hover-icon: #ffffff;
+    --sidebar-group-hover-border: rgba(255, 255, 255, 0.28);
+    --sidebar-group-hover-shadow: rgba(30, 8, 76, 0.08);
+}
+
+.dark {
+    --sidebar-group-hover-bg: rgba(196, 181, 253, 0.14);
+    --sidebar-group-hover-text: #ffffff;
+    --sidebar-group-hover-icon: #ddd6fe;
+    --sidebar-group-hover-border: rgba(196, 181, 253, 0.25);
+    --sidebar-group-hover-shadow: rgba(0, 0, 0, 0.12);
+}
+
+
+/* Keep rounded corners during hover fade-out */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-group > .fi-sidebar-group-button {
+    border-radius: 14px !important;
+}
+
+
+
+
+/* =========================================================
+   STAT WIDGETS — چیدمان عنوان، توضیح و آیکون
+========================================================= */
+
+.fi-wi-stats-overview-stat {
+    --stat-icon-size: 36px;
+    --stat-icon-space: 48px;
+    --stat-icon-bg: #e8ebf3;
+    --stat-icon-color: #4147ff;
+    --stat-label-color: #111111;
+}
+
+html.dark .fi-wi-stats-overview-stat {
+    --stat-icon-bg: #26004d;
+    --stat-icon-color: #ffffff;
+    --stat-label-color: #ffffff;
+}
+
+/* محفظه محتوای کارت؛ نمودار احتمالی کارت هدف نیست */
+.fi-wi-stats-overview-stat
+> div:has(> .fi-wi-stats-overview-stat-value) {
+    position: relative !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    min-width: 0 !important;
+    gap: 0 !important;
+    direction: rtl !important;
+}
+
+/* عدد در ردیف اول */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat
+.fi-wi-stats-overview-stat-value {
+    order: 0 !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    margin: 0 0 4px !important;
+    margin-inline-start: var(--stat-icon-space) !important;
+
+    text-align: right !important;
+}
+
+/* محفظه عنوان در ردیف دوم */
+.fi-wi-stats-overview-stat
+> div:has(> .fi-wi-stats-overview-stat-value)
+> div:has(> .fi-wi-stats-overview-stat-label) {
+    position: static !important;
+    order: 1 !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    min-width: 0 !important;
+    min-height: 18px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-inline-start: var(--stat-icon-space) !important;
+
+    gap: 0 !important;
+}
+
+/* متن عنوان */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat
+.fi-wi-stats-overview-stat-label {
+    display: block !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    color: var(--stat-label-color) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    line-height: 18px !important;
+    text-align: right !important;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+/* محفظه توضیح در ردیف سوم */
+.fi-wi-stats-overview-stat
+> div:has(> .fi-wi-stats-overview-stat-value)
+> div:has(> .fi-wi-stats-overview-stat-description) {
+    position: static !important;
+    order: 2 !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    min-width: 0 !important;
+    min-height: 18px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-inline-start: var(--stat-icon-space) !important;
+
+    gap: 0 !important;
+}
+
+/* متن توضیح؛ رنگ اختصاصی هر ویجت حفظ می‌شود */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat
+.fi-wi-stats-overview-stat-description {
+    display: block !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 18px !important;
+    text-align: right !important;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+/* آیکون اصلی کارت داخل دایره */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat
+.fi-wi-stats-overview-stat-icon {
+    position: absolute !important;
+    inset: auto !important;
+    inset-inline-start: 0 !important;
+    bottom: 0 !important;
+
+    display: block !important;
+    box-sizing: border-box !important;
+
+    width: var(--stat-icon-size) !important;
+    height: var(--stat-icon-size) !important;
+    min-width: var(--stat-icon-size) !important;
+
+    margin: 0 !important;
+    padding: 10px !important;
+
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    background: var(--stat-icon-bg) !important;
+    color: var(--stat-icon-color) !important;
+
+    pointer-events: none;
+}
+
+/* وقتی آیکون اصلی داریم، آیکون تکراری توضیح مخفی شود */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat:has(.fi-wi-stats-overview-stat-icon)
+.fi-wi-stats-overview-stat-description-icon {
+    display: none !important;
+}
+
+/* اگر آیکون اصلی نداریم، آیکون توضیح جای آن قرار بگیرد */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+.fi-wi-stats-overview-stat:not(:has(.fi-wi-stats-overview-stat-icon))
+.fi-wi-stats-overview-stat-description-icon {
+    position: absolute !important;
+    inset: auto !important;
+    inset-inline-start: 0 !important;
+    bottom: 0 !important;
+
+    display: block !important;
+    box-sizing: border-box !important;
+
+    width: var(--stat-icon-size) !important;
+    height: var(--stat-icon-size) !important;
+    min-width: var(--stat-icon-size) !important;
+
+    margin: 0 !important;
+    padding: 10px !important;
+
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    background: var(--stat-icon-bg) !important;
+    color: var(--stat-icon-color) !important;
+
+    pointer-events: none;
+}
+
+/*HOVER SIDEBAR KAR*/
+
+
+/* Selected sidebar resource */
+
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-button {
+    background: var(--sidebar-group-hover-bg) !important;
+    color: var(--sidebar-group-hover-text) !important;
+
+    border-radius: 14px !important;
+
+    box-shadow:
+        inset 0 0 0 1px var(--sidebar-group-hover-border),
+        0 4px 12px var(--sidebar-group-hover-shadow) !important;
+}
+
+/* Selected resource label */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-button
+.fi-sidebar-item-label {
+    color: var(--sidebar-group-hover-text) !important;
+}
+
+/* Selected resource icon */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-button svg {
+    color: var(--sidebar-group-hover-icon) !important;
+    fill: currentColor !important;
+}
+
+/* Preserve outline icons */
+body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-button
+svg[fill="none"] {
+    fill: none !important;
+    stroke: currentColor !important;
+}
+
+body.soar-forget .fi-btn,
+body.soar-forget .fi-btn:is(:hover, :focus, :active)
+{
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+}
+.soar-login__submit {
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+}
+
+
+
+
+/* Forgot password only — input text */
+body .soar-forgot .fi-fo-field-wrp
+.fi-input-wrp input.fi-input[id] {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    caret-color: #000000 !important;
+}
+
+
+
+
+/* =====================================================
+   PAGE FORMS
+   فرم اصلی داخل صفحه، خارج از مودال / جدول / ویجت
+   ===================================================== */
+
+/* ---------- باکس اصلی ---------- */
+
+/* Page-only rules exclude native modal hosts and every form inside a modal. */
+body .fi-main .fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) {
+    --pf-bg: #ffffff;
+    --pf-input-bg: #ffffff;
+    --pf-text: #171717;
+    --pf-muted: #9292a4;
+    --pf-border: #e0deeb;
+    --pf-divider: #e3e3e3;
+    --pf-accent: #a870fa;
+    --pf-icon: #6938ff;
+
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+
+    /* ارتفاع منعطف؛ با افزایش محتوا باکس بزرگ‌تر می‌شود */
+    min-height: clamp(420px, 74dvh, 900px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    padding: clamp(20px, 2vw, 32px) !important;
+    margin: 0 !important;
+
+    background: var(--pf-bg) !important;
+    border: 0 !important;
+    border-radius: 24px !important;
     box-shadow: none !important;
 }
 
-:is(
-    [wire\:key$=".actions.create.modal"],
-    [wire\:key$=".actions.edit.modal"]
-) > .fi-modal-window
-.fi-modal-footer-actions .fi-btn[wire\:click*="another"] {
+/* ---------- دارک مود ---------- */
+
+html.dark body .fi-main .fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) {
+    --pf-bg: #000000;
+    --pf-input-bg: #000000;
+    --pf-text: #ffffff;
+    --pf-muted: #a4a4b8;
+    --pf-border: rgba(99, 99, 128, 1);
+    --pf-divider: #30303d;
+    --pf-accent: #a870fa;
+    --pf-icon: #b494ff;
+}
+
+/* ---------- سکشن‌های داخل فرم ---------- */
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *) {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section-header:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *) {
+    padding: 0 0 20px !important;
+    border: 0 !important;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section-header-heading:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    color: var(--pf-text) !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 1.8 !important;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section-content:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    padding: 0 !important;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section-content-ctn:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    border: 0 !important;
+    margin-right: 2% !important;
+    margin-left: 2% !important;
+}
+
+/* جداکننده، در صورتی که سکشن‌ها هم‌سطح باشند */
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section ~ .fi-section:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    padding-block-start: 24px !important;
+    border-block-start: 1px solid var(--pf-divider) !important;
+}
+
+/* ---------- عنوان و توضیح فیلد ---------- */
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-fo-field-wrp-label > span:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    color: var(--pf-text) !important;
+    font-size: 12px !important;
+    line-height: 1.8 !important;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-fo-field-wrp-helper-text:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    color: var(--pf-muted) !important;
+    font-size: 11px !important;
+    line-height: 1.8 !important;
+}
+
+/* ---------- قاب فیلد ---------- */
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-input-wrp:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *) {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 26px;
+
+    background: var(--pf-input-bg) !important;
+
+    border: 1px solid var(--pf-border) !important;
+    border-inline-start: 2px solid var(--pf-accent) !important;
+    border-radius: 10px !important;
+
+    box-shadow: none !important;
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-input-wrp:focus-within:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    border-color: var(--pf-accent) !important;
+    box-shadow: 0 0 0 2px rgb(168 112 250 / 14%) !important;
+}
+
+/* ---------- متن داخل input و select معمولی ---------- */
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+:is(input.fi-input, select.fi-select-input):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    box-sizing: border-box;
+    min-width: 0;
+    height: 24px !important;
+    min-height: 24px !important;
+
+    padding-block: 0 !important;
+    padding-inline: 10px !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+
+    color: var(--pf-text) !important;
+    -webkit-text-fill-color: var(--pf-text) !important;
+    caret-color: var(--pf-text);
+
+    font-size: 12px !important;
+    line-height: 24px !important;
+}
+
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+input.fi-input:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+)::placeholder {
+    color: var(--pf-muted) !important;
+    -webkit-text-fill-color: var(--pf-muted) !important;
+    opacity: 1 !important;
+}
+
+/* آیکون‌هایی که از قبل کنار فیلد وجود دارند */
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+:is(.fi-input-wrp-prefix, .fi-input-wrp-suffix) svg:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    width: 16px !important;
+    height: 16px !important;
+    color: var(--pf-icon) !important;
+}
+
+/* ---------- دکمه‌های انتهای فرم ---------- */
+
+/* ساختار استاندارد فیلامنت و ردیف flex مستقیم داخل فرم */
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-form-actions:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *),
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)) > .flex:last-child:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    margin-block-start: auto !important;
+    padding-block-start: 28px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* دکمه ذخیره؛ حتی اگر داخل ردیف actions نباشد */
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+button[type="submit"]:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget, .fi-input-wrp) *
+) {
+    align-self: flex-end;
+    min-width: 132px;
+    min-height: 38px;
+
+    padding: 8px 24px !important;
     background: #ff8000 !important;
     color: #ffffff !important;
-    width: auto !important;
-    min-width: 106px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+/* لغو موجود در ردیف استاندارد اکشن‌ها */
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-form-actions .fi-btn.fi-color-gray:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    min-width: 132px;
+    min-height: 38px;
+
+    background: #808080 !important;
+    color: #ffffff !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+/* بدون جابه‌جایی هنگام هاور */
+body .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-btn:is(:hover, :focus, :active):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+}
+
+/* PAGE FORMS — اصلاح اندازه، متن، autofill و دکمه */
+
+/* رنگ‌های مستقل برای همین فرم‌های صفحه‌ای */
+body .fi-main .fi-page.fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) {
+    --pf-input-bg: #ffffff;
+    --pf-text: #171717;
+    --pf-muted: #9292a4;
+    --pf-border: #e0deeb;
+}
+
+html.dark body .fi-main .fi-page.fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) {
+    --pf-input-bg: #000000;
+    --pf-text: #ffffff;
+    --pf-muted: #a4a4b8;
+    --pf-border: rgba(99, 99, 128, 1);
+}
+
+/* عنوان فیلد: هم color و هم text-fill اصلاح شوند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+:is(.fi-fo-field-wrp-label, .fi-fo-field-wrp-label > span):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    color: var(--pf-text) !important;
+    -webkit-text-fill-color: var(--pf-text) !important;
+    opacity: 1 !important;
+}
+
+/* عرض فیلدهای متنی و سلکت؛ در صفحه کوچک از عرض والد بیشتر نشود */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.fi-fo-field-wrp:has(
+    input.fi-input, select.fi-select-input, .fi-fo-select
+):not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *) {
+    width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
+    justify-self: start;
+}
+
+/* اندازه و پس‌زمینه قاب فیلدهای تک‌خطی */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.fi-input-wrp:has(input.fi-input, select.fi-select-input):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+
+    height: 40px !important;
+    min-height: 40px !important;
+    padding-block: 0 !important;
+
+    background: var(--pf-input-bg) !important;
+    background-image: none !important;
+    border: 1px solid var(--pf-border) !important;
+    border-inline-start: 2px solid #a870fa !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+}
+
+/* لایه داخلی نباید padding یا ارتفاع اضافی ایجاد کند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.fi-input-wrp-input:has(input.fi-input, select.fi-select-input):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    padding-block: 0 !important;
+    background: transparent !important;
+}
+
+/* متن از نظر عمودی وسط؛ جهت افقی مطابق فرم باقی می‌ماند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+:is(input.fi-input, select.fi-select-input):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    box-sizing: border-box !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+
+    margin-block: 0 !important;
+    padding-block: 0 !important;
+    padding-inline: 10px !important;
+
+    font-size: 12px !important;
+    line-height: normal !important;
+    color: var(--pf-text) !important;
+    -webkit-text-fill-color: var(--pf-text) !important;
+    caret-color: var(--pf-text) !important;
+
+    background: var(--pf-input-bg) !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+/* Autofill مرورگر؛ رنگ فیلد پرشده ثابت بماند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+input.fi-input:is(:autofill, :-webkit-autofill):not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    color: var(--pf-text) !important;
+    -webkit-text-fill-color: var(--pf-text) !important;
+    caret-color: var(--pf-text) !important;
+
+    -webkit-box-shadow:
+        0 0 0 1000px var(--pf-input-bg) inset !important;
+    box-shadow:
+        0 0 0 1000px var(--pf-input-bg) inset !important;
+}
+
+/* دکمه ذخیره با ابعاد و گردی فیگما */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+button[type="submit"]:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget, .fi-input-wrp) *
+) {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 106px !important;
+    min-width: 106px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+
+    padding: 0 12px !important;
+    border: 0 !important;
+    border-radius: 35px !important;
+
+    background: #ff8000 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+
+    font-size: 12px !important;
+    line-height: normal !important;
+    box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+}
+/* خط بالای سکشن مشخص‌شده، فقط در فرم صفحه‌ای */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section.soar-section-divider:not(.fi-modal *) {
+    border-block-start: 1px solid #d5d5d5 !important;
+    padding-block-start: 24px !important;
+}
+
+/* دارک مود */
+html.dark body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-section.soar-section-divider:not(.fi-modal *) {
+    border-block-start-color: rgba(99, 99, 128, 1) !important;
+}
+
+
+
+
+
+/* Create / Edit modals — required fields */
+
+/* تشخیص فیلد اجباری از علامت عنوان یا ویژگی required */
+body :is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"],
+    [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-modal-window
+.fi-fo-field-wrp:not(:has(.fi-fo-field-wrp)):has(
+    .fi-fo-field-wrp-label sup,
+    input[required],
+    select[required],
+    textarea[required],
+    [aria-required="true"]
+) .fi-input-wrp {
+    border-inline-start: 2px solid #a870fa !important;
+}
+
+/* حذف نمایش ستاره؛ اعتبارسنجی required باقی می‌ماند */
+body :is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"],
+    [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-modal-window
+.fi-fo-field-wrp-label sup {
+    display: none !important;
+}
+
+
+
+
+
+
+
+
+/*FLOATINGGGGGGGGGGGGGGG*/
+
+
+
+
+
+
+
+
+/* =====================================================
+   FLOATING LABELS + REQUIRED
+   Modal forms & standalone page forms
+   ===================================================== */
+
+/* ---------- تنظیمات عنوان ---------- */
+
+body .soar-floating-field {
+    position: relative;
+
+    --floating-label-top: calc(var(--cm-field-height, 33px) / 2);
+    --floating-label-bg: var(--cm-bg, #ffffff);
+    --floating-label-color: #9292a2;
+    --floating-label-active: #a870fa;
+}
+
+/* فرم‌های صفحه‌ای: هماهنگ با ارتفاع 26px فعلی */
+body .fi-main .fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-floating-field {
+    --floating-label-top: 13px;
+    --floating-label-bg: var(--pf-input-bg, #ffffff);
+    --floating-label-color: var(--pf-muted, #9292a4);
+}
+
+/* دارک مود */
+html.dark body .soar-floating-field {
+    --floating-label-bg: #000000;
+    --floating-label-color: #b2b2c3;
+}
+
+/* ---------- خارج کردن عنوان از جریان چیدمان ---------- */
+
+body .soar-floating-field > .grid > div:has(
+    > .fi-fo-field-wrp-label
+) {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 12px;
+
+    height: 0;
+    z-index: 2;
+}
+
+/* ---------- عنوان داخل فیلد خالی ---------- */
+
+body .soar-floating-field .fi-fo-field-wrp-label {
+    position: absolute;
+    inset-inline-start: 0;
+    top: var(--floating-label-top);
+
+    transform: translateY(-50%);
+    max-width: calc(100% - 12px);
+
+    margin: 0 !important;
+    padding: 0 5px !important;
+
+    background: transparent;
+    color: var(--floating-label-color) !important;
+    cursor: text;
+
+    transition:
+        top 160ms ease,
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+body .soar-floating-field .fi-fo-field-wrp-label > span {
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+
+    font-size: 12px !important;
+    line-height: 18px !important;
+}
+
+/* ---------- TextInput و Textarea ----------
+   با فوکوس یا داشتن مقدار، عنوان روی بوردر می‌رود
+*/
+
+body .soar-floating-field:not(.soar-floating-select):is(
+    :focus-within,
+    .soar-floating-has-value,
+    :has(input.fi-input[placeholder]:not(:placeholder-shown)),
+    :has(textarea.fi-textarea[placeholder]:not(:placeholder-shown))
+) .fi-fo-field-wrp-label {
+    top: 0 !important;
+    background: var(--floating-label-bg) !important;
+    color: var(--floating-label-active) !important;
+}
+
+/* Resting labels occupy the placeholder area; preserve hints on focus. */
+body .soar-floating-field:not(.soar-floating-select):not(:focus-within)
+:is(input.fi-input, textarea.fi-textarea)::placeholder {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* ---------- Select ----------
+   وضعیت مقدار توسط اسکریپت مشترک مشخص می‌شود
+*/
+
+body .soar-floating-select:is(
+    :focus-within,
+    .soar-floating-has-value,
+    :has(.choices.is-open)
+) .fi-fo-field-wrp-label {
+    top: 0 !important;
+    background: var(--floating-label-bg) !important;
+    color: var(--floating-label-active) !important;
+}
+
+/* سلکت معمولی خالی: placeholder با عنوان هم‌پوشانی نداشته باشد */
+body .soar-floating-select:not(
+    .soar-floating-has-value
+):not(:focus-within) select.fi-select-input {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* متن گزینه‌های منوی سلکت معمولی خوانا بماند */
+body .soar-floating-select select.fi-select-input option {
+    background: var(--floating-label-bg) !important;
+    color: var(--pf-text, var(--cm-text, #34343b)) !important;
+    -webkit-text-fill-color:
+        var(--pf-text, var(--cm-text, #34343b)) !important;
+}
+
+html.dark body .soar-floating-select select.fi-select-input option {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* placeholder سلکت جست‌وجودار */
+body .soar-floating-select
+.choices__list--single > .choices__item.choices__placeholder {
+    visibility: hidden !important;
+}
+
+/* placeholder داخل بخش انتخاب‌های چندتایی */
+body .soar-floating-select
+.choices__inner > input.choices__input::placeholder {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* ---------- Required ----------
+   مودال‌های ایجاد / ویرایش و فرم اصلی صفحه
+*/
+
+body :is(
+    [wire\:key$=".actions.create.modal"] .fi-modal-window,
+    [wire\:key$=".actions.edit.modal"] .fi-modal-window,
+    [wire\:key$=".actions.credential.modal"] .fi-modal-window,
+    .soar-form-modal .fi-modal-window,
+    .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+)
+.fi-fo-field-wrp:not(:has(.fi-fo-field-wrp)):has(
+    .fi-fo-field-wrp-label sup,
+    input[required],
+    select[required],
+    textarea[required],
+    [aria-required="true"]
+) .fi-input-wrp {
+    border-inline-start: 2px solid #a870fa !important;
+}
+
+/* مخفی کردن ستاره، بدون حذف اعتبارسنجی */
+body :is(
+    [wire\:key$=".actions.create.modal"] .fi-modal-window,
+    [wire\:key$=".actions.edit.modal"] .fi-modal-window,
+    [wire\:key$=".actions.credential.modal"] .fi-modal-window,
+    .soar-form-modal .fi-modal-window,
+    .fi-main .fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+)
+.fi-fo-field-wrp-label sup {
+    display: none !important;
+}
+
+/* رعایت تنظیم کاهش حرکت کاربر */
+@media (prefers-reduced-motion: reduce) {
+    body .soar-floating-field .fi-fo-field-wrp-label {
+        transition: none !important;
+    }
+}
+
+
+
+
+
+
+
+/* Page forms — floating label settings only */
+body .fi-main .fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) .soar-floating-field {
+    /* فقط برای محاسبه موقعیت عنوان؛ اندازه فیلد تغییر نمی‌کند */
+    --cm-field-height: 26px;
+
+    --floating-label-bg: var(--pf-input-bg, #ffffff);
+    --floating-label-color: var(--pf-muted, #9292a4);
+}
+
+html.dark body .fi-main .fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) .soar-floating-field {
+    --floating-label-bg: #000000;
+    --floating-label-color: #b2b2c3;
+}
+
+/* هماهنگی عنوان با ارتفاع قبلی فیلدها در موبایل */
+@media (max-width: 640px) {
+    body .fi-main .fi-page
+    form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp) .soar-floating-field {
+        --cm-field-height: 40px;
+    }
+}
+
+
+/* عنوان داخل فیلدهای صفحه‌ای با ارتفاع 40px */
+body .fi-main .fi-page.fi-page
+form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-floating-field {
+    --floating-label-top: 20px !important;
+}
+
+
+
+
+
+/* TagsInput دارای مقدار: عنوان روی بوردر بماند */
+body .soar-floating-field:has(
+    .fi-fo-tags-input-tags-ctn .fi-badge
+) .fi-fo-field-wrp-label {
+    top: 0 !important;
+    background: var(--floating-label-bg) !important;
+    color: var(--floating-label-active, #a870fa) !important;
+}
+
+
+
+/* Page form selects — alignment & width */
+
+/* فیلد داخل ستون خودش بماند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.fi-fo-field-wrp.soar-floating-field.soar-floating-select {
+    position: relative;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    --floating-label-top: 20px !important;
+}
+
+/* قاب سلکت هم‌ارتفاع اینپوت‌های 40px */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.soar-floating-select .fi-input-wrp.fi-fo-select {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 40px !important;
+    min-height: 40px !important;
+    padding-block: 0 !important;
+}
+
+/* سلکت معمولی */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.soar-floating-select select.fi-select-input {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    padding-block: 0 !important;
+    margin-block: 0 !important;
+}
+
+/* سلکت جست‌وجودار از عرض ستون بیرون نزند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.soar-floating-select .choices {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.soar-floating-select .choices__inner {
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 38px !important;
+    padding-block: var(--floating-multiple-padding, 0) !important;
+}
+
+/* Keep native selected chips below the shared floating label. */
+
+body .soar-floating-select .choices[data-type="select-multiple"] {
+    --floating-multiple-padding: 8px 2px;
+}
+
+/* سلکت چندانتخابی با افزایش گزینه‌ها بتواند بزرگ شود */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal)):has(.fi-fo-field-wrp)
+.soar-floating-select .fi-fo-select:has(select[multiple]) {
+    height: auto !important;
+    min-height: 40px !important;
+}
+/* Shared input radius for native form modals. */
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"],
+    [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-modal-window {
+    --cm-field-radius: 16px;
+}
+
+body:not(:has(.fi-simple-layout))
+:not(:has(.glass-form))
+:not(:has([data-soar-auth-page]))
+:is(
+    [wire\:key$=".actions.create.modal"],
+    [wire\:key$=".actions.edit.modal"],
+    [wire\:key$=".actions.credential.modal"], .soar-form-modal) .fi-modal-window .fi-input-wrp {
+    border-radius: 17px !important;
+}
+/* Floating label — Icon picker */
+body .soar-floating-icon {
+    position: relative;
+
+    --icon-floating-height: var(--cm-field-height, 40px);
+    --icon-floating-bg: var(--cm-bg, #ffffff);
+}
+
+/* Label inside the field */
+body .soar-floating-icon > label.fi-fo-field-wrp-label {
+    position: absolute !important;
+    inset-inline-start: 12px !important;
+    inset-inline-end: auto !important;
+    top: calc(var(--icon-floating-height) / 2) !important;
+
+    transform: translateY(-50%) !important;
+    z-index: 2;
+
+    margin: 0 !important;
+    padding: 0 5px !important;
+    max-width: calc(100% - 40px);
+
+    color: #9292a2 !important;
+    background: transparent !important;
+    font-size: 12px !important;
+    line-height: 18px !important;
+
+    pointer-events: none;
+
+    transition:
+        top 160ms ease,
+        color 160ms ease,
+        background-color 160ms ease;
+}
+
+body .soar-floating-icon > label.fi-fo-field-wrp-label > span {
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+}
+
+/* Hide the duplicate “انتخاب آیکون” text.
+   Keep display untouched: the script reads Alpine's display state. */
+body .soar-floating-icon
+> div.cursor-pointer
+> span[x-show="!value"] {
+    visibility: hidden !important;
+}
+
+/* Selected icon, open dropdown, or keyboard focus */
+body .soar-floating-icon:is(
+    .soar-floating-icon-active,
+    :focus-within
+) > label.fi-fo-field-wrp-label {
+    top: 0 !important;
+    color: #a870fa !important;
+    background: var(--icon-floating-bg) !important;
+}
+
+html.dark body .soar-floating-icon {
+    --icon-floating-bg: #000000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body .soar-floating-icon > label.fi-fo-field-wrp-label {
+        transition: none !important;
+    }
+}
+/* Access IPs — فقط TagsInput مشخص‌شده در فرم صفحه‌ای */
+
+/* قاب بیرونی: بدون ارتفاع ثابت و بدون بوردر دور برچسب‌ها */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.fi-input-wrp.fi-fo-tags-input.soar-access-ips:not(.fi-modal *) {
+    display: block !important;
+    width: 100% !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+}
+
+/* لایه‌های داخلی باید فضای برچسب‌ها را هم بگیرند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-input-wrp-input,
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-input-wrp-input > div {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    padding: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+}
+
+/* فقط خود کادر ورود، بوردر داشته باشد */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) input.fi-input {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+
+    margin: 0 !important;
+    padding: 0 10px !important;
+
+    background: var(--pf-input-bg, #ffffff) !important;
+    border: 1px solid var(--pf-border, #e0deeb) !important;
+    border-inline-start: 2px solid #a870fa !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+
+    color: var(--pf-text, #171717) !important;
+    -webkit-text-fill-color: var(--pf-text, #171717) !important;
+    font-size: 12px !important;
+    line-height: normal !important;
+}
+
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) input.fi-input:focus {
+    outline: none !important;
+    border-color: #a870fa !important;
+    box-shadow: 0 0 0 2px rgb(168 112 250 / 14%) !important;
+}
+
+/* برچسب‌ها زیر کادر؛ با افزایش تعداد به سطر بعد بروند */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-fo-tags-input-tags-ctn {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+
+    width: 100% !important;
+    gap: 6px !important;
+    margin: 8px 0 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* ظاهر هر IP */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+
+    max-width: 100%;
+    min-height: 26px;
+    gap: 6px !important;
+    padding: 4px 10px !important;
+
+    background: #a870fa !important;
+    color: #ffffff !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+
+    font-size: 12px !important;
+    line-height: 18px !important;
+}
+
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge span {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* ترتیب ارقام IP به هم نریزد */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge [x-text="tag"] {
+    direction: ltr;
+    unicode-bidi: isolatا;
+    overflow-wrap: anywhere;
+}
+
+/* دکمه حذف خود فیلامنت حفظ می‌شود */
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge-delete-button {
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    transform: none !important;
+}
+
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge-delete-button:hover {
+    background: rgb(255 255 255 / 20%) !important;
+}
+
+body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge-delete-button svg {
+    width: 14px !important;
+    height: 14px !important;
+    color: #ffffff !important;
+}
+
+/* دارک مود: رنگ کادر از متغیرهای فرم قبلی گرفته می‌شود */
+html.dark body .fi-main .fi-page.fi-page form:not(:where(.fi-modal, .fi-ta, .fi-wi-widget) *):not(:has(> .fi-modal))
+.soar-access-ips:not(.fi-modal *) .fi-badge {
+    background: #7540bd !important;
+}
+
+
+/* Required selects — Resource page forms only */
+body .fi-main .fi-page.fi-page
+.fi-fo-field-wrp:has(
+    .fi-fo-field-wrp-label sup,
+    select[required],
+    [aria-required="true"]
+)
+.fi-input-wrp.fi-fo-select:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    position: relative !important;
+    isolation: isolate;
+
+    /* نشان بنفش را لایه پایین رسم می‌کند */
+    border-inline-start-color: transparent !important;
+}
+
+/* نشان کامل، هم‌اندازه قاب و با همان گردی */
+body .fi-main .fi-page.fi-page
+.fi-fo-field-wrp:not(:has(.fi-fo-field-wrp)):has(
+    .fi-fo-field-wrp-label sup,
+    select[required],
+    [aria-required="true"]
+)
+.fi-input-wrp.fi-fo-select:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    box-sizing: border-box;
+    border: 0;
+    border-inline-start: 2px solid #a870fa;
+    border-radius: inherit;
+
+    pointer-events: none;
+}
+
+/* حذف نشان تکراری احتمالی از خود select */
+body .fi-main .fi-page.fi-page
+.fi-fo-field-wrp:has(
+    .fi-fo-field-wrp-label sup,
+    select[required],
+    [aria-required="true"]
+)
+.fi-input-wrp.fi-fo-select:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) select.fi-select-input {
+    border-inline-start: 0 !important;
+}
+/* Restore the opposite border — Page selects only */
+body .fi-main .fi-page.fi-page
+.fi-input-wrp.fi-fo-select:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    border-inline-end: 1px solid var(--pf-border, #e0deeb) !important;
+}
+
+/* Native selects share their wrapper border and focus ring in pages, modals and tables. */
+body .fi-input-wrp select.fi-select-input {
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+html.dark body .fi-main .fi-page.fi-page
+.fi-input-wrp.fi-fo-select:not(
+    :where(.fi-modal, .fi-ta, .fi-wi-widget) *
+) {
+    border-inline-end-color: rgb(99 99 128) !important;
+}
+
+
+
+
+/* Credential modal: fieldset layout only; shared styles are extended in place above. */
+/* Append to the existing theme.css. Scoped to the credential modal only. */
+.fi-modal-window.soar-credential-modal .soar-credential-form {
+    min-width: 0;
+    direction: rtl;
+}
+
+.fi-modal-window.soar-credential-modal .soar-credential-form .fi-fo-fieldset {
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.fi-modal-window.soar-credential-modal .soar-credential-form .fi-fo-fieldset > legend {
+    display: none !important;
+}
+
+/*REPEATE MODAL EQUIPMENTMODEL ->MODAL -> PORT */
+
+
+/* ==========================================================
+   Equipment Model — اختصاصی فرم مدل تجهیز و جدول پورت‌های آن
+   ========================================================== */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] {
+    --smp-bg: #ffffff;
+    --smp-text: #171717;
+    --smp-muted: #9292a2;
+    --smp-border: #e2e2eb;
+    --smp-strip-bg: #e9ebf4;
+    --smp-editor-bg: #f8f8fc;
+    --smp-action-bg: #e9ebf4;
+    --smp-action-color: #4b008f;
+
+    --cm-field-height: 33px;
+    --cm-field-radius: 10px;
+
+    min-width: 0;
+    direction: rtl;
+}
+
+html.dark body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] {
+    --smp-bg: #000000;
+    --smp-text: #f3f3f6;
+    --smp-muted: #a9a9bc;
+    --smp-border: rgb(99 99 128);
+    --smp-strip-bg: #191923;
+    --smp-editor-bg: #101016;
+    --smp-action-bg: #282237;
+    --smp-action-color: #c59aff;
+}
+
+/* بخش اطلاعات مدل و بخش پورت‌ها */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-section {
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-section > .fi-section-header {
+    padding: 0 0 18px !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-section > .fi-section-content-ctn {
+    border: 0 !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-section > .fi-section-content-ctn > .fi-section-content {
+    padding: 0 !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-section .fi-section-header-heading {
+    color: var(--smp-text) !important;
+    font-size: 13px !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-section .fi-section-header-description {
+    color: var(--smp-muted) !important;
+    font-size: 11px !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-model-info {
+    padding-bottom: 24px !important;
+    border-bottom: 1px solid var(--smp-border) !important;
+}
+
+/* نوار افزودن: نوع، پیشوند، تعداد، وضعیت، + */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-generator {
+    padding: 12px !important;
+    background: var(--smp-strip-bg) !important;
+    border-radius: 6px !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-generator > .fi-fo-component-ctn {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 30px !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-generator > .fi-fo-component-ctn > div {
+    min-width: 0 !important;
+}
+
+/* فقط فیلدهای همین فرم */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .fi-input-wrp {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    min-height: var(--cm-field-height) !important;
+    border-radius: var(--cm-field-radius) !important;
+
+    background: var(--smp-bg) !important;
+    box-shadow: none !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-generator .fi-input-wrp {
+    border: 1px solid var(--smp-border) !important;
+    border-inline-start: 2px solid #a870fa !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+:is(input.fi-input, select.fi-select-input) {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    color: var(--smp-text) !important;
+    -webkit-text-fill-color: var(--smp-text) !important;
+}
+
+/* متن Select خالی با لیبل شناور تداخل نکند */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.soar-floating-select:not(.soar-floating-has-value):not(:focus-within)
+select.fi-select-input {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+select.fi-select-input option {
+    color: var(--smp-text) !important;
+    background: var(--smp-bg) !important;
+    -webkit-text-fill-color: var(--smp-text) !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .soar-floating-field {
+    --floating-label-bg: var(--smp-bg);
+    --floating-label-top: calc(var(--cm-field-height) / 2);
+}
+
+/* دکمه + اختصاصی */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-add-port {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    padding: 0 !important;
+    margin-left: 3px !important;
+
+    color: #7040ff !important;
+    background: transparent !important;
+    border: 2px solid #7040ff !important;
+    border-radius: 7px !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-add-port svg {
+    width: 18px !important;
+    height: 18px !important;
+    padding: 0 !important;
+    color: inherit !important;
+    background: transparent !important;
+}
+
+/* جدول اختصاصی؛ از کلاس‌های کارت ریپیتر استفاده نمی‌کند */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .soar-model-repeater {
+    min-width: 0;
+    margin-top: 20px;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-table-scroll {
+    max-height: 360px;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-table {
+    width: 100% !important;
+    min-width: 620px;
+    margin: 0 !important;
+
+    table-layout: fixed;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+
+    background: var(--smp-bg) !important;
+    color: var(--smp-text) !important;
+}
+
+/* سربرگ بنفش، ثابت هنگام اسکرول */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+
+    background: linear-gradient(to left, #5e41ff, #8700ff);
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-table th {
+    height: 46px;
+    padding: 10px 12px !important;
+
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background: transparent !important;
+    border: 0 !important;
+
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-table th:first-child {
+    width: 30%;
+    border-start-start-radius: 999px;
+    border-end-start-radius: 999px;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-table th:last-child {
+    width: 116px;
+    border-start-end-radius: 999px;
+    border-end-end-radius: 999px;
+}
+
+/* ردیف‌های پورت */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-summary-row > td {
+    height: 64px;
+    padding: 12px 10px !important;
+
+    color: var(--smp-text) !important;
+    -webkit-text-fill-color: var(--smp-text) !important;
+    background: var(--smp-bg) !important;
+
+    border: 0 !important;
+    border-bottom: 1px solid var(--smp-border) !important;
+
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: #a870fa;
+}
+
+/* ویرایش و حذف فقط در جدول پورت همین فرم */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-row-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    padding: 7px !important;
+
+    color: var(--smp-action-color) !important;
+    background: var(--smp-action-bg) !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: pointer;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-row-action svg {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: inherit !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+:is(.smp-row-action, .smp-add-port):focus-visible {
+    outline: 2px solid #a870fa !important;
+    outline-offset: 3px;
+}
+
+/* فرم ویرایش زیر ردیف */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-editor-row > td {
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-editor {
+    padding: 24px 16px 16px;
+    background: var(--smp-editor-bg);
+    border-bottom: 1px solid var(--smp-border);
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-close-editor {
+    padding: 6px 20px;
+    color: #ffffff !important;
+    background: #7e7e7e !important;
+    border: 0;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-row-error {
+    display: block;
+    margin-top: 4px;
+    color: #dc2626 !important;
+    -webkit-text-fill-color: #dc2626 !important;
+    font-size: 10px;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-empty {
+    padding: 36px 16px !important;
+    color: var(--smp-muted) !important;
+    text-align: center;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form] .smp-total {
+    margin-top: 10px;
+    color: var(--smp-muted) !important;
+    font-size: 11px;
+}
+
+/* تبلت و موبایل */
+
+@media (max-width: 767px) {
+    body .fi-modal-window
+    .soar-equipment-model-form[data-soar-model-form]
+    .smp-generator > .fi-fo-component-ctn {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 18px 12px !important;
+    }
+
+    body .fi-modal-window
+    .soar-equipment-model-form[data-soar-model-form]
+    .smp-generator > .fi-fo-component-ctn > div:last-child {
+        grid-column: 1 / -1 !important;
+        justify-self: end;
+    }
+}
+
+@media (max-width: 420px) {
+    body .fi-modal-window
+    .soar-equipment-model-form[data-soar-model-form]
+    .smp-generator > .fi-fo-component-ctn {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* عنوان و محتوای ستون اول، نزدیک لبه راست و هم‌راستا */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-table th:first-child,
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-summary-row > td:first-child {
+    text-align: start !important;
+    padding-inline-start: 20px !important;
+    padding-inline-end: 12px !important;
+}
+
+/* فاصله فیلدهای نوار افزودن */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-generator > .fi-fo-component-ctn {
+    column-gap: 20px !important;
+}
+
+/* فضای مستقل برای دکمه + در دسکتاپ */
+
+@media (min-width: 768px) {
+    body .fi-modal-window
+    .soar-equipment-model-form[data-soar-model-form]
+    .smp-generator > .fi-fo-component-ctn {
+        grid-template-columns:
+            repeat(4, minmax(0, 1fr)) 40px !important;
+    }
+
+    body .fi-modal-window
+    .soar-equipment-model-form[data-soar-model-form]
+    .smp-generator > .fi-fo-component-ctn > div:last-child {
+        justify-self: end !important;
+    }
+}
+
+/* رنگ نقطه وضعیت */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-status-dot {
+    background: #9ca3af !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-status-dot[data-status="active"] {
+    background: #39b779 !important;
+}
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-status-dot[data-status="inactive"] {
+    background: #ef4444 !important;
+}
+
+/* گوشه‌های گرد بخش ویرایش پورت */
+
+body .fi-modal-window
+.soar-equipment-model-form[data-soar-model-form]
+.smp-editor {
+    margin-block: 8px !important;
+    border: 1px solid var(--smp-border) !important;
+    border-radius: 12px !important;
+}
+
+
+
+
+/* Append to the existing theme.css. Scoped to the credential modal only. */
+.fi-modal-window.soar-credential-modal .soar-credential-form {
+    min-width: 0;
+    direction: rtl;
+}
+
+.fi-modal-window.soar-credential-modal .soar-credential-form .fi-fo-fieldset {
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.fi-modal-window.soar-credential-modal .soar-credential-form .fi-fo-fieldset > legend {
+    display: none !important;
+}
+
+
+.fi-fieldset {
+    border: none !important;
+}
+
+/*WIDTH MODAL CREDENTIAL*/
+
+
+/* عرض اختصاصی مودال اطلاعات دسترسی */
+[wire\:key$=".actions.credential.modal"] .fi-modal-window {
+    --cm-width: 40%;
+    width: var(--cm-width) !important;
+}
+
+/* در موبایل، فرم بیش از حد باریک نشود */
+@media (max-width: 767px) {
+    [wire\:key$=".actions.credential.modal"] .fi-modal-window {
+        --cm-width: calc(100vw - 32px);
+    }
+}
+
+
+/* Layout fixes for native Filament components, scoped only to ServicesDashboard.
+   Keep the project's existing card typography, colors, padding, and icons. */
+[data-monitoring-dashboard="services"] .fi-wi-stats-overview-stats-ctn {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch;
+}
+
+[data-monitoring-dashboard="services"] .fi-wi-stats-overview-stat {
+    min-width: 0;
+}
+
+[data-monitoring-dashboard="services"] .fi-wi-stats-overview-stat-value {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+    [data-monitoring-dashboard="services"] .fi-wi-stats-overview-stats-ctn {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    [data-monitoring-dashboard="services"] .fi-wi-stats-overview-stats-ctn {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Restore the native chart's section when the host theme makes sections transparent.
+   Override these variables in the host theme to match its table surface exactly. */
+[data-monitoring-dashboard="services"] .fi-wi-chart > .fi-section {
+    background: var(--monitoring-chart-background, #fff) !important;
+    border: var(--monitoring-chart-border, 1px solid rgb(17 24 39 / 8%)) !important;
+    border-radius: var(--monitoring-chart-radius, 1rem) !important;
+    box-shadow: var(--monitoring-chart-shadow, 0 1px 3px rgb(17 24 39 / 8%)) !important;
+}
+
+.dark [data-monitoring-dashboard="services"] .fi-wi-chart > .fi-section,
+.dark[data-monitoring-dashboard="services"] .fi-wi-chart > .fi-section {
+    background: var(--monitoring-chart-dark-background, #111827) !important;
+    border: var(--monitoring-chart-dark-border, 1px solid rgb(255 255 255 / 10%)) !important;
+}
+
+
+
+
+
+/* Company dashboard embed only. Wrap DashboardStats in #system-monitor-stats.
+   No per-card attributes or :has() support are required. */
+#system-monitor-stats {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    direction: rtl;
+}
+
+#system-monitor-stats .fi-wi-stats-overview,
+#system-monitor-stats .fi-wi-stats-overview-stats-ctn {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-auto-flow: row !important;
+    grid-auto-rows: auto !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-header {
+    min-width: 0 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat {
+    --stat-icon-space: 0px !important;
+    --stat-icon-size: 20px !important;
+    display: block !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 16px !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat > .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat > .grid,
+#system-monitor-stats .fi-wi-stats-overview-stat > .grid > div {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat > .grid > .flex {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat-value,
+#system-monitor-stats .fi-wi-stats-overview-stat-label,
+#system-monitor-stats .fi-wi-stats-overview-stat-description {
+    position: static !important;
+    inset: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    writing-mode: horizontal-tb !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: start !important;
+    line-height: 1.6 !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat-value {
+    font-size: 24px !important;
+}
+
+#system-monitor-stats .fi-wi-stats-overview-stat-icon,
+#system-monitor-stats .fi-wi-stats-overview-stat-description-icon {
+    position: static !important;
+    inset: auto !important;
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+}
+/* Native DashboardStats cards: only the three API usage gauges. */
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] > .grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] .fi-wi-stats-overview-stat-value {
+    order: -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] .monitoring-system-gauge {
+    display: block !important;
+    width: 100% !important;
+    max-width: 164px !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    direction: ltr;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] .monitoring-system-gauge-svg {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    overflow: visible;
+}
+[data-monitoring-gauge="system"] .monitoring-system-gauge-fill {
+    transition: stroke-dashoffset 800ms ease-in-out, opacity 200ms;
+}
+[data-monitoring-gauge="system"] .monitoring-system-gauge-needle {
+    transform-origin: 110px 110px;
+    transition: transform 800ms ease-in-out, opacity 200ms;
+}
+[data-monitoring-gauge="system"] .monitoring-system-gauge-number {
+    fill: #111827;
+    font-family: inherit;
+    font-weight: 700;
+}
+/* Compact Figma proportions; only DashboardStats cards, never other stats. */
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-stat="system"] {
+    padding: 12px 16px !important;
+    border-radius: 20px !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] {
+    min-height: 171px !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-stat="system"] > .grid {
+    gap: 2px !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-stat="system"] .fi-wi-stats-overview-stat-label {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-stat="system"] .fi-wi-stats-overview-stat-description {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-stat="system"] .fi-wi-stats-overview-stat-value {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] .fi-wi-stats-overview-stat-icon {
+    box-sizing: border-box !important;
+    flex: 0 0 29px !important;
+    width: 29px !important;
+    min-width: 29px !important;
+    max-width: 29px !important;
+    height: 29px !important;
+    padding: 7px !important;
+    border-radius: 50% !important;
+    background: #e9ecf1 !important;
+    color: #3a4de9 !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-gauge="system"] .monitoring-system-gauge[role="meter"] .monitoring-system-gauge-number {
+    font-size: 30px !important;
+}
+.dark [data-monitoring-gauge="system"] .monitoring-system-gauge-number {
+    fill: #f9fafb;
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-monitoring-gauge="system"] .monitoring-system-gauge-fill,
+    [data-monitoring-gauge="system"] .monitoring-system-gauge-needle {
+        transition: none;
+    }
+}
+/* Center only uptime and hostname cards, preserving the three usage gauges. */
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-details="system"] > .grid > .flex {
+    justify-content: center !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-details="system"] .fi-wi-stats-overview-stat-value,
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-details="system"] .fi-wi-stats-overview-stat-label,
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-details="system"] .fi-wi-stats-overview-stat-description {
+    text-align: center !important;
+}
+:is(#system-monitor-stats, .fi-wi-stats-overview) [data-monitoring-details="system"] .fi-wi-stats-overview-stat-value {
+    order: -1 !important;
+    width: 100% !important;
+    unicode-bidi: plaintext;
 }
 
 
@@ -7443,29 +10142,10 @@ html.dark body:not(:has(.fi-simple-layout))
    This panel uses Filament's own account menu and sidebar controls. */
 :root {
     --soar-panel-font: "Vazir", "Vazirmatn", Tahoma, Arial, sans-serif;
-    --soar-analytics-card-bg: #ffffff;
-    --soar-analytics-sidebar-bg: linear-gradient(180deg, #7e08f6, #5948f9);
-    /* Match the supplied final create/edit modal palette. */
-    --soar-dialog-bg: #ffffff;
-    --soar-dialog-text: #34343b;
-    --soar-dialog-muted: #9292a2;
-    --soar-dialog-border: #e2e2ea;
-    --soar-dialog-accent: #ad6bfa;
-    --soar-dialog-cancel: #7b7b7b;
-    --soar-dialog-radius: 10px;
-    --soar-dialog-field-height: 33px;
 }
 
-html.dark {
-    --soar-analytics-card-bg: #000000;
-    --soar-analytics-sidebar-bg: linear-gradient(180deg, #000000, #5000a1);
-    --soar-dialog-bg: #000000;
-    --soar-dialog-text: #eeeef2;
-    --soar-dialog-muted: #aaa7b5;
-    --soar-dialog-border: #636380;
-}
 
-body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
+/* body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page]))
 :is(.fi-layout, .fi-main, .fi-page, .fi-section, .fi-modal-window, .fi-dropdown-panel,
     .fi-input, .fi-select-input, .fi-textarea, .fi-btn, .fi-ta-ctn, .fi-tabs, .fi-badge,
     .fi-header-heading, .fi-page-header-heading) {
@@ -7474,7 +10154,7 @@ body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-aut
 
 :is([wire\:key$=".actions.create.modal"], [wire\:key$=".actions.edit.modal"]) {
     --cm-font-family: "Vazir", Tahoma, Arial, sans-serif;
-}
+} */
 
 /* The supplied sidebar footer is absent here: keep the sole account/theme menu. */
 body:not(:has(.fi-simple-layout)):not(:has(.glass-form)):not(:has([data-soar-auth-page])):not(:has(.soar-sidebar-footer))

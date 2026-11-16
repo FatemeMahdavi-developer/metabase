@@ -5,6 +5,8 @@
             <div class="mb-loading">در حال آماده‌سازی فضای تحلیل…</div>
         </div>
         <div wire:ignore>@include('filament.partials.analytics-modal')</div>
+        <div wire:ignore>@include('filament.partials.analytics-native-table')
+            @include('filament.partials.analytics-native-controls')</div>
         @include('filament.partials.analytics-native-form')
     </div>
 </x-filament-panels::page>

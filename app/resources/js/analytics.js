@@ -1,4 +1,4 @@
-import { e, icon, button, iconButton, displayNames, visualize } from "./analytics/ui";
+import { e, icon, visualize } from "./analytics/ui";
 import { dashboardMethods } from './analytics/dashboards';
 import { reportMethods } from './analytics/reports';
 import { connectionMethods } from './analytics/connections';
@@ -25,7 +25,7 @@ import '../css/analytics-filament.css';
 class AnalyticsStudio {
     constructor(root) {
         this.root = root; this.api = root.dataset.api; this.token = root.dataset.csrf; this.view = 'dashboards';
-        this.folder = null; this.search = ''; this.charts = []; this.library = { connections: [], reports: [], dashboards: [], folders: [] };
+        this.folder = null; this.charts = []; this.library = { connections: [], reports: [], dashboards: [], folders: [] };
         this.editing = false; this.dirty = false; this.results = new Map(); this.cardCache = new Map(); this.cardPromises = new Map(); this.epoch = 0; this.navigationEpoch = 0;
         this.visualizationColors = new Map();
         this.initializeNativeNavigation();
@@ -33,7 +33,7 @@ class AnalyticsStudio {
         this.root.addEventListener('analytics:themechange', () => this.refreshVisualizationTheme());
         root.addEventListener('click', event => { const target = event.target.closest('[data-action]'); if (target && root.contains(target)) { event.preventDefault(); this.dispatch(target.dataset.action, target); } });
         root.addEventListener('change', event => this.change(event.target));
-        root.addEventListener('input', event => { const target = event.target; if (target.dataset.expressionEditor !== undefined || target.dataset.expressionName !== undefined || target.dataset.expressionSearch !== undefined || target.dataset.expressionBrowserSearch !== undefined) this.expressionEditorInput(target); if (target.dataset.notebookSortSearch !== undefined) this.root.querySelectorAll('.mb-notebook-field-options button').forEach(row => { row.hidden = !row.textContent.toLocaleLowerCase().includes(target.value.toLocaleLowerCase()); }); if (target.closest('[data-connection-form]')) this.markDirty(); if (target.dataset.search !== undefined) { this.search = target.value; this.filterLibrary(); } if (target.dataset.schemaSearch !== undefined) this.root.querySelectorAll('.mb-schema-tables [data-key]').forEach(row => { row.hidden = !(row.dataset.searchText || normalizeMetadataSearch(row.textContent)).includes(normalizeMetadataSearch(target.value)); }); if (target.dataset.pickerSearch !== undefined) this.root.querySelectorAll('.mb-dialog .mb-card-picker').forEach(row => { row.hidden = !(row.dataset.searchText || normalizeMetadataSearch(row.textContent)).includes(normalizeMetadataSearch(target.value)); }); if (target.dataset.reportInput) { this.report[target.dataset.reportInput] = target.value; this.markDirty(); } if (target.dataset.sql !== undefined) { this.report.query_definition.sql = target.value; this.markDirty(); this.updateSqlHighlight(); } });
+        root.addEventListener('input', event => { const target = event.target; if (target.dataset.expressionEditor !== undefined || target.dataset.expressionName !== undefined || target.dataset.expressionSearch !== undefined || target.dataset.expressionBrowserSearch !== undefined) this.expressionEditorInput(target); if (target.closest('[data-connection-form]')) this.markDirty(); if (target.dataset.schemaSearch !== undefined) this.root.querySelectorAll('.mb-schema-tables [data-key]').forEach(row => { row.hidden = !(row.dataset.searchText || normalizeMetadataSearch(row.textContent)).includes(normalizeMetadataSearch(target.value)); }); if (target.dataset.pickerSearch !== undefined) this.root.querySelectorAll('.mb-dialog .mb-card-picker').forEach(row => { row.hidden = !(row.dataset.searchText || normalizeMetadataSearch(row.textContent)).includes(normalizeMetadataSearch(target.value)); }); if (target.dataset.reportInput) { this.report[target.dataset.reportInput] = target.value; this.markDirty(); } if (target.dataset.sql !== undefined) { this.report.query_definition.sql = target.value; this.markDirty(); this.updateSqlHighlight(); } });
         root.addEventListener('keydown', event => { if (event.target.matches('[data-expression-editor]') || event.target.closest('[data-expression-workbench]')) this.expressionEditorKeydown(event); if (event.target.dataset.rowLimit !== undefined && event.key === 'Enter') { event.preventDefault(); event.target.blur(); } });
         root.addEventListener('focusout', event => { if (event.target.dataset.rowLimit !== undefined) this.dispatch('saveNotebookLimit', event.target); });
         root.addEventListener('dragstart', event => { const clause = event.target.closest('.mb-notebook-clause'); if (clause) { event.dataTransfer.setData('application/json', JSON.stringify({ stage: Number(clause.dataset.stage), list: clause.dataset.list, index: Number(clause.dataset.index) })); event.dataTransfer.effectAllowed = 'move'; } });
@@ -110,44 +110,6 @@ class AnalyticsStudio {
         if (this.view === 'browser') this.loadTablePreview();
         if (this.view === 'connection') this.connectionDriverChanged(this.root.querySelector('[data-driver]'));
     }
-    libraryHtml() {
-        const connectionView = this.view === 'connections'; const dashboards = this.view === 'dashboards';
-        const title = connectionView ? 'دیتابیس‌ها' : dashboards ? 'داشبوردهای شما' : 'گزارش‌های ذخیره‌شده';
-        const action = connectionView ? 'newConnection' : dashboards ? 'newDashboard' : 'newReport';
-        const label = connectionView ? 'اتصال دیتابیس' : dashboards ? 'داشبورد جدید' : 'گزارش جدید';
-        return `<header class="mb-toolbar"><div><h1>${title}</h1><small>${connectionView ? 'اتصال، همگام‌سازی و مرور ساختار داده‌ها' : dashboards ? 'گزارش‌های مرتبط را کنار هم قرار دهید و داستان داده‌ها را ببینید.' : 'پرسش‌ها را یک‌بار بسازید و در داشبوردهای مختلف استفاده کنید.'}</small></div><div class="mb-actions">${!connectionView && !dashboards ? button(icon('code') + 'پرس‌وجوی SQL', 'newNativeReport') : ''}${button(icon('plus') + label, action, 'primary')}</div></header>
-            <div class="mb-content"><label class="mb-search">${icon('search')}<input aria-label="جست‌وجو" placeholder="جست‌وجو…" value="${e(this.search)}" data-search></label><div class="mb-list">${this.libraryRows()}</div></div>`;
-    }
-    libraryRows() {
-        const connections = this.view === 'connections'; const dashboards = this.view === 'dashboards';
-        const rows = this.library[this.view] || [];
-        const normalizeSearch = value => String(value || '').replaceAll('ي', 'ی').replaceAll('ك', 'ک').replace(/[\u064B-\u065F\u200c]/g, '').toLocaleLowerCase().trim();
-        const selected = rows.filter(row => (!this.folder || connections || row.folder_id === this.folder) && normalizeSearch([row.name, row.description, row.driver, displayNames[row.display], this.library.folders.find(folder => folder.id === row.folder_id)?.name].join(' ')).includes(normalizeSearch(this.search)));
-        if (!selected.length) return `<div class="mb-empty">${icon(connections ? 'database' : dashboards ? 'dashboard' : 'chart')}<strong>اینجا هنوز چیزی نیست</strong>از دکمهٔ بالای صفحه برای شروع استفاده کنید.</div>`;
-        return `<table class="mb-library-table"><thead><tr><th>نام</th><th>${connections ? 'موتور دیتابیس' : 'نوع'}</th><th>${connections ? 'وضعیت' : 'آخرین ویرایش'}</th><th></th></tr></thead><tbody>${selected.map(row => `<tr><td><div class="mb-library-name">${icon(connections ? 'database' : dashboards ? 'dashboard' : row.display)}<div><button class="mb-list-title" data-action="${connections ? 'browseConnection' : dashboards ? 'openDashboard' : 'openReport'}" data-id="${row.id}">${e(row.name)}</button>${row.description ? `<div class="mb-list-subtitle">${e(row.description)}</div>` : ''}</div></div></td><td>${connections ? e(({ pgsql: 'PostgreSQL', clickhouse: 'ClickHouse' })[row.driver] || row.driver) : dashboards ? 'داشبورد' : displayNames[row.display]}</td><td>${connections ? `<span class="mb-badge">${row.synced_at ? 'فعال' : 'همگام نشده'}</span><small class="mb-list-subtitle"> ${row.catalog?.length || 0} جدول</small>` : e(new Date(row.updated_at).toLocaleDateString('fa-IR'))}</td><td><div class="mb-actions">${connections ? iconButton('settings', 'تنظیم اتصال', 'editConnection', `data-id="${row.id}"`) : dashboards ? `<span class="mb-badge">${row.is_owner ? 'شخصی' : 'اشتراکی'}</span>` : iconButton('copy', 'کپی گزارش', 'copyReport', `data-id="${row.id}"`)}${(!dashboards || row.is_owner) ? iconButton('trash', 'حذف', 'deleteItem', `data-id="${row.id}" data-kind="${this.view}"`) : ''}</div></td></tr>`).join('')}</tbody></table>`;
-    }
-    filterLibrary() { const list = this.root.querySelector('.mb-list'); if (list) list.innerHTML = this.libraryRows(); }
-    async navigate(target) {
-        const nextView = target.dataset.view;
-        if (nextView === this.view) { this.navigationEpoch++; return; }
-        if (this.dirty) { this.confirm('تغییرات ذخیره‌نشده', 'با خروج از این صفحه تغییرات موقت از دست می‌روند.', async () => { this.dirty = false; await this.navigate(target); }); return; }
-        const navigation = ++this.navigationEpoch;
-        this.libraryNavigation = navigation;
-        this.root.inert = true;
-        this.root.setAttribute('aria-busy', 'true');
-        try {
-            await this.refreshLibrary();
-            if (navigation !== this.navigationEpoch) return;
-            this.drillSession = null; this.view = nextView; this.editing = false; this.search = ''; window.history.replaceState(null, '', window.location.pathname); this.render();
-        } finally {
-            if (this.libraryNavigation === navigation) {
-                this.libraryNavigation = null;
-                this.root.inert = false;
-                this.root.removeAttribute('aria-busy');
-            }
-        }
-    }
-    selectFolder(target) { if (this.dirty) { this.confirm('تغییرات ذخیره‌نشده', 'تغییرات ذخیره نشده کنار گذاشته شود؟', () => { this.dirty = false; this.selectFolder(target); }); return; } this.navigationEpoch++; if (['report', 'dashboard'].includes(this.view)) this.view = 'dashboards'; this.editing = false; this.folder = target.dataset.id ? Number(target.dataset.id) : null; this.render(); }
     change(target) {
         if (target.matches('[data-series-color], [data-base-chart-color]')) target.dataset.colorChanged = 'true';
         if (target.dataset.notebookFilterField !== undefined || target.dataset.notebookFilterOperator !== undefined) this.notebookFilterChanged(target);
@@ -177,7 +139,6 @@ class AnalyticsStudio {
     modalWasClosed(dialog) {
         this.closeDrillMenu();
         if (dialog.dataset.objectDetail !== undefined) this.objectDetailClosed();
-        if (dialog.querySelector('.mb-filter-value-picker')) { clearTimeout(this.filterSearchTimer); this.filterPickerEpoch = (this.filterPickerEpoch || 0) + 1; this.filterOptionsRevision = (this.filterOptionsRevision || 0) + 1; }
         if (dialog.querySelector('[data-expression-workbench]')) { clearTimeout(this.expressionValidationTimer); this.expressionValidationRevision = (this.expressionValidationRevision || 0) + 1; }
     }
     closeModal() {
@@ -191,7 +152,7 @@ class AnalyticsStudio {
 
     async confirmAction() { this.closeModal(); await this.confirmCallback?.(); }
 
-    async saveFolder() { const form = this.form(); await this.request('folders', 'POST', { name: form.get('name') }); this.closeModal(); await this.refreshLibrary(); if (this.view === 'connection') this.root.querySelector('.mb-sidebar').outerHTML = this.sidebar(); else this.render(); }
+    async saveFolder() { const form = this.form(); await this.request('folders', 'POST', { name: form.get('name') }); this.closeModal(); await this.refreshLibrary(); this.render(); }
     deleteItem(target) { const { id, kind } = target.dataset; this.confirm('حذف مورد', 'این مورد حذف می‌شود. مواردی که در گزارش یا داشبورد استفاده شده‌اند قابل حذف نیستند.', async () => { await this.request(`${kind}/${id}`, 'DELETE'); await this.refreshLibrary(); this.render(); this.toast('حذف شد.'); }); }
     exportResult(result, name = 'report') {
         const cell = value => { let text = String(value ?? ''); if (typeof value === 'string' && /^[=+\-@]/.test(text)) text = "'" + text; return '"' + text.replaceAll('"', '""') + '"'; };
@@ -204,9 +165,13 @@ class AnalyticsStudio {
         const origin = this.drillSession?.origin;
         const scope = widget ? ['widget', this.dashboard?.id, widget] : origin?.kind === 'widget' ? ['widget', origin.dashboard_id, origin.widget_key] : ['report', this.report?.id || origin?.definition?.connection_id || this.report?.query_definition?.connection_id, this.report?.id || origin?.name || this.report?.name, this.report?.query_definition?.source];
         const signature = JSON.stringify([scope, display, settings.color, settings.color_custom, settings.series_colors]);
-        const runtime = { ...settings, _series_colors: { ...this.visualizationColors.get(signature), ...sanitizeSeriesColors(settings._series_colors) } };
+        const cachedColors = this.visualizationColors.get(signature);
+        const inheritedColors = sanitizeSeriesColors(settings._series_colors);
+        const indexes = { ...cachedColors?.indexes, ...settings._series_color_indexes };
+        for (const key of Object.keys(inheritedColors)) if (!Number.isInteger(settings._series_color_indexes?.[key])) delete indexes[key];
+        const runtime = { ...settings, _series_colors: { ...cachedColors?.colors, ...inheritedColors }, _series_color_indexes: indexes };
         const chart = visualize(container, result, display, runtime, callback);
-        this.visualizationColors.set(signature, runtime._series_colors || {});
+        this.visualizationColors.set(signature, { colors: runtime._series_colors || {}, indexes: runtime._series_color_indexes || {} });
         if (this.visualizationColors.size > 256) this.visualizationColors.delete(this.visualizationColors.keys().next().value);
         if (chart) this.charts.push(chart);
     }
